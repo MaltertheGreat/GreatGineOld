@@ -215,7 +215,13 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Source\GGApplication.cpp" />
+    <ClCompile Include="Source\GGWindow.cpp" />
     <ClCompile Include="Source\GreatGine.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Source\GGApplication.h" />
+    <ClInclude Include="Source\GGWindow.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
