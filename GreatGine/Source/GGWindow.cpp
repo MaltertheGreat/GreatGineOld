@@ -1,27 +1,35 @@
 #include "GGWindow.h"
 using namespace std;
 
-GGWindow::GGWindow( std::wstring title )
+GGWindow::GGWindow( std::wstring title, UINT _width, UINT _height, HINSTANCE _hInstance )
+	:
+	m_width( _width ),
+	m_height( _height )
 {
-	WNDCLASSEX wcex;
+	WNDCLASSEX wcex = { 0 };
 
 	wcex.cbSize = sizeof( WNDCLASSEX );
 	wcex.style = CS_HREDRAW | CS_VREDRAW;
-	wcex.lpfnWndProc = WndProc;
-	wcex.cbClsExtra = 0;
-	wcex.cbWndExtra = 0;
-	wcex.hInstance = GetModuleHandle( NULL );
-	wcex.hIcon = LoadIcon( wcex.hInstance, MAKEINTRESOURCE( IDI_APPLICATION ) );
-	wcex.hCursor = LoadCursor( NULL, IDC_ARROW );
+	wcex.lpfnWndProc = &WndProc;
+	wcex.hInstance = _hInstance;
+	wcex.hCursor = LoadCursor( nullptr, IDC_ARROW );
 	wcex.hbrBackground = (HBRUSH)(COLOR_WINDOW + 1);
-	wcex.lpszMenuName = NULL;
+	wcex.lpszMenuName = nullptr;
 	wcex.lpszClassName = title.c_str();
-	wcex.hIconSm = LoadIcon( wcex.hInstance, MAKEINTRESOURCE( IDI_APPLICATION ) );
 
 	RegisterClassEx( &wcex );
-	m_hWnd = CreateWindow( title.c_str(), title.c_str(), WS_OVERLAPPEDWINDOW, CW_USEDEFAULT, CW_USEDEFAULT, 800, 600, NULL, NULL, wcex.hInstance, NULL );
+
+	// Convert client size to window size
+	RECT windowRect = { 0, 0, _width, _height };
+	DWORD windowStyle = WS_OVERLAPPEDWINDOW;
+	AdjustWindowRect( &windowRect, windowStyle, FALSE );
+	UINT windowWidth = windowRect.right - windowRect.left;
+	UINT windowHeigth = windowRect.bottom - windowRect.top;
+
+	m_hWnd = CreateWindow( title.c_str(), title.c_str(), windowStyle, CW_USEDEFAULT, CW_USEDEFAULT, windowWidth, windowHeigth, nullptr, nullptr, _hInstance, nullptr );
 
 	ShowWindow( m_hWnd, SW_SHOW );
+	UpdateWindow( m_hWnd );
 
 	return;
 }
@@ -29,6 +37,16 @@ GGWindow::GGWindow( std::wstring title )
 HWND GGWindow::GetHandle() const
 {
 	return m_hWnd;
+}
+
+UINT GGWindow::GetWidth() const
+{
+	return m_width;
+}
+
+UINT GGWindow::GetHeight() const
+{
+	return m_height;
 }
 
 LRESULT CALLBACK GGWindow::WndProc( HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam )

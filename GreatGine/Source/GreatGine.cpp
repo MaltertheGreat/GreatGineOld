@@ -3,9 +3,9 @@
 
 #include "GGApplication.h"
 
-int WINAPI WinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow )
+int WINAPI WinMain( HINSTANCE _hInstance, HINSTANCE _hPrevInstance, LPSTR _lpCmdLine, int _nCmdShow )
 {
-	GGApplication app;
+	GGApplication app( _hInstance );
 
 	app.Run();
 

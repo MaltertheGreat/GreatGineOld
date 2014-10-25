@@ -1,8 +1,8 @@
 #include "GGApplication.h"
 
-GGApplication::GGApplication()
+GGApplication::GGApplication( HINSTANCE _hInstance )
 	:
-	m_window( m_title + L" v." + m_version )
+	m_window( m_title + L" v." + m_version, m_width, m_heigt, _hInstance )
 {
 }
 
@@ -24,7 +24,20 @@ void GGApplication::Run()
 					break;
 			}
 		}
+
+		Update();
+		Render();
 	}
 
+	return;
+}
+
+void GGApplication::Update()
+{
+	return;
+}
+
+void GGApplication::Render()
+{
 	return;
 }
