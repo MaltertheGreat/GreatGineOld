@@ -1,6 +1,7 @@
 #pragma once
 
 #include "GGWindow.h"
+#include "GGGraphics.h"
 
 class GGApplication
 {
@@ -22,4 +23,5 @@ private:
 
 private:
 	GGWindow m_window;
+	GGGraphics m_graphics;
 };

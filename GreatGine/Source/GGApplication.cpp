@@ -3,7 +3,8 @@
 
 GGApplication::GGApplication( HINSTANCE _hInstance )
 	:
-	m_window( m_title + L" v." + m_version, m_width, m_heigt, _hInstance )
+	m_window( m_title + L" v." + m_version, m_width, m_heigt, _hInstance ),
+	m_graphics( m_window )
 {
 }
 
@@ -35,10 +36,14 @@ void GGApplication::Run()
 
 void GGApplication::Update()
 {
+	m_graphics.Update();
+
 	return;
 }
 
 void GGApplication::Render()
 {
+	m_graphics.Render();
+
 	return;
 }
