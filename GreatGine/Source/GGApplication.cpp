@@ -1,4 +1,5 @@
 #include "GGApplication.h"
+#include "GGError.h"
 
 GGApplication::GGApplication( HINSTANCE _hInstance )
 	:

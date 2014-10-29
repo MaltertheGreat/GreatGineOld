@@ -5,9 +5,16 @@
 
 int WINAPI WinMain( HINSTANCE _hInstance, HINSTANCE _hPrevInstance, LPSTR _lpCmdLine, int _nCmdShow )
 {
-	GGApplication app( _hInstance );
+	try
+	{
+		GGApplication app( _hInstance );
 
-	app.Run();
+		app.Run();
+	}
+	catch( const std::exception& error )
+	{
+		MessageBoxA( NULL, error.what(), "An error occured!", MB_ICONERROR );
+	}
 
 	return 0;
 }
