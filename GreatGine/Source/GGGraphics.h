@@ -1,7 +1,7 @@
 #pragma once
 
-#include "GGRenderer.h"
 #include "GGWindow.h"
+#include "GGRenderer.h"
 
 class GGGraphics
 {

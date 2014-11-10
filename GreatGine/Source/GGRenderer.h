@@ -1,23 +1,17 @@
 #pragma once
 
-#include <d3d11_1.h>
+#include <d3d11.h>
 #include <atlbase.h>
-using namespace ATL;
 
 #include "GGWindow.h"
 
 class GGRenderer
 {
 public:
-	GGRenderer( const GGWindow& _window, UINT _resX, UINT _resY );
+	GGRenderer( const GGWindow& _window, UINT _resX = 0, UINT _resY = 0 );
 
-	void ClearScene( const float _color[ 4 ] );
+	void ClearScene();
 	void PresentScene();
-
-private:
-	void CreateDevice( const GGWindow& _window, UINT _resX, UINT _resY );
-	void SetupOM();
-	void SetupRS( UINT _resX, UINT _resY );
 
 private:
 	CComPtr<ID3D11Device> m_device;

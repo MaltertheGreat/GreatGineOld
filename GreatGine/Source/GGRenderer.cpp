@@ -1,46 +1,14 @@
 #include "GGRenderer.h"
-
-#define WIN32_LEAN_AND_MEAN
-#include <Windows.h>
-
 #include "GGError.h"
 
 GGRenderer::GGRenderer( const GGWindow& _window, UINT _resX, UINT _resY )
 {
-	UINT resX;
-	UINT resY;
-	if( _resX && _resY )
+	if( !_resX && !_resY )
 	{
-		resX = _resX;
-		resY = _resY;
-	}
-	else
-	{
-		resX = _window.GetWidth();
-		resY = _window.GetHeight();
+		_resX = _window.GetWidth();
+		_resY = _window.GetHeight();
 	}
 
-	CreateDevice( _window, resX, resY );
-	SetupOM();
-	SetupRS( resX, resY );
-}
-
-void GGRenderer::ClearScene( const float _color[ 4 ] )
-{
-	m_deviceContext->ClearRenderTargetView( m_renderTargetView, _color );
-
-	return;
-}
-
-void GGRenderer::PresentScene()
-{
-	m_swapChain->Present( 0, 0 );
-
-	return;
-}
-
-void GGRenderer::CreateDevice( const GGWindow & _window, UINT _resX, UINT _resY )
-{
 	UINT createDeviceFlags = 0;
 	#ifdef _DEBUG
 	createDeviceFlags |= D3D11_CREATE_DEVICE_DEBUG;
@@ -72,27 +40,22 @@ void GGRenderer::CreateDevice( const GGWindow & _window, UINT _resX, UINT _resY 
 		GG_THROW;
 	}
 
-	return;
-}
-
-void GGRenderer::SetupOM()
-{
 	CComPtr<ID3D11Texture2D> backBuffer;
-	HRESULT hr = m_swapChain->GetBuffer( 0, __uuidof(ID3D11Texture2D), reinterpret_cast<void**>(&backBuffer) );
+	hr = m_swapChain->GetBuffer( 0, __uuidof(ID3D11Texture2D), reinterpret_cast<void**>(&backBuffer) );
 	if( FAILED( hr ) )
 	{
 		GG_THROW;
 	}
 
 	hr = m_device->CreateRenderTargetView( backBuffer, nullptr, &m_renderTargetView );
+	if( FAILED( hr ) )
+	{
+		GG_THROW;
+	}
 
 	m_deviceContext->OMSetRenderTargets( 1, &m_renderTargetView.p, nullptr );
 
-	return;
-}
-
-void GGRenderer::SetupRS( UINT _resX, UINT _resY )
-{
+	// Setup the viewport 
 	D3D11_VIEWPORT vp;
 	vp.Width = (FLOAT)_resX;
 	vp.Height = (FLOAT)_resY;
@@ -101,6 +64,19 @@ void GGRenderer::SetupRS( UINT _resX, UINT _resY )
 	vp.TopLeftX = 0;
 	vp.TopLeftY = 0;
 	m_deviceContext->RSSetViewports( 1, &vp );
+}
+
+void GGRenderer::ClearScene()
+{
+	float color[ 4 ] = { 0.2f, 0.2f, 0.8f, 1.0f };
+	m_deviceContext->ClearRenderTargetView( m_renderTargetView, color );
+
+	return;
+}
+
+void GGRenderer::PresentScene()
+{
+	m_swapChain->Present( 0, 0 );
 
 	return;
 }
