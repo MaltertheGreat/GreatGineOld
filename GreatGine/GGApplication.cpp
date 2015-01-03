@@ -5,8 +5,7 @@ GGApplication::GGApplication( HINSTANCE _hInstance )
 	:
 	m_window( m_title + L" v." + m_version, m_width, m_heigt, _hInstance ),
 	m_graphics( m_window )
-{
-}
+{}
 
 void GGApplication::Run()
 {
@@ -21,9 +20,9 @@ void GGApplication::Run()
 
 			switch( msg.message )
 			{
-				case WM_QUIT:
-					running = false;
-					break;
+			case WM_QUIT:
+				running = false;
+				break;
 			}
 		}
 

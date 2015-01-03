@@ -12,7 +12,6 @@ GGError::GGError( const string _fileName, const unsigned _fileLine )
 	}
 	catch( ... )
 	{
-
 	}
 }
 

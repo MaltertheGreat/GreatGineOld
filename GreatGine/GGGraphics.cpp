@@ -2,12 +2,13 @@
 
 GGGraphics::GGGraphics( const GGWindow& _window )
 	:
-	m_renderer( _window )
-{
-}
+	m_device( _window ),
+	m_renderer( m_device )
+{}
 
 void GGGraphics::Update()
 {
+	return;
 }
 
 void GGGraphics::Render()

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "GGWindow.h"
+#include "GGDirectXDevice.h"
 #include "GGRenderer.h"
 
 class GGGraphics
@@ -12,5 +13,6 @@ public:
 	void Render();
 
 private:
+	GGDirectXDevice m_device;
 	GGRenderer m_renderer;
 };

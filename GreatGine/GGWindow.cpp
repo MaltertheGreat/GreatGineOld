@@ -13,7 +13,7 @@ GGWindow::GGWindow( std::wstring title, UINT _width, UINT _height, HINSTANCE _hI
 	wcex.lpfnWndProc = &WndProc;
 	wcex.hInstance = _hInstance;
 	wcex.hCursor = LoadCursor( nullptr, IDC_ARROW );
-	wcex.hbrBackground = (HBRUSH)(COLOR_WINDOW + 1);
+	wcex.hbrBackground = (HBRUSH) (COLOR_WINDOW + 1);
 	wcex.lpszMenuName = nullptr;
 	wcex.lpszClassName = title.c_str();
 
@@ -53,11 +53,11 @@ LRESULT CALLBACK GGWindow::WndProc( HWND hWnd, UINT message, WPARAM wParam, LPAR
 {
 	switch( message )
 	{
-		case WM_DESTROY:
-			PostQuitMessage( 0 );
-			break;
-		default:
-			return DefWindowProc( hWnd, message, wParam, lParam );
+	case WM_DESTROY:
+		PostQuitMessage( 0 );
+		break;
+	default:
+		return DefWindowProc( hWnd, message, wParam, lParam );
 	}
 	return 0;
 }
