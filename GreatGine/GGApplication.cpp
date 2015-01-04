@@ -1,6 +1,7 @@
 #include "GGApplication.h"
 #include "GGError.h"
 
+
 GGApplication::GGApplication( HINSTANCE _hInstance )
 	:
 	m_window( m_title + L" v." + m_version, m_width, m_heigt, _hInstance ),

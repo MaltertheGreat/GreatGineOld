@@ -1,14 +1,21 @@
 #pragma once
 
-#include "GGDirectXDevice.h"
+#include <d3d11.h>
+#include <atlbase.h>
+
+class GGDirectXDriver;
+class GGShader;
 
 class GGRenderer
 {
 public:
-	GGRenderer( const GGDirectXDevice& _device );
+	GGRenderer( GGDirectXDriver& _driver );
 
+public:
 	void ClearScene();
 	void PresentScene();
+
+	void SetShader( GGShader* _shader );
 
 private:
 	ID3D11Device* m_device;
