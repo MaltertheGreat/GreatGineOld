@@ -36,13 +36,16 @@
     <ClCompile Include="GGRenderer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="GGBasicShader.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="GGDevice.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="GGDirectXDriver.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GGMesh.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GGShader.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -65,13 +68,16 @@
     <ClInclude Include="GGShader.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="GGBasicShader.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="GGDevice.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="GGDirectXDriver.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GGMesh.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GGCamera.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

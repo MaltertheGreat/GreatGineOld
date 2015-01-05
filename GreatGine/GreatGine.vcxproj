@@ -246,22 +246,24 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="GGApplication.cpp" />
-    <ClCompile Include="GGBasicShader.cpp" />
     <ClCompile Include="GGDirectXDriver.cpp" />
     <ClCompile Include="GGError.cpp" />
     <ClCompile Include="GGGraphics.cpp" />
     <ClCompile Include="GGDevice.cpp" />
+    <ClCompile Include="GGMesh.cpp" />
     <ClCompile Include="GGRenderer.cpp" />
+    <ClCompile Include="GGShader.cpp" />
     <ClCompile Include="GGWindow.cpp" />
     <ClCompile Include="GreatGine.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GGApplication.h" />
-    <ClInclude Include="GGBasicShader.h" />
+    <ClInclude Include="GGCamera.h" />
     <ClInclude Include="GGDirectXDriver.h" />
     <ClInclude Include="GGError.h" />
     <ClInclude Include="GGGraphics.h" />
     <ClInclude Include="GGDevice.h" />
+    <ClInclude Include="GGMesh.h" />
     <ClInclude Include="GGRenderer.h" />
     <ClInclude Include="GGShader.h" />
     <ClInclude Include="GGWindow.h" />

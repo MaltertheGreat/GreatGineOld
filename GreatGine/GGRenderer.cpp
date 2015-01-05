@@ -1,6 +1,7 @@
 #include "GGRenderer.h"
 #include "GGDirectXDriver.h"
 #include "GGShader.h"
+#include "GGMesh.h"
 #include "GGError.h"
 
 
@@ -34,6 +35,8 @@ GGRenderer::GGRenderer( GGDirectXDriver& _driver )
 	vp.TopLeftX = 0;
 	vp.TopLeftY = 0;
 	m_deviceContext->RSSetViewports( 1, &vp );
+
+	m_deviceContext->IASetPrimitiveTopology( D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST );
 }
 
 void GGRenderer::ClearScene()
@@ -51,9 +54,29 @@ void GGRenderer::PresentScene()
 	return;
 }
 
-void GGRenderer::SetShader( GGShader* _shader )
+void GGRenderer::SetShader( const GGShader* _shader )
 {
-	_shader->BindToPipeline( m_deviceContext );
+	m_deviceContext->VSSetShader( _shader->GetVertexShader(), nullptr, 0 );
+	m_deviceContext->PSSetShader( _shader->GetPixelShader(), nullptr, 0 );
+	m_deviceContext->IASetInputLayout( _shader->GetInputLayout() );
+
+	return;
+}
+
+void GGRenderer::SetMesh( const GGMesh* _mesh )
+{
+	ID3D11Buffer* vertexBuffer = _mesh->GetVertexBuffer();
+	UINT stride = sizeof( GGMesh::GGBasicVertex );
+	UINT offset = 0;
+	m_deviceContext->IASetVertexBuffers( 0, 1, &vertexBuffer, &stride, &offset );
+	m_deviceContext->IASetIndexBuffer( _mesh->GetIndexBuffer(), DXGI_FORMAT_R16_UINT, offset );
+
+	return;
+}
+
+void GGRenderer::RenderMesh( const GGMesh* _mesh )
+{
+	m_deviceContext->DrawIndexed( _mesh->GetIndexCount(), 0, 0 );
 
 	return;
 }

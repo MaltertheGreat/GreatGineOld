@@ -5,7 +5,8 @@
 #include "GGDirectXDriver.h"
 #include "GGDevice.h"
 #include "GGRenderer.h"
-#include "GGBasicShader.h"
+#include "GGShader.h"
+#include "GGMesh.h"
 
 class GGWindow;
 
@@ -23,5 +24,6 @@ private:
 	GGDevice m_device;
 	GGRenderer m_renderer;
 
-	std::unique_ptr<GGBasicShader> m_basicShader;
+	std::unique_ptr<GGShader> m_basicShader;
+	std::unique_ptr<GGMesh> m_mesh;
 };

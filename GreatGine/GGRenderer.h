@@ -5,6 +5,7 @@
 
 class GGDirectXDriver;
 class GGShader;
+class GGMesh;
 
 class GGRenderer
 {
@@ -15,7 +16,10 @@ public:
 	void ClearScene();
 	void PresentScene();
 
-	void SetShader( GGShader* _shader );
+	void SetShader( const GGShader* _shader );
+	void SetMesh( const GGMesh* _mesh );
+
+	void RenderMesh( const GGMesh* _mesh );
 
 private:
 	ID3D11Device* m_device;

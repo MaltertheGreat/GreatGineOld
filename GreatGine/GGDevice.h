@@ -3,18 +3,22 @@
 #include <d3d11.h>
 
 class GGDirectXDriver;
-class GGBasicShader;
+class GGShader;
+class GGMesh;
 
 class GGDevice
 {
 public:
 	GGDevice( GGDirectXDriver& _driver );
+	~GGDevice();
 
 public:
 	UINT GetResolutionX() const;
 	UINT GetResolutionY() const;
 
-	GGBasicShader* CreateBasicShader();
+	GGShader* CreateShader();
+	GGMesh* CreateTriangleMesh();
+	GGMesh* CreateCubeMesh();
 
 private:
 	ID3D11Device* m_device;
