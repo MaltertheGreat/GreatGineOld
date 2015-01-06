@@ -246,6 +246,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="GGApplication.cpp" />
+    <ClCompile Include="GGCamera.cpp" />
     <ClCompile Include="GGDirectXDriver.cpp" />
     <ClCompile Include="GGError.cpp" />
     <ClCompile Include="GGGraphics.cpp" />

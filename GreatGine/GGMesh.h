@@ -9,7 +9,7 @@ class GGMesh
 public:
 	struct GGBasicVertex
 	{
-		DirectX::XMFLOAT3 pos;
+		DirectX::XMFLOAT3 outputpos;
 	};
 
 public:

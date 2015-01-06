@@ -48,6 +48,9 @@
     <ClCompile Include="GGShader.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="GGCamera.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GGApplication.h">
