@@ -1,0 +1,8 @@
+# Configuration file for GreatGine
+
+# 'C' prefix for character	e.g. Cchar=r
+# 'I' prefix for integer	e.g. Iint=4
+
+
+Iwindow_width=800
+Iwindow_height=600

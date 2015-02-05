@@ -16,6 +16,9 @@
     <Filter Include="Shaders">
       <UniqueIdentifier>{fe0a2b3c-4de6-462f-aad4-e1fe01bffb2b}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Other">
+      <UniqueIdentifier>{5c6205f5-9ae5-46d2-b42e-73743f23ba58}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="GreatGine.cpp">
@@ -51,6 +54,12 @@
     <ClCompile Include="GGCamera.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="GGInputProcessor.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GGConfig.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GGApplication.h">
@@ -83,6 +92,15 @@
     <ClInclude Include="GGCamera.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="GGInputProcessor.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GGInputHandler.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GGConfig.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="basicVS.hlsl">
@@ -91,5 +109,10 @@
     <FxCompile Include="basicPS.hlsl">
       <Filter>Shaders</Filter>
     </FxCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="config.txt">
+      <Filter>Other</Filter>
+    </Text>
   </ItemGroup>
 </Project>

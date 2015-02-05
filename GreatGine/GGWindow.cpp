@@ -1,10 +1,11 @@
 #include "GGWindow.h"
+#include "GGConfig.h"
 using namespace std;
 
-GGWindow::GGWindow( std::wstring title, UINT _width, UINT _height, HINSTANCE _hInstance )
+GGWindow::GGWindow( std::wstring title, HINSTANCE _hInstance, const GGConfig& _config )
 	:
-	m_width( _width ),
-	m_height( _height )
+	m_width( _config.GetInt( "window_width" ) ),
+	m_height( _config.GetInt( "window_height" ) )
 {
 	WNDCLASSEX wcex = { 0 };
 
@@ -20,7 +21,7 @@ GGWindow::GGWindow( std::wstring title, UINT _width, UINT _height, HINSTANCE _hI
 	RegisterClassEx( &wcex );
 
 	// Convert client size to window size
-	RECT windowRect = { 0, 0, _width, _height };
+	RECT windowRect = { 0, 0, m_width, m_height };
 	DWORD windowStyle = WS_OVERLAPPEDWINDOW;
 	AdjustWindowRect( &windowRect, windowStyle, FALSE );
 	UINT windowWidth = windowRect.right - windowRect.left;

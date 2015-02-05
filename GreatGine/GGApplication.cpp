@@ -1,30 +1,39 @@
 #include "GGApplication.h"
+#include "GGConfig.h"
 #include "GGError.h"
 
 
-GGApplication::GGApplication( HINSTANCE _hInstance )
+GGApplication::GGApplication( HINSTANCE _hInstance, const GGConfig& _config )
 	:
-	m_window( m_title + L" v." + m_version, m_width, m_heigt, _hInstance ),
+	m_window( m_title + L" v." + m_version, _hInstance, _config ),
+	m_input( m_window ),
 	m_graphics( m_window )
-{}
+{
+	m_input.RegisterHandler( this );
+	m_input.RegisterHandler( &m_graphics );
+}
 
 void GGApplication::Run()
 {
-	bool running = true;
+	m_running = true;
 	MSG msg;
-	while( running )
+	while( m_running )
 	{
 		while( PeekMessage( &msg, NULL, 0, 0, PM_REMOVE ) )
 		{
-			TranslateMessage( &msg );
-			DispatchMessage( &msg );
-
 			switch( msg.message )
 			{
 			case WM_QUIT:
-				running = false;
+				m_running = false;
+				break;
+			case WM_INPUT:
+				m_input.ProcessInput( msg.lParam );
+				DefWindowProc( msg.hwnd, msg.message, msg.wParam, msg.lParam );
 				break;
 			}
+
+			TranslateMessage( &msg );
+			DispatchMessage( &msg );
 		}
 
 		Update();
@@ -46,4 +55,12 @@ void GGApplication::Render()
 	m_graphics.Render();
 
 	return;
+}
+
+void GGApplication::HandleInput( GG_INPUT _input, bool _down )
+{
+	if( _down && (_input == GG_INPUT_EXIT) )
+	{
+		m_running = false;
+	}
 }

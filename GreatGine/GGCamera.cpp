@@ -10,7 +10,7 @@ void GGCamera::Update( DirectX::XMFLOAT3 _pos, DirectX::XMFLOAT3 _rot )
 	float roll = XMConvertToRadians( _rot.z );
 	XMMATRIX rotation = XMMatrixRotationRollPitchYaw( pitch, yaw, roll );
 
-	XMVECTOR focusPos = XMVectorSet( 0.0f, 0.0f, 1.0f, 1.0f );
+	XMVECTOR focusPos = eyePos + XMVectorSet( 0.0f, 0.0f, 1.0f, 1.0f );
 	XMVECTOR upDir = XMVectorSet( 0.0f, 1.0f, 0.0f, 1.0f );
 
 	focusPos = XMVector3TransformCoord( focusPos, rotation );

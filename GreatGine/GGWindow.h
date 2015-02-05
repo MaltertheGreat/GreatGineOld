@@ -4,10 +4,12 @@
 #include <Windows.h>
 #include <string>
 
+class GGConfig;
+
 class GGWindow
 {
 public:
-	GGWindow( std::wstring title, UINT _width, UINT _height, HINSTANCE _hInstance );
+	GGWindow( std::wstring title, HINSTANCE _hInstance, const GGConfig& _config );
 
 public:
 	HWND GetHandle() const;

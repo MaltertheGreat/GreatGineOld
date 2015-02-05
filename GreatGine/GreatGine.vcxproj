@@ -140,6 +140,9 @@
       <ShaderModel>5.0</ShaderModel>
       <ObjectFileOutput />
     </FxCompile>
+    <PostBuildEvent>
+      <Command>xcopy "$(ProjectDir)config.txt" "$(OutputPath)" /Y</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Profile|Win32'">
     <ClCompile>
@@ -159,6 +162,9 @@
       <ShaderModel>5.0</ShaderModel>
       <ObjectFileOutput />
     </FxCompile>
+    <PostBuildEvent>
+      <Command>xcopy "$(ProjectDir)config.txt" "$(OutputPath)" /Y</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
@@ -178,6 +184,9 @@
       <ShaderModel>5.0</ShaderModel>
       <ObjectFileOutput />
     </FxCompile>
+    <PostBuildEvent>
+      <Command>xcopy "$(ProjectDir)config.txt" "$(OutputPath)" /Y</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">
     <ClCompile>
@@ -197,6 +206,9 @@
       <ShaderModel>5.0</ShaderModel>
       <ObjectFileOutput />
     </FxCompile>
+    <PostBuildEvent>
+      <Command>xcopy "$(ProjectDir)config.txt" "$(OutputPath)" /Y</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
@@ -220,6 +232,9 @@
       <ShaderModel>5.0</ShaderModel>
       <ObjectFileOutput />
     </FxCompile>
+    <PostBuildEvent>
+      <Command>xcopy "$(ProjectDir)config.txt" "$(OutputPath)" /Y</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
@@ -243,14 +258,19 @@
       <ShaderModel>5.0</ShaderModel>
       <ObjectFileOutput />
     </FxCompile>
+    <PostBuildEvent>
+      <Command>xcopy "$(ProjectDir)config.txt" "$(OutputPath)" /Y</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="GGApplication.cpp" />
     <ClCompile Include="GGCamera.cpp" />
+    <ClCompile Include="GGConfig.cpp" />
     <ClCompile Include="GGDirectXDriver.cpp" />
     <ClCompile Include="GGError.cpp" />
     <ClCompile Include="GGGraphics.cpp" />
     <ClCompile Include="GGDevice.cpp" />
+    <ClCompile Include="GGInputProcessor.cpp" />
     <ClCompile Include="GGMesh.cpp" />
     <ClCompile Include="GGRenderer.cpp" />
     <ClCompile Include="GGShader.cpp" />
@@ -260,10 +280,13 @@
   <ItemGroup>
     <ClInclude Include="GGApplication.h" />
     <ClInclude Include="GGCamera.h" />
+    <ClInclude Include="GGConfig.h" />
     <ClInclude Include="GGDirectXDriver.h" />
     <ClInclude Include="GGError.h" />
     <ClInclude Include="GGGraphics.h" />
     <ClInclude Include="GGDevice.h" />
+    <ClInclude Include="GGInputHandler.h" />
+    <ClInclude Include="GGInputProcessor.h" />
     <ClInclude Include="GGMesh.h" />
     <ClInclude Include="GGRenderer.h" />
     <ClInclude Include="GGShader.h" />
@@ -322,6 +345,9 @@
       <VariableName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">g_vertexShader</VariableName>
       <VariableName Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">g_vertexShader</VariableName>
     </FxCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="config.txt" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -1,13 +1,15 @@
 #define WIN32_LEAN_AND_MEAN
 #include <Windows.h>
 
+#include "GGConfig.h"
 #include "GGApplication.h"
 
 int WINAPI WinMain( HINSTANCE _hInstance, HINSTANCE _hPrevInstance, LPSTR _lpCmdLine, int _nCmdShow )
 {
 	try
 	{
-		GGApplication app( _hInstance );
+		GGConfig config;
+		GGApplication app( _hInstance, config );
 
 		app.Run();
 	}

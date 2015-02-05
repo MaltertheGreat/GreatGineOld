@@ -14,7 +14,7 @@ GGGraphics::GGGraphics( const GGWindow& _window )
 
 void GGGraphics::Update()
 {
-	m_camera.Update( { -1.5f, 1.5f, -5.0f }, { 0.0f, 0.0f, 0.0f } );
+	m_camera.Update( { -1.5f, 1.5f, cameraZPos }, { 0.0f, 0.0f, 0.0f } );
 
 	return;
 }
@@ -31,6 +31,25 @@ void GGGraphics::Render()
 	m_renderer.RenderMesh( m_mesh.get() );
 
 	m_renderer.PresentScene();
+
+	return;
+}
+
+void GGGraphics::HandleInput( GG_INPUT _input, bool _down )
+{
+	if( !_down )
+	{
+		return;
+	}
+
+	if( _input == GG_INPUT_MOVE_FORWARD )
+	{
+		cameraZPos += 0.1f;
+	}
+	else if( _input == GG_INPUT_MOVE_BACKWARD )
+	{
+		cameraZPos -= 0.1f;
+	}
 
 	return;
 }
