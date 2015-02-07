@@ -6,7 +6,7 @@
 GGApplication::GGApplication( HINSTANCE _hInstance, const GGConfig& _config )
 	:
 	m_window( m_title + L" v." + m_version, _hInstance, _config ),
-	m_input( m_window ),
+	m_input( m_window, _config ),
 	m_graphics( m_window )
 {
 	m_input.RegisterHandler( this );
@@ -21,18 +21,15 @@ void GGApplication::Run()
 	{
 		while( PeekMessage( &msg, NULL, 0, 0, PM_REMOVE ) )
 		{
-			switch( msg.message )
+			if( msg.message == WM_QUIT )
 			{
-			case WM_QUIT:
 				m_running = false;
-				break;
-			case WM_INPUT:
-				m_input.ProcessInput( msg.lParam );
-				DefWindowProc( msg.hwnd, msg.message, msg.wParam, msg.lParam );
-				break;
+			}
+			else if( msg.message & GGInputProcessor::INPUT_MESSAGE )
+			{
+				m_input.ProcessInput( msg );
 			}
 
-			TranslateMessage( &msg );
 			DispatchMessage( &msg );
 		}
 
@@ -57,9 +54,9 @@ void GGApplication::Render()
 	return;
 }
 
-void GGApplication::HandleInput( GG_INPUT _input, bool _down )
+void GGApplication::HandleActionInput( GG_ACTION_INPUT _input, bool _down )
 {
-	if( _down && (_input == GG_INPUT_EXIT) )
+	if( _down && (_input == GG_ACTION_INPUT_EXIT) )
 	{
 		m_running = false;
 	}

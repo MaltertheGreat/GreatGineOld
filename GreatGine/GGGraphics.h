@@ -22,7 +22,7 @@ public:
 	void Render();
 
 public:
-	virtual void HandleInput( GG_INPUT _input, bool _down ) override;
+	virtual void HandleActionInput( GG_ACTION_INPUT _input, bool _down ) override;
 
 
 private:
@@ -34,5 +34,5 @@ private:
 	std::unique_ptr<GGShader> m_basicShader;
 	std::unique_ptr<GGMesh> m_mesh;
 
-	float cameraZPos = 0.0f;
+	DirectX::XMFLOAT3 m_cameraPos;
 };

@@ -1,8 +1,14 @@
 # Configuration file for GreatGine
 
-# 'C' prefix for character	e.g. Cchar=r
-# 'I' prefix for integer	e.g. Iint=4
+# 'I' prefix for integer		e.g. Iint=4
+# 'H' prefix for hex integer 	e.g. Hint=0x4
 
 
 Iwindow_width=800
 Iwindow_height=600
+
+Hkey_exit=0x1B
+Hkey_forward=0x57
+Hkey_backward=0x53
+Hkey_rightward=0x44
+Hkey_leftward=0x41

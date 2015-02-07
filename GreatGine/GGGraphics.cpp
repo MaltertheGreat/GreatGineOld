@@ -7,14 +7,15 @@ GGGraphics::GGGraphics( const GGWindow& _window )
 	m_device( m_driver ),
 	m_renderer( m_driver ),
 	m_basicShader( m_device.CreateShader() ),
-	m_mesh( m_device.CreateCubeMesh() )
+	m_mesh( m_device.CreateCubeMesh() ),
+	m_cameraPos({0.0f, 1.5f, 0.0f})
 {
 	
 }
 
 void GGGraphics::Update()
 {
-	m_camera.Update( { -1.5f, 1.5f, cameraZPos }, { 0.0f, 0.0f, 0.0f } );
+	m_camera.Update( m_cameraPos, { 0.0f, 0.0f, 0.0f } );
 
 	return;
 }
@@ -35,20 +36,29 @@ void GGGraphics::Render()
 	return;
 }
 
-void GGGraphics::HandleInput( GG_INPUT _input, bool _down )
+void GGGraphics::HandleActionInput( GG_ACTION_INPUT _input, bool _down )
 {
 	if( !_down )
 	{
 		return;
 	}
 
-	if( _input == GG_INPUT_MOVE_FORWARD )
+	if( _input == GG_ACTION_INPUT_MOVE_FORWARD )
 	{
-		cameraZPos += 0.1f;
+		m_cameraPos.z += 0.1f;
 	}
-	else if( _input == GG_INPUT_MOVE_BACKWARD )
+	else if( _input == GG_ACTION_INPUT_MOVE_BACKWARD )
 	{
-		cameraZPos -= 0.1f;
+		m_cameraPos.z -= 0.1f;
+	}
+
+	if( _input == GG_ACTION_INPUT_MOVE_RIGHTWARD )
+	{
+		m_cameraPos.x += 0.1f;
+	}
+	else if( _input == GG_ACTION_INPUT_MOVE_LEFTWARD )
+	{
+		m_cameraPos.x -= 0.1f;
 	}
 
 	return;

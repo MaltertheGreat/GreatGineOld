@@ -19,7 +19,7 @@ private:
 	void Update();
 	void Render();
 
-	virtual void HandleInput( GG_INPUT _input, bool _down ) override;
+	virtual void HandleActionInput( GG_ACTION_INPUT _input, bool _down ) override;
 
 private:
 	const std::wstring m_title = L"GreatGine";

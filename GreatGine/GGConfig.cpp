@@ -24,7 +24,7 @@ GGConfig::GGConfig()
 
 		istringstream configLineStream( configLine );
 
-		char configType;
+		char configType = 0;
 		configLineStream.get( configType );
 
 		string configName;
@@ -35,21 +35,16 @@ GGConfig::GGConfig()
 
 		switch( configType )
 		{
-		case 'C':	// character
-			m_chars[ configName ] = configValue[ 0 ];
-			break;
 		case 'I':	// integer
 			m_ints[ configName ] = stoi( configValue );
+			break;
+		case 'H':	// hex integer
+			m_ints[ configName ] = stoi( configValue, 0, 16 );
 			break;
 		default:
 			continue;
 		}
 	}
-}
-
-char GGConfig::GetChar( string _configName ) const
-{
-	return m_chars.at( _configName );
 }
 
 int GGConfig::GetInt( string _configName ) const

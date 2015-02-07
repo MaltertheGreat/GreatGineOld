@@ -1,37 +1,30 @@
 #include "GGInputProcessor.h"
 #include "GGWindow.h"
+#include "GGConfig.h"
 #include "GGError.h"
 
+#include <bitset>
 #include <memory>
 using namespace std;
 
-GGInputProcessor::GGInputProcessor( const GGWindow& _window )
-	:
-	m_keyMap( { { VK_ESCAPE, GG_INPUT_EXIT }, { 'W', GG_INPUT_MOVE_FORWARD }, { 'S', GG_INPUT_MOVE_BACKWARD }, { 'A', GG_INPUT_MOVE_LEFTWARD }, { 'D', GG_INPUT_MOVE_RIGHTWARD } } )
+GGInputProcessor::GGInputProcessor( const GGWindow& _window, const GGConfig& _config )
 {
-	RAWINPUTDEVICE devices[ 2 ];
+	m_actionKeysMap[ GG_ACTION_INPUT_EXIT ] = _config.GetInt( "key_exit" );
+	m_actionKeysMap[ GG_ACTION_INPUT_MOVE_FORWARD ] = _config.GetInt( "key_forward" );
+	m_actionKeysMap[ GG_ACTION_INPUT_MOVE_BACKWARD ] = _config.GetInt( "key_backward" );
+	m_actionKeysMap[ GG_ACTION_INPUT_MOVE_RIGHTWARD ] = _config.GetInt( "key_rightward" );
+	m_actionKeysMap[ GG_ACTION_INPUT_MOVE_LEFTWARD ] = _config.GetInt( "key_leftward" );
 
-	// Keyboard
-	devices[ 0 ].usUsagePage = 0x01;
-	devices[ 0 ].usUsage = 0x06;
-	devices[ 0 ].dwFlags = 0;
-	devices[ 0 ].hwndTarget = _window.GetHandle();
+	RAWINPUTDEVICE mouse;
+	mouse.usUsagePage = 0x01;
+	mouse.usUsage = 0x02;
+	mouse.dwFlags = 0;
+	mouse.hwndTarget = _window.GetHandle();
 
-	//Mouse
-	devices[ 1 ].usUsagePage = 0x01;
-	devices[ 1 ].usUsage = 0x02;
-	devices[ 1 ].dwFlags = 0;
-	devices[ 1 ].hwndTarget = _window.GetHandle();
-
-	if( !RegisterRawInputDevices( devices, 2, sizeof( devices[ 0 ] ) ) )
+	if( !RegisterRawInputDevices( &mouse, 1, sizeof( mouse ) ) )
 	{
 		GG_THROW;
 	}
-}
-
-GGInputProcessor::~GGInputProcessor()
-{
-	
 }
 
 void GGInputProcessor::RegisterHandler( GGInputHandler* _handler )
@@ -41,9 +34,43 @@ void GGInputProcessor::RegisterHandler( GGInputHandler* _handler )
 	return;
 }
 
-void GGInputProcessor::ProcessInput( LPARAM _lParam )
+void GGInputProcessor::ProcessInput( const MSG& _msg )
 {
-	UINT dwSize;
+	bitset<32> keyflag = _msg.lParam;
+
+	switch( _msg.message )
+	{
+	case WM_KEYDOWN:
+		if( !keyflag[ 30 ] )	// Respond only to first key press. No key repeat
+		{
+			for( int i = 0; i < GG_ACTION_INPUT_COUNT; ++i )
+			{
+				if( m_actionKeysMap[ i ] == _msg.wParam )
+				{
+					SendActionInput( static_cast<GG_ACTION_INPUT>(i), true);
+				}
+			}
+		}
+		break;
+	case WM_KEYUP:
+		for( int i = 0; i < GG_ACTION_INPUT_COUNT; ++i )
+		{
+			if( m_actionKeysMap[ i ] == _msg.wParam )
+			{
+				SendActionInput( static_cast<GG_ACTION_INPUT>(i), false );
+			}
+		}
+		break;
+	case WM_CHAR:
+		break;
+	case WM_INPUT:
+		break;
+	}
+
+	TranslateMessage( &_msg );
+	
+
+	/*UINT dwSize;
 
 	GetRawInputData( (HRAWINPUT) _lParam, RID_INPUT, NULL, &dwSize, sizeof( RAWINPUTHEADER ) );
 
@@ -64,40 +91,17 @@ void GGInputProcessor::ProcessInput( LPARAM _lParam )
 	else if( input->header.dwType == RIM_TYPEMOUSE )
 	{
 		SendMouseInput( input->data.mouse );
-	}
+	}*/
 
 	return;
 }
 
-void GGInputProcessor::SendKebordInput( RAWKEYBOARD& _input )
+void GGInputProcessor::SendActionInput( GG_ACTION_INPUT _input, bool _down )
 {
-	bool down = true;
-	if( _input.Flags & RI_KEY_BREAK )
-	{
-		down = false;
-	}
-
-	GG_INPUT inputCode;
-
-	try
-	{
-		inputCode = m_keyMap.at( _input.VKey );
-	}
-	catch( ... )
-	{
-		return;
-	}
-
 	for( auto handler : m_handlers )
 	{
-		handler->HandleInput( inputCode, down );
+		handler->HandleActionInput( _input, _down );
 	}
-
-	return;
-}
-
-void GGInputProcessor::SendMouseInput( RAWMOUSE& _input )
-{
 
 	return;
 }

@@ -8,22 +8,24 @@
 #include "GGInputHandler.h"
 
 class GGWindow;
+class GGConfig;
 
 class GGInputProcessor
 {
 public:
-	GGInputProcessor( const GGWindow& _window );
-	~GGInputProcessor();
+	static const UINT INPUT_MESSAGE = WM_KEYDOWN | WM_KEYUP | WM_CHAR | WM_INPUT;
+
+public:
+	GGInputProcessor( const GGWindow& _window, const GGConfig& _config );
 
 public:
 	void RegisterHandler( GGInputHandler* _handler );
-	void ProcessInput( LPARAM _lParam );
+	void ProcessInput( const MSG& _msg );
 
 private:
-	void SendKebordInput( RAWKEYBOARD& _input );
-	void SendMouseInput( RAWMOUSE& _input );
+	void SendActionInput( GG_ACTION_INPUT _input, bool _down );
 
 private:
-	std::map<USHORT, GG_INPUT> m_keyMap;
+	UINT m_actionKeysMap[ GG_ACTION_INPUT_COUNT ];
 	std::vector<GGInputHandler*> m_handlers;
 };
