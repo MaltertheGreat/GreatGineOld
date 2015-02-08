@@ -1,27 +1,25 @@
 #include "GGCamera.h"
-using namespace DirectX;
+#include <string>
+using namespace std;
 
-void GGCamera::Update( DirectX::XMFLOAT3 _pos, DirectX::XMFLOAT3 _rot )
+GGCamera::GGCamera( ID3D11Buffer* _viewBuffer, ID3D11Buffer* _projectionBuffer )
+	:
+	m_viewBuffer( _viewBuffer ),
+	m_projectionBuffer( _projectionBuffer )
+{}
+
+GGCamera::GGCamera( GGCamera&& _from )
+	:
+	m_viewBuffer( _from.m_viewBuffer ),
+	m_projectionBuffer( _from.m_projectionBuffer )
+{}
+
+ID3D11Buffer* GGCamera::GetViewBuffer() const
 {
-	XMVECTOR eyePos = XMLoadFloat3( &_pos );
-
-	float pitch = XMConvertToRadians( _rot.x );
-	float yaw = XMConvertToRadians( _rot.y );
-	float roll = XMConvertToRadians( _rot.z );
-	XMMATRIX rotation = XMMatrixRotationRollPitchYaw( pitch, yaw, roll );
-
-	XMVECTOR focusPos = eyePos + XMVectorSet( 0.0f, 0.0f, 1.0f, 1.0f );
-	XMVECTOR upDir = XMVectorSet( 0.0f, 1.0f, 0.0f, 1.0f );
-
-	focusPos = XMVector3TransformCoord( focusPos, rotation );
-	upDir = XMVector3TransformCoord( upDir, rotation );
-
-	XMStoreFloat4x4( &m_viewMatrix, XMMatrixLookAtLH( eyePos, focusPos, upDir ) );
-
-	return;
+	return m_viewBuffer.p;
 }
 
-DirectX::XMFLOAT4X4 GGCamera::GetViewMatrix() const
+ID3D11Buffer* GGCamera::GetProjectionBuffer() const
 {
-	return m_viewMatrix;
+	return m_projectionBuffer.p;
 }

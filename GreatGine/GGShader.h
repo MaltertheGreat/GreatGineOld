@@ -7,7 +7,9 @@ class GGShader
 {
 public:
 	GGShader( ID3D11VertexShader* _vertexShader, ID3D11PixelShader* _pixelShader, ID3D11InputLayout* _inputLayout );
-	~GGShader();
+	GGShader( const GGShader& ) = delete;
+	// Visual optimizes this, so move contr isn't even called, but without it error occures
+	GGShader( GGShader&& _from );
 
 	ID3D11VertexShader* GetVertexShader() const;
 	ID3D11PixelShader* GetPixelShader() const;

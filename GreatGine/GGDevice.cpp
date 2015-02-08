@@ -1,13 +1,10 @@
 #include "GGDevice.h"
 #include "GGDirectXDriver.h"
-#include "GGShader.h"
-#include "GGMesh.h"
 #include "GGError.h"
 #include "Shaders/BasicVS.h"
 #include "Shaders/BasicPS.h"
 
 #include <atlbase.h>
-#include <DirectXMath.h>
 using namespace DirectX;
 
 GGDevice::GGDevice( GGDirectXDriver& _driver )
@@ -17,10 +14,49 @@ GGDevice::GGDevice( GGDirectXDriver& _driver )
 	m_swapChain( _driver.GetSwapChain() )
 {}
 
-GGDevice::~GGDevice()
-{}
+GGCamera GGDevice::CreateCamera( float _fovAngle )
+{
+	// View matrix constant buffer
+	D3D11_BUFFER_DESC bd;
+	ZeroMemory( &bd, sizeof( bd ) );
+	bd.Usage = D3D11_USAGE_DEFAULT;
+	bd.ByteWidth = sizeof( XMFLOAT4X4 );
+	bd.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+	bd.CPUAccessFlags = 0;
 
-GGShader* GGDevice::CreateShader()
+	CComPtr<ID3D11Buffer> viewBuffer;
+	HRESULT hr = m_device->CreateBuffer( &bd, nullptr, &viewBuffer );
+	if( FAILED( hr ) )
+	{
+		GG_THROW;
+	}
+
+	XMFLOAT4X4 projectionMatrix;
+	XMMATRIX projection = XMMatrixPerspectiveFovLH( XM_PIDIV2, _fovAngle, 0.01f, 100.0f );
+	XMStoreFloat4x4( &projectionMatrix, XMMatrixTranspose( projection ) );
+
+	// Projection matrix constant buffer
+	ZeroMemory( &bd, sizeof( bd ) );
+	bd.Usage = D3D11_USAGE_DEFAULT;
+	bd.ByteWidth = sizeof( XMFLOAT4X4 );
+	bd.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+	bd.CPUAccessFlags = 0;
+
+	D3D11_SUBRESOURCE_DATA InitData;
+	ZeroMemory( &InitData, sizeof( InitData ) );
+	InitData.pSysMem = projectionMatrix.m;
+
+	CComPtr<ID3D11Buffer> projectionBuffer;
+	hr = m_device->CreateBuffer( &bd, &InitData, &projectionBuffer );
+	if( FAILED( hr ) )
+	{
+		GG_THROW;
+	}
+
+	return GGCamera( viewBuffer, projectionBuffer );
+}
+
+GGShader GGDevice::CreateShader()
 {
 	CComPtr<ID3D11VertexShader> vertexShader;
 	CComPtr<ID3D11PixelShader> pixelShader;
@@ -50,10 +86,10 @@ GGShader* GGDevice::CreateShader()
 		GG_THROW;
 	}
 
-	return new GGShader( vertexShader, pixelShader, inputLayout );
+	return GGShader( vertexShader, pixelShader, inputLayout );
 }
 
-GGMesh* GGDevice::CreateTriangleMesh()
+GGMesh GGDevice::CreateTriangleMesh()
 {
 	// Vertex buffer
 	GGMesh::GGBasicVertex vertices[] =
@@ -97,10 +133,10 @@ GGMesh* GGDevice::CreateTriangleMesh()
 		GG_THROW;
 	}
 
-	return new GGMesh( indexCount, vertexBuffer, indexBuffer );
+	return GGMesh( indexCount, vertexBuffer, indexBuffer );
 }
 
-GGMesh* GGDevice::CreateCubeMesh()
+GGMesh GGDevice::CreateCubeMesh()
 {
 	// Vertex buffer
 	GGMesh::GGBasicVertex vertices[] =
@@ -168,5 +204,12 @@ GGMesh* GGDevice::CreateCubeMesh()
 		GG_THROW;
 	}
 
-	return new GGMesh( indexCount, vertexBuffer, indexBuffer );
+	return GGMesh( indexCount, vertexBuffer, indexBuffer );
+}
+
+void GGDevice::UpdateCamera( GGCamera& _camera, XMFLOAT4X4& viewMatrix )
+{
+	m_deviceContext->UpdateSubresource( _camera.GetViewBuffer(), 0, nullptr, viewMatrix.m, 0, 0 );
+
+	return;
 }

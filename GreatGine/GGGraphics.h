@@ -29,9 +29,9 @@ private:
 	GGDevice m_device;
 	GGRenderer m_renderer;
 	GGCamera m_camera;
-
-	std::unique_ptr<GGShader> m_basicShader;
-	std::unique_ptr<GGMesh> m_mesh;
+	GGShader m_basicShader;
+	GGMesh m_mesh;
 
 	DirectX::XMFLOAT3 m_cameraPos;
+	DirectX::XMFLOAT3 m_cameraVelocity;
 };

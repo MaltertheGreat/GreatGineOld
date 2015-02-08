@@ -1,14 +1,22 @@
 #pragma once
 
-#include <DirectXMath.h>
+#include <d3d11.h>
+#include <atlbase.h>
 
 class GGCamera
 {
 public:
-	void Update( DirectX::XMFLOAT3 _pos, DirectX::XMFLOAT3 _rot );
+	GGCamera( ID3D11Buffer* _viewBuffer, ID3D11Buffer* _projectionBuffer );
+	GGCamera( const GGCamera& ) = delete;
+	// Visual optimizes this, so move contr isn't even called, but without it error occures
+	GGCamera( GGCamera&& _from );
 
-	DirectX::XMFLOAT4X4 GetViewMatrix() const;
+public:
+
+	ID3D11Buffer* GetViewBuffer() const;
+	ID3D11Buffer* GetProjectionBuffer() const;
 
 private:
-	DirectX::XMFLOAT4X4 m_viewMatrix;
+	CComPtr<ID3D11Buffer> m_viewBuffer;
+	CComPtr<ID3D11Buffer> m_projectionBuffer;
 };

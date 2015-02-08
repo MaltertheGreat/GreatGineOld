@@ -14,6 +14,9 @@ public:
 
 public:
 	GGMesh( UINT _indexCount, ID3D11Buffer* _vertexBuffer, ID3D11Buffer* _indexBuffer );
+	GGMesh( const GGMesh& ) = delete;
+	// Visual optimizes this, so move contr isn't even called, but without it error occures
+	GGMesh( GGMesh&& _from );
 
 public:
 	UINT GetIndexCount() const;

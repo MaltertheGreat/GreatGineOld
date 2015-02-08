@@ -1,6 +1,6 @@
-cbuffer ProjectionBuffer : register(b0)
+cbuffer WorldBuffer : register(b0)
 {
-	matrix projectionMatrix;
+	matrix worldMatrix;
 }
 
 cbuffer ViewBuffer : register(b1)
@@ -8,9 +8,9 @@ cbuffer ViewBuffer : register(b1)
 	matrix viewMatrix;
 }
 
-cbuffer WorldBuffer : register(b2)
+cbuffer ProjectionBuffer : register(b2)
 {
-	matrix worldMatrix;
+	matrix projectionMatrix;
 }
 
 float4 main( float4 pos : POSITION ) : SV_POSITION

@@ -18,11 +18,11 @@ public:
 	void ClearScene();
 	void PresentScene();
 
-	void SetCamera( const GGCamera* _camera );
-	void SetShader( const GGShader* _shader );
-	void SetMesh( const GGMesh* _mesh );
+	void SetCamera( const GGCamera& _camera );
+	void SetShader( const GGShader& _shader );
+	void SetMesh( const GGMesh& _mesh );
 
-	void RenderMesh( const GGMesh* _mesh );
+	void RenderMesh( const GGMesh& _mesh );
 
 private:
 	ID3D11Device* m_device;
@@ -31,7 +31,5 @@ private:
 
 	CComPtr<ID3D11RenderTargetView> m_renderTargetView;
 	CComPtr<ID3D11RasterizerState> m_rasterizerState;
-	CComPtr<ID3D11Buffer> m_projectionBuffer;
-	CComPtr<ID3D11Buffer> m_viewBuffer;
 	CComPtr<ID3D11Buffer> m_worldBuffer;
 };

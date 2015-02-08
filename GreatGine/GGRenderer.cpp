@@ -12,6 +12,7 @@ GGRenderer::GGRenderer( GGDirectXDriver& _driver )
 	m_deviceContext( _driver.GetDeviceContext() ),
 	m_swapChain( _driver.GetSwapChain() )
 {
+	// Back buffer creation
 	CComPtr<ID3D11Texture2D> backBuffer;
 	HRESULT hr = m_swapChain->GetBuffer( 0, __uuidof(ID3D11Texture2D), reinterpret_cast<void**>(&backBuffer) );
 	if( FAILED( hr ) )
@@ -56,45 +57,32 @@ GGRenderer::GGRenderer( GGDirectXDriver& _driver )
 	vp.TopLeftY = 0;
 	m_deviceContext->RSSetViewports( 1, &vp );
 
+	// For now lets assume all meshes are triangulated ;)
 	m_deviceContext->IASetPrimitiveTopology( D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST );
 
-	// TODO: Move it somewhere else... maybe... or not
-	XMFLOAT4X4 projectionMatrix;
-	XMMATRIX projection = XMMatrixPerspectiveFovLH( XM_PIDIV2, _driver.GetResX() / (FLOAT) _driver.GetResY(), 0.01f, 100.0f );
-	XMStoreFloat4x4( &projectionMatrix, XMMatrixTranspose( projection ) );
+	// World constant buffer
+	XMFLOAT4X4 worldMatrix;
+	XMStoreFloat4x4( &worldMatrix, XMMatrixTranspose( XMMatrixIdentity() ) );
 
-	// Projection constant buffer
 	D3D11_BUFFER_DESC bd;
 	ZeroMemory( &bd, sizeof( bd ) );
 	bd.Usage = D3D11_USAGE_DEFAULT;
 	bd.ByteWidth = sizeof( XMFLOAT4X4 );
 	bd.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
 	bd.CPUAccessFlags = 0;
+	bd.ByteWidth = sizeof( XMFLOAT4X4 );
+
 	D3D11_SUBRESOURCE_DATA InitData;
 	ZeroMemory( &InitData, sizeof( InitData ) );
-	InitData.pSysMem = projectionMatrix.m;
+	InitData.pSysMem = worldMatrix.m;
 
-	m_device->CreateBuffer( &bd, &InitData, &m_projectionBuffer );
-	m_deviceContext->VSSetConstantBuffers( 0, 1, &m_projectionBuffer.p );
-
-	// View constant buffer
-	bd.ByteWidth = sizeof( XMFLOAT4X4 );
-	hr = m_device->CreateBuffer( &bd, nullptr, &m_viewBuffer );
+	hr = m_device->CreateBuffer( &bd, &InitData, &m_worldBuffer );
 	if( FAILED( hr ) )
 	{
 		GG_THROW;
 	}
 
-	XMFLOAT4X4 worldMatrix;
-	XMStoreFloat4x4( &worldMatrix, XMMatrixTranspose( XMMatrixIdentity() ) );	// This definitely need to go
-
-	// World constant buffer
-	bd.ByteWidth = sizeof( XMFLOAT4X4 );
-	ZeroMemory( &InitData, sizeof( InitData ) );
-	InitData.pSysMem = worldMatrix.m;
-
-	m_device->CreateBuffer( &bd, &InitData, &m_worldBuffer );
-	m_deviceContext->VSSetConstantBuffers( 2, 1, &m_worldBuffer.p );
+	m_deviceContext->VSSetConstantBuffers( 0, 1, &m_worldBuffer.p );
 }
 
 void GGRenderer::ClearScene()
@@ -112,41 +100,49 @@ void GGRenderer::PresentScene()
 	return;
 }
 
-void GGRenderer::SetCamera( const GGCamera* _camera )
+void GGRenderer::SetCamera( const GGCamera& _camera )
 {
-	XMFLOAT4X4 viewMatrix = _camera->GetViewMatrix();
+	/*XMFLOAT4X4 viewMatrix = _camera->GetViewMatrix();
 
 	XMMATRIX view = XMLoadFloat4x4( &viewMatrix );
-	view = XMMatrixTranspose( view );
-	XMStoreFloat4x4( &viewMatrix, view );
+	XMStoreFloat4x4( &viewMatrix, XMMatrixTranspose( view ) );
 
-	m_deviceContext->UpdateSubresource( m_viewBuffer, 0, nullptr, viewMatrix.m, 0, 0 );
-	m_deviceContext->VSSetConstantBuffers( 1, 1, &m_viewBuffer.p );
-}
+	m_deviceContext->UpdateSubresource( m_viewBuffer, 0, nullptr, viewMatrix.m, 0, 0 );*/
 
-void GGRenderer::SetShader( const GGShader* _shader )
-{
-	m_deviceContext->VSSetShader( _shader->GetVertexShader(), nullptr, 0 );
-	m_deviceContext->PSSetShader( _shader->GetPixelShader(), nullptr, 0 );
-	m_deviceContext->IASetInputLayout( _shader->GetInputLayout() );
+	UINT viewBufferSlot = 1;
+	UINT projectionBufferSlot = 2;
+	ID3D11Buffer* viewBuffer = _camera.GetViewBuffer();
+	ID3D11Buffer* projectionBuffer = _camera.GetProjectionBuffer();
+
+	m_deviceContext->VSSetConstantBuffers( viewBufferSlot, 1, &viewBuffer );
+	m_deviceContext->VSSetConstantBuffers( projectionBufferSlot, 1, &projectionBuffer );
 
 	return;
 }
 
-void GGRenderer::SetMesh( const GGMesh* _mesh )
+void GGRenderer::SetShader( const GGShader& _shader )
 {
-	ID3D11Buffer* vertexBuffer = _mesh->GetVertexBuffer();
+	m_deviceContext->VSSetShader( _shader.GetVertexShader(), nullptr, 0 );
+	m_deviceContext->PSSetShader( _shader.GetPixelShader(), nullptr, 0 );
+	m_deviceContext->IASetInputLayout( _shader.GetInputLayout() );
+
+	return;
+}
+
+void GGRenderer::SetMesh( const GGMesh& _mesh )
+{
+	ID3D11Buffer* vertexBuffer = _mesh.GetVertexBuffer();
 	UINT stride = sizeof( GGMesh::GGBasicVertex );
 	UINT offset = 0;
 	m_deviceContext->IASetVertexBuffers( 0, 1, &vertexBuffer, &stride, &offset );
-	m_deviceContext->IASetIndexBuffer( _mesh->GetIndexBuffer(), DXGI_FORMAT_R16_UINT, offset );
+	m_deviceContext->IASetIndexBuffer( _mesh.GetIndexBuffer(), DXGI_FORMAT_R16_UINT, offset );
 
 	return;
 }
 
-void GGRenderer::RenderMesh( const GGMesh* _mesh )
+void GGRenderer::RenderMesh( const GGMesh& _mesh )
 {
-	m_deviceContext->DrawIndexed( _mesh->GetIndexCount(), 0, 0 );
+	m_deviceContext->DrawIndexed( _mesh.GetIndexCount(), 0, 0 );
 
 	return;
 }
