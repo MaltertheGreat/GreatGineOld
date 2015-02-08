@@ -47,7 +47,7 @@ void GGInputProcessor::ProcessInput( const MSG& _msg )
 			{
 				if( m_actionKeysMap[ i ] == _msg.wParam )
 				{
-					SendActionInput( static_cast<GG_ACTION_INPUT>(i), true);
+					SendActionInput( static_cast<GG_ACTION_INPUT>(i), true );
 				}
 			}
 		}
@@ -68,7 +68,6 @@ void GGInputProcessor::ProcessInput( const MSG& _msg )
 	}
 
 	TranslateMessage( &_msg );
-	
 
 	/*UINT dwSize;
 
@@ -77,20 +76,20 @@ void GGInputProcessor::ProcessInput( const MSG& _msg )
 	unique_ptr<BYTE[]> buffer( new BYTE[ dwSize ] );
 
 	if( GetRawInputData( (HRAWINPUT) _lParam, RID_INPUT, buffer.get(), &dwSize,
-		sizeof( RAWINPUTHEADER ) ) != dwSize )
+	sizeof( RAWINPUTHEADER ) ) != dwSize )
 	{
-		GG_THROW;
+	GG_THROW;
 	}
 
 	RAWINPUT* input = (RAWINPUT*) buffer.get();
 
 	if( input->header.dwType == RIM_TYPEKEYBOARD )
 	{
-		SendKebordInput( input->data.keyboard );
+	SendKebordInput( input->data.keyboard );
 	}
 	else if( input->header.dwType == RIM_TYPEMOUSE )
 	{
-		SendMouseInput( input->data.mouse );
+	SendMouseInput( input->data.mouse );
 	}*/
 
 	return;

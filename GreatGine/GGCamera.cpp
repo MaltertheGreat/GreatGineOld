@@ -6,7 +6,7 @@ void GGCamera::Update( DirectX::XMFLOAT3 _pos, DirectX::XMFLOAT3 _rot )
 	XMVECTOR eyePos = XMLoadFloat3( &_pos );
 
 	float pitch = XMConvertToRadians( _rot.x );
-	float yaw = XMConvertToRadians( _rot.y);
+	float yaw = XMConvertToRadians( _rot.y );
 	float roll = XMConvertToRadians( _rot.z );
 	XMMATRIX rotation = XMMatrixRotationRollPitchYaw( pitch, yaw, roll );
 

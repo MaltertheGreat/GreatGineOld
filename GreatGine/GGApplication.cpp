@@ -2,7 +2,6 @@
 #include "GGConfig.h"
 #include "GGError.h"
 
-
 GGApplication::GGApplication( HINSTANCE _hInstance, const GGConfig& _config )
 	:
 	m_window( m_title + L" v." + m_version, _hInstance, _config ),

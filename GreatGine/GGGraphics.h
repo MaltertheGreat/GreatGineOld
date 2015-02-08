@@ -24,7 +24,6 @@ public:
 public:
 	virtual void HandleActionInput( GG_ACTION_INPUT _input, bool _down ) override;
 
-
 private:
 	GGDirectXDriver m_driver;
 	GGDevice m_device;

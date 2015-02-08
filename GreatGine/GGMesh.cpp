@@ -8,7 +8,6 @@ GGMesh::GGMesh( UINT _indexCount, ID3D11Buffer* _vertexBuffer, ID3D11Buffer* _in
 	m_vertexBuffer( _vertexBuffer ),
 	m_indexBuffer( _indexBuffer )
 {
-
 }
 
 UINT GGMesh::GetIndexCount() const

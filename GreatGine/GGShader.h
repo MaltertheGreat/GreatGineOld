@@ -12,7 +12,7 @@ public:
 	ID3D11VertexShader* GetVertexShader() const;
 	ID3D11PixelShader* GetPixelShader() const;
 	ID3D11InputLayout* GetInputLayout() const;
-	
+
 private:
 	CComPtr<ID3D11VertexShader> m_vertexShader;
 	CComPtr<ID3D11PixelShader> m_pixelShader;

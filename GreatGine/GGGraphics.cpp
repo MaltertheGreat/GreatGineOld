@@ -8,9 +8,8 @@ GGGraphics::GGGraphics( const GGWindow& _window )
 	m_renderer( m_driver ),
 	m_basicShader( m_device.CreateShader() ),
 	m_mesh( m_device.CreateCubeMesh() ),
-	m_cameraPos({0.0f, 1.5f, 0.0f})
+	m_cameraPos( { 0.0f, 1.5f, 0.0f } )
 {
-	
 }
 
 void GGGraphics::Update()

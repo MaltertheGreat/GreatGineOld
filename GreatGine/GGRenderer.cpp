@@ -6,7 +6,6 @@
 #include "GGError.h"
 using namespace DirectX;
 
-
 GGRenderer::GGRenderer( GGDirectXDriver& _driver )
 	:
 	m_device( _driver.GetDevice() ),

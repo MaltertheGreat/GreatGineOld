@@ -5,8 +5,7 @@ GGShader::GGShader( ID3D11VertexShader* _vertexShader, ID3D11PixelShader* _pixel
 	m_vertexShader( _vertexShader ),
 	m_pixelShader( _pixelShader ),
 	m_inputLayout( _inputLayout )
-{
-}
+{}
 
 GGShader::~GGShader()
 {

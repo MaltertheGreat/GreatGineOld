@@ -15,11 +15,10 @@ GGDevice::GGDevice( GGDirectXDriver& _driver )
 	m_device( _driver.GetDevice() ),
 	m_deviceContext( _driver.GetDeviceContext() ),
 	m_swapChain( _driver.GetSwapChain() )
-{ }
+{}
 
 GGDevice::~GGDevice()
-{ }
-
+{}
 
 GGShader* GGDevice::CreateShader()
 {
@@ -51,7 +50,7 @@ GGShader* GGDevice::CreateShader()
 		GG_THROW;
 	}
 
-	return new GGShader( vertexShader, pixelShader, inputLayout	);
+	return new GGShader( vertexShader, pixelShader, inputLayout );
 }
 
 GGMesh* GGDevice::CreateTriangleMesh()
