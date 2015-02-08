@@ -8,7 +8,7 @@ class GGCamera
 public:
 	GGCamera( ID3D11Buffer* _viewBuffer, ID3D11Buffer* _projectionBuffer );
 	GGCamera( const GGCamera& ) = delete;
-	// Visual optimizes this, so move contr isn't even called, but without it error occures
+	// Visual optimizes this, so move ctor isn't even called, but without it error occures
 	GGCamera( GGCamera&& _from );
 
 public:

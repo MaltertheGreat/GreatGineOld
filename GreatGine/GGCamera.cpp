@@ -9,10 +9,10 @@ GGCamera::GGCamera( ID3D11Buffer* _viewBuffer, ID3D11Buffer* _projectionBuffer )
 {}
 
 GGCamera::GGCamera( GGCamera&& _from )
-	:
-	m_viewBuffer( _from.m_viewBuffer ),
-	m_projectionBuffer( _from.m_projectionBuffer )
-{}
+{
+	m_viewBuffer.Attach( _from.m_viewBuffer.Detach() );
+	m_projectionBuffer.Attach( _from.m_projectionBuffer.Detach() );
+}
 
 ID3D11Buffer* GGCamera::GetViewBuffer() const
 {

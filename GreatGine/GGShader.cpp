@@ -8,11 +8,11 @@ GGShader::GGShader( ID3D11VertexShader* _vertexShader, ID3D11PixelShader* _pixel
 {}
 
 GGShader::GGShader( GGShader&& _from )
-	:
-	m_vertexShader( _from.m_vertexShader ),
-	m_pixelShader( _from.m_pixelShader ),
-	m_inputLayout( _from.m_inputLayout )
-{}
+{
+	m_vertexShader.Attach( _from.m_vertexShader.Detach() );
+	m_pixelShader.Attach( _from.m_pixelShader.Detach() );
+	m_inputLayout.Attach( _from.m_inputLayout.Detach() );
+}
 
 ID3D11VertexShader* GGShader::GetVertexShader() const
 {
