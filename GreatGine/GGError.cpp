@@ -1,7 +1,7 @@
 #include "GGError.h"
 using namespace std;
 
-GGError::GGError( const string _fileName, const unsigned _fileLine )
+GGError::GGError( const string& _fileName, const unsigned _fileLine )
 {
 	try
 	{

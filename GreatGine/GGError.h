@@ -8,7 +8,7 @@
 class GGError : public std::exception
 {
 public:
-	GGError( const std::string _fileName, const unsigned _fileLine );
+	GGError( const std::string& _fileName, const unsigned _fileLine );
 
 	virtual const char* what() const noexcept;
 

@@ -81,6 +81,10 @@ GGRenderer::GGRenderer( GGDirectXDriver& _driver )
 	// View constant buffer
 	bd.ByteWidth = sizeof( XMFLOAT4X4 );
 	hr = m_device->CreateBuffer( &bd, nullptr, &m_viewBuffer );
+	if( FAILED( hr ) )
+	{
+		GG_THROW;
+	}
 
 	XMFLOAT4X4 worldMatrix;
 	XMStoreFloat4x4( &worldMatrix, XMMatrixTranspose( XMMatrixIdentity() ) );	// This definitely need to go
@@ -113,7 +117,7 @@ void GGRenderer::SetCamera( const GGCamera* _camera )
 {
 	XMFLOAT4X4 viewMatrix = _camera->GetViewMatrix();
 
-	XMMATRIX view = XMLoadFloat4x4( &_camera->GetViewMatrix() );
+	XMMATRIX view = XMLoadFloat4x4( &viewMatrix );
 	view = XMMatrixTranspose( view );
 	XMStoreFloat4x4( &viewMatrix, view );
 

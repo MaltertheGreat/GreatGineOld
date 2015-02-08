@@ -4,7 +4,7 @@
 #include "GGConfig.h"
 #include "GGApplication.h"
 
-int WINAPI WinMain( HINSTANCE _hInstance, HINSTANCE _hPrevInstance, LPSTR _lpCmdLine, int _nCmdShow )
+int WINAPI WinMain( HINSTANCE _hInstance, HINSTANCE, LPSTR, int )
 {
 	try
 	{
