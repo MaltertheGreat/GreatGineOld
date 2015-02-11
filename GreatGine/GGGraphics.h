@@ -23,6 +23,7 @@ public:
 
 public:
 	virtual void HandleActionInput( GG_ACTION_INPUT _input, bool _down ) override;
+	virtual void HandleRangeInput( int _x, int _y ) override;
 
 private:
 	GGDirectXDriver m_driver;
@@ -34,4 +35,5 @@ private:
 
 	DirectX::XMFLOAT3 m_cameraPos;
 	DirectX::XMFLOAT3 m_cameraVelocity;
+	DirectX::XMFLOAT3 m_cameraRot = { 0.0f, 0.0f, 1.0f };
 };

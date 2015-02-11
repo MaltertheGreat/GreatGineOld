@@ -23,7 +23,11 @@ public:
 	void ProcessInput( const MSG& _msg );
 
 private:
+	void ProcessKeyPress( WPARAM _wParam, LPARAM _lParam );
+	void ProcessKeyRelease( WPARAM _wParam );
+	void ProcessRawInput( LPARAM _lParam );
 	void SendActionInput( GG_ACTION_INPUT _input, bool _down );
+	void SendRangeInput( int _x, int _y );
 
 private:
 	UINT m_actionKeysMap[ GG_ACTION_INPUT_COUNT ];

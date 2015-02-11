@@ -5,6 +5,7 @@
 
 #include <bitset>
 #include <memory>
+#include <assert.h>
 using namespace std;
 
 GGInputProcessor::GGInputProcessor( const GGWindow& _window, const GGConfig& _config )
@@ -36,61 +37,81 @@ void GGInputProcessor::RegisterHandler( GGInputHandler* _handler )
 
 void GGInputProcessor::ProcessInput( const MSG& _msg )
 {
-	bitset<32> keyflag = _msg.lParam;
-
 	switch( _msg.message )
 	{
 	case WM_KEYDOWN:
-		if( !keyflag[ 30 ] )	// Respond only to first key press. No key repeat
-		{
-			for( int i = 0; i < GG_ACTION_INPUT_COUNT; ++i )
-			{
-				if( m_actionKeysMap[ i ] == _msg.wParam )
-				{
-					SendActionInput( static_cast<GG_ACTION_INPUT>(i), true );
-				}
-			}
-		}
+		ProcessKeyPress( _msg.wParam, _msg.lParam );
 		break;
 	case WM_KEYUP:
-		for( int i = 0; i < GG_ACTION_INPUT_COUNT; ++i )
-		{
-			if( m_actionKeysMap[ i ] == _msg.wParam )
-			{
-				SendActionInput( static_cast<GG_ACTION_INPUT>(i), false );
-			}
-		}
+		ProcessKeyRelease( _msg.wParam );
 		break;
 	case WM_CHAR:
 		break;
 	case WM_INPUT:
+		ProcessRawInput( _msg.lParam );
 		break;
 	}
 
 	TranslateMessage( &_msg );
 
-	/*UINT dwSize;
+	return;
+}
+
+void GGInputProcessor::ProcessKeyPress( WPARAM _wParam, LPARAM _lParam )
+{
+	bitset<32> keyflag = _lParam;
+
+	if( !keyflag[ 30 ] )	// Respond only to first key press. No key repeat
+	{
+		for( int i = 0; i < GG_ACTION_INPUT_COUNT; ++i )
+		{
+			if( m_actionKeysMap[ i ] == _wParam )
+			{
+				SendActionInput( static_cast<GG_ACTION_INPUT>(i), true );
+			}
+		}
+	}
+
+	return;
+}
+
+void GGInputProcessor::ProcessKeyRelease( WPARAM _wParam )
+{
+	for( int i = 0; i < GG_ACTION_INPUT_COUNT; ++i )
+	{
+		if( m_actionKeysMap[ i ] == _wParam )
+		{
+			SendActionInput( static_cast<GG_ACTION_INPUT>(i), false );
+		}
+	}
+
+	return;
+}
+
+void GGInputProcessor::ProcessRawInput( LPARAM _lParam )
+{
+	UINT dwSize;
 
 	GetRawInputData( (HRAWINPUT) _lParam, RID_INPUT, NULL, &dwSize, sizeof( RAWINPUTHEADER ) );
 
 	unique_ptr<BYTE[]> buffer( new BYTE[ dwSize ] );
 
 	if( GetRawInputData( (HRAWINPUT) _lParam, RID_INPUT, buffer.get(), &dwSize,
-	sizeof( RAWINPUTHEADER ) ) != dwSize )
+		sizeof( RAWINPUTHEADER ) ) != dwSize )
 	{
-	GG_THROW;
+		GG_THROW;
 	}
 
 	RAWINPUT* input = (RAWINPUT*) buffer.get();
 
-	if( input->header.dwType == RIM_TYPEKEYBOARD )
+	if( input->header.dwType == RIM_TYPEMOUSE )
 	{
-	SendKebordInput( input->data.keyboard );
+		RAWMOUSE mouse = input->data.mouse;
+
+		assert( (mouse.usFlags & MOUSE_MOVE_RELATIVE) == 0 );	// For simplicity temporarly assume relative mouse movement
+
+		SendRangeInput( mouse.lLastX, mouse.lLastY );
 	}
-	else if( input->header.dwType == RIM_TYPEMOUSE )
-	{
-	SendMouseInput( input->data.mouse );
-	}*/
 
 	return;
 }
@@ -100,6 +121,16 @@ void GGInputProcessor::SendActionInput( GG_ACTION_INPUT _input, bool _down )
 	for( auto handler : m_handlers )
 	{
 		handler->HandleActionInput( _input, _down );
+	}
+
+	return;
+}
+
+void GGInputProcessor::SendRangeInput( int _x, int _y )
+{
+	for( auto handler : m_handlers )
+	{
+		handler->HandleRangeInput( _x, _y );
 	}
 
 	return;

@@ -19,7 +19,7 @@ void GGGraphics::Update()
 	m_cameraPos.z += m_cameraVelocity.z;
 
 	XMVECTOR eyePos = XMLoadFloat3( &m_cameraPos );
-	XMVECTOR lookDir = XMVectorSet( 0.0f, 0.0f, 1.0f, 0.0f );
+	XMVECTOR lookDir = XMLoadFloat3( &m_cameraRot );
 	XMVECTOR upDir = XMVectorSet( 0.0f, 1.0f, 0.0f, 0.0f );
 
 	XMFLOAT4X4 viewMatrix;
@@ -71,6 +71,14 @@ void GGGraphics::HandleActionInput( GG_ACTION_INPUT _input, bool _down )
 	{
 		m_cameraVelocity.x -= 0.00001f;
 	}
+
+	return;
+}
+
+void GGGraphics::HandleRangeInput( int _x, int _y )
+{
+	m_cameraRot.x += _x * 0.001f;
+	m_cameraRot.y -= _y * 0.001f;
 
 	return;
 }

@@ -16,9 +16,5 @@ class GGInputHandler
 {
 public:
 	virtual void HandleActionInput( GG_ACTION_INPUT _input, bool _down ) = 0;
-
-	/*virtual void HandleRangeInput( int _x, int _y )
-	{
-	return;
-	}*/
+	virtual void HandleRangeInput( int _x, int _y ) = 0;
 };

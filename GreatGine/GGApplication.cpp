@@ -59,4 +59,11 @@ void GGApplication::HandleActionInput( GG_ACTION_INPUT _input, bool _down )
 	{
 		m_running = false;
 	}
+
+	return;
+}
+
+void GGApplication::HandleRangeInput( int, int )
+{
+	return;
 }
