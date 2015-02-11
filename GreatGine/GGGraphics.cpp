@@ -1,5 +1,6 @@
 #include "GGGraphics.h"
 #include "GGWindow.h"
+#include <string>
 #include <DirectXMath.h>
 using namespace DirectX;
 
@@ -13,14 +14,19 @@ GGGraphics::GGGraphics( const GGWindow& _window )
 	m_mesh( m_device.CreateCubeMesh() )
 {}
 
-void GGGraphics::Update()
+void GGGraphics::Update( float _frameTime )
 {
-	m_cameraPos.x += m_cameraVelocity.x;
-	m_cameraPos.z += m_cameraVelocity.z;
+	m_cameraPos.x += m_cameraVelocity.x * _frameTime;
+	m_cameraPos.z += m_cameraVelocity.z * _frameTime;
+
+	float pitch = m_cameraRot.x;
+	float yaw = m_cameraRot.y;
+	float roll = m_cameraRot.z;
+	XMVECTOR rotationQuaterion = XMQuaternionRotationRollPitchYaw( pitch, yaw, roll );
 
 	XMVECTOR eyePos = XMLoadFloat3( &m_cameraPos );
-	XMVECTOR lookDir = XMLoadFloat3( &m_cameraRot );
-	XMVECTOR upDir = XMVectorSet( 0.0f, 1.0f, 0.0f, 0.0f );
+	XMVECTOR lookDir = XMVector3Rotate( XMVectorSet( 0.0f, 0.0f, 1.0f, 0.0f ), rotationQuaterion );
+	XMVECTOR upDir = XMVectorSet( 0.0f, 1.0f, 0.0f, 1.0f );
 
 	XMFLOAT4X4 viewMatrix;
 	XMMATRIX view = XMMatrixLookToLH( eyePos, lookDir, upDir );
@@ -49,27 +55,45 @@ void GGGraphics::Render()
 
 void GGGraphics::HandleActionInput( GG_ACTION_INPUT _input, bool _down )
 {
-	if( !_down )
+	if( _down )
 	{
-		return;
-	}
+		if( _input == GG_ACTION_INPUT_MOVE_FORWARD )
+		{
+			m_cameraVelocity.z = 4.0f;
+		}
+		else if( _input == GG_ACTION_INPUT_MOVE_BACKWARD )
+		{
+			m_cameraVelocity.z = -4.0f;
+		}
 
-	if( _input == GG_ACTION_INPUT_MOVE_FORWARD )
-	{
-		m_cameraVelocity.z += 0.00001f;
+		if( _input == GG_ACTION_INPUT_MOVE_RIGHTWARD )
+		{
+			m_cameraVelocity.x = 4.0f;
+		}
+		else if( _input == GG_ACTION_INPUT_MOVE_LEFTWARD )
+		{
+			m_cameraVelocity.x = -4.0f;
+		}
 	}
-	else if( _input == GG_ACTION_INPUT_MOVE_BACKWARD )
+	else
 	{
-		m_cameraVelocity.z -= 0.00001f;
-	}
+		if( _input == GG_ACTION_INPUT_MOVE_FORWARD )
+		{
+			m_cameraVelocity.z = 0.0f;
+		}
+		else if( _input == GG_ACTION_INPUT_MOVE_BACKWARD )
+		{
+			m_cameraVelocity.z = 0.0f;
+		}
 
-	if( _input == GG_ACTION_INPUT_MOVE_RIGHTWARD )
-	{
-		m_cameraVelocity.x += 0.00001f;
-	}
-	else if( _input == GG_ACTION_INPUT_MOVE_LEFTWARD )
-	{
-		m_cameraVelocity.x -= 0.00001f;
+		if( _input == GG_ACTION_INPUT_MOVE_RIGHTWARD )
+		{
+			m_cameraVelocity.x = 0.0f;
+		}
+		else if( _input == GG_ACTION_INPUT_MOVE_LEFTWARD )
+		{
+			m_cameraVelocity.x = 0.0f;
+		}
 	}
 
 	return;
@@ -77,8 +101,8 @@ void GGGraphics::HandleActionInput( GG_ACTION_INPUT _input, bool _down )
 
 void GGGraphics::HandleRangeInput( int _x, int _y )
 {
-	m_cameraRot.x += _x * 0.001f;
-	m_cameraRot.y -= _y * 0.001f;
+	m_cameraRot.y += _x * 0.001f;
+	m_cameraRot.x += _y * 0.001f;
 
 	return;
 }

@@ -18,7 +18,7 @@ public:
 	GGGraphics( const GGWindow& _window );
 
 public:
-	void Update();
+	void Update( float _frameTime );
 	void Render();
 
 public:
@@ -35,5 +35,5 @@ private:
 
 	DirectX::XMFLOAT3 m_cameraPos;
 	DirectX::XMFLOAT3 m_cameraVelocity;
-	DirectX::XMFLOAT3 m_cameraRot = { 0.0f, 0.0f, 1.0f };
+	DirectX::XMFLOAT3 m_cameraRot;
 };

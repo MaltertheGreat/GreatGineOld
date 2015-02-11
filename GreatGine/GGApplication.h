@@ -3,6 +3,7 @@
 #include "GGInputHandler.h"
 #include "GGWindow.h"
 #include "GGInputProcessor.h"
+#include "GGFrameTimer.h"
 #include "GGGraphics.h"
 
 class GGConfig;
@@ -32,5 +33,6 @@ private:
 
 	GGWindow m_window;
 	GGInputProcessor m_input;
+	GGFrameTimer m_timer;
 	GGGraphics m_graphics;
 };

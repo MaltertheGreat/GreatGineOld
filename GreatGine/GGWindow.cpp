@@ -57,6 +57,12 @@ LRESULT CALLBACK GGWindow::WndProc( HWND hWnd, UINT message, WPARAM wParam, LPAR
 	case WM_DESTROY:
 		PostQuitMessage( 0 );
 		break;
+	case WM_ACTIVATE:
+		if( wParam )	// Window activated
+		{
+			ShowCursor( FALSE );
+		}
+		break;
 	default:
 		return DefWindowProc( hWnd, message, wParam, lParam );
 	}

@@ -268,6 +268,7 @@
     <ClCompile Include="GGConfig.cpp" />
     <ClCompile Include="GGDirectXDriver.cpp" />
     <ClCompile Include="GGError.cpp" />
+    <ClCompile Include="GGFrameTimer.cpp" />
     <ClCompile Include="GGGraphics.cpp" />
     <ClCompile Include="GGDevice.cpp" />
     <ClCompile Include="GGInputProcessor.cpp" />
@@ -283,6 +284,7 @@
     <ClInclude Include="GGConfig.h" />
     <ClInclude Include="GGDirectXDriver.h" />
     <ClInclude Include="GGError.h" />
+    <ClInclude Include="GGFrameTimer.h" />
     <ClInclude Include="GGGraphics.h" />
     <ClInclude Include="GGDevice.h" />
     <ClInclude Include="GGInputHandler.h" />

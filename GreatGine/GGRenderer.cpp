@@ -102,13 +102,6 @@ void GGRenderer::PresentScene()
 
 void GGRenderer::SetCamera( const GGCamera& _camera )
 {
-	/*XMFLOAT4X4 viewMatrix = _camera->GetViewMatrix();
-
-	XMMATRIX view = XMLoadFloat4x4( &viewMatrix );
-	XMStoreFloat4x4( &viewMatrix, XMMatrixTranspose( view ) );
-
-	m_deviceContext->UpdateSubresource( m_viewBuffer, 0, nullptr, viewMatrix.m, 0, 0 );*/
-
 	UINT viewBufferSlot = 1;
 	UINT projectionBufferSlot = 2;
 	ID3D11Buffer* viewBuffer = _camera.GetViewBuffer();

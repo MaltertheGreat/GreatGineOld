@@ -14,6 +14,7 @@ GGApplication::GGApplication( HINSTANCE _hInstance, const GGConfig& _config )
 
 void GGApplication::Run()
 {
+	m_timer.Start();
 	m_running = true;
 	MSG msg;
 	while( m_running )
@@ -41,7 +42,10 @@ void GGApplication::Run()
 
 void GGApplication::Update()
 {
-	m_graphics.Update();
+	m_timer.Update();
+	float frameTime = m_timer.GetFrameTime();
+
+	m_graphics.Update( frameTime );
 
 	return;
 }

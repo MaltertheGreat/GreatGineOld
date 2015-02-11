@@ -19,7 +19,7 @@ GGInputProcessor::GGInputProcessor( const GGWindow& _window, const GGConfig& _co
 	RAWINPUTDEVICE mouse;
 	mouse.usUsagePage = 0x01;
 	mouse.usUsage = 0x02;
-	mouse.dwFlags = 0;
+	mouse.dwFlags = RIDEV_CAPTUREMOUSE | RIDEV_NOLEGACY;
 	mouse.hwndTarget = _window.GetHandle();
 
 	if( !RegisterRawInputDevices( &mouse, 1, sizeof( mouse ) ) )
