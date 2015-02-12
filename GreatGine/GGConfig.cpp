@@ -41,6 +41,9 @@ GGConfig::GGConfig()
 		case 'H':	// hex integer
 			m_ints[ configName ] = stoi( configValue, 0, 16 );
 			break;
+		case 'F':	// float
+			m_floats[ configName ] = stof( configValue );
+			break;
 		default:
 			continue;
 		}
@@ -50,4 +53,9 @@ GGConfig::GGConfig()
 int GGConfig::GetInt( string _configName ) const
 {
 	return m_ints.at( _configName );
+}
+
+float GGConfig::GetFloat( std::string _configName ) const
+{
+	return m_floats.at( _configName );
 }

@@ -9,7 +9,7 @@ GGGraphics::GGGraphics( const GGWindow& _window, const GGConfig& _config )
 	m_driver( _window, _config.GetInt( "resolutionX" ), _config.GetInt( "resolutionY" ) ),
 	m_device( m_driver ),
 	m_renderer( m_driver ),
-	m_camera( m_device.CreateCamera( XMConvertToRadians( 80.0f ), _config.GetInt( "resolutionX" ), _config.GetInt( "resolutionY" ) ) ),
+	m_camera( m_device.CreateCamera( XMConvertToRadians( _config.GetFloat( "fov" ) ), _config.GetInt( "resolutionX" ), _config.GetInt( "resolutionY" ) ) ),
 	m_basicShader( m_device.CreateShader() ),
 	m_mesh( m_device.CreateCubeMesh() )
 {}
