@@ -6,7 +6,7 @@ GGApplication::GGApplication( HINSTANCE _hInstance, const GGConfig& _config )
 	:
 	m_window( m_title + L" v." + m_version, _hInstance, _config ),
 	m_input( m_window, _config ),
-	m_graphics( m_window )
+	m_graphics( m_window, _config )
 {
 	m_input.RegisterHandler( this );
 	m_input.RegisterHandler( &m_graphics );

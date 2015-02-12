@@ -11,11 +11,12 @@
 #include "GGMesh.h"
 
 class GGWindow;
+class GGConfig;
 
 class GGGraphics : public GGInputHandler
 {
 public:
-	GGGraphics( const GGWindow& _window );
+	GGGraphics( const GGWindow& _window, const GGConfig& _config );
 
 public:
 	void Update( float _frameTime );

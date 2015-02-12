@@ -20,7 +20,7 @@ public:
 	UINT GetResolutionX() const;
 	UINT GetResolutionY() const;
 
-	GGCamera CreateCamera( float _fovAngle );
+	GGCamera CreateCamera( float _fovAngle, UINT _viewWidth, UINT _viewHeight );
 	GGShader CreateShader();
 	GGMesh CreateTriangleMesh();
 	GGMesh CreateCubeMesh();

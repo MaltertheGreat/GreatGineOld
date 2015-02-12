@@ -14,7 +14,7 @@ GGDevice::GGDevice( GGDirectXDriver& _driver )
 	m_swapChain( _driver.GetSwapChain() )
 {}
 
-GGCamera GGDevice::CreateCamera( float _fovAngle )
+GGCamera GGDevice::CreateCamera( float _fovAngle, UINT _viewWidth, UINT _viewHeight )
 {
 	// View matrix constant buffer
 	D3D11_BUFFER_DESC bd;
@@ -32,7 +32,7 @@ GGCamera GGDevice::CreateCamera( float _fovAngle )
 	}
 
 	XMFLOAT4X4 projectionMatrix;
-	XMMATRIX projection = XMMatrixPerspectiveFovLH( XM_PIDIV2, _fovAngle, 0.01f, 100.0f );
+	XMMATRIX projection = XMMatrixPerspectiveFovLH( _fovAngle, _viewWidth / static_cast<float>(_viewHeight), 0.01f, 100.0f );
 	XMStoreFloat4x4( &projectionMatrix, XMMatrixTranspose( projection ) );
 
 	// Projection matrix constant buffer

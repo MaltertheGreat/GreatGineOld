@@ -4,8 +4,11 @@
 # 'H' prefix for hex integer	e.g. Hint=0x4
 # Do not use spaces( exept for comments ;p )
 
-Iwindow_width=800
-Iwindow_height=600
+Iwindow_width=1280
+Iwindow_height=720
+
+IresolutionX=1280
+IresolutionY=720
 
 Hkey_exit=0x1B
 Hkey_forward=0x57
