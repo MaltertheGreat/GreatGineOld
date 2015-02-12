@@ -30,23 +30,32 @@ GGRenderer::GGRenderer( GGDirectXDriver& _driver )
 
 	D3D11_RASTERIZER_DESC rasterDesc;
 	rasterDesc.AntialiasedLineEnable = false;
-	rasterDesc.CullMode = D3D11_CULL_NONE;
+	rasterDesc.CullMode = D3D11_CULL_BACK;
 	rasterDesc.DepthBias = 0;
 	rasterDesc.DepthBiasClamp = 0.0f;
 	rasterDesc.DepthClipEnable = true;
-	rasterDesc.FillMode = D3D11_FILL_WIREFRAME;
+	rasterDesc.FillMode = D3D11_FILL_SOLID;
 	rasterDesc.FrontCounterClockwise = false;
 	rasterDesc.MultisampleEnable = false;
 	rasterDesc.ScissorEnable = false;
 	rasterDesc.SlopeScaledDepthBias = 0.0f;
 
-	hr = m_device->CreateRasterizerState( &rasterDesc, &m_rasterizerState );
+	hr = m_device->CreateRasterizerState( &rasterDesc, &m_rasterizerState[ FILL_TYPE_SOLID ] );
 	if( FAILED( hr ) )
 	{
 		GG_THROW;
 	}
 
-	m_deviceContext->RSSetState( m_rasterizerState );
+	rasterDesc.CullMode = D3D11_CULL_NONE;
+	rasterDesc.FillMode = D3D11_FILL_WIREFRAME;
+
+	hr = m_device->CreateRasterizerState( &rasterDesc, &m_rasterizerState[ FILL_TYPE_WIREFRAME ] );
+	if( FAILED( hr ) )
+	{
+		GG_THROW;
+	}
+
+	m_deviceContext->RSSetState( m_rasterizerState[ FILL_TYPE_SOLID ] );
 
 	D3D11_VIEWPORT vp;
 	vp.Width = (FLOAT) _driver.GetResX();
@@ -96,6 +105,13 @@ void GGRenderer::ClearScene()
 void GGRenderer::PresentScene()
 {
 	m_swapChain->Present( 0, 0 );
+
+	return;
+}
+
+void GGRenderer::SetFillType( FILL_TYPE _fillType )
+{
+	m_deviceContext->RSSetState( m_rasterizerState[ _fillType ] );
 
 	return;
 }

@@ -15,6 +15,7 @@ GGInputProcessor::GGInputProcessor( const GGWindow& _window, const GGConfig& _co
 	m_actionKeysMap[ GG_ACTION_INPUT_MOVE_BACKWARD ] = _config.GetInt( "key_backward" );
 	m_actionKeysMap[ GG_ACTION_INPUT_MOVE_RIGHTWARD ] = _config.GetInt( "key_rightward" );
 	m_actionKeysMap[ GG_ACTION_INPUT_MOVE_LEFTWARD ] = _config.GetInt( "key_leftward" );
+	m_actionKeysMap[ GG_ACTION_INPUT_FILL_TYPE ] = _config.GetInt( "key_fill_type" );
 
 	RAWINPUTDEVICE mouse;
 	mouse.usUsagePage = 0x01;

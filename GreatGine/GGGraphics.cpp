@@ -44,6 +44,8 @@ void GGGraphics::Render()
 {
 	m_renderer.ClearScene();
 
+	m_renderer.SetFillType( m_currentFillType );
+
 	m_renderer.SetCamera( m_camera );
 
 	m_renderer.SetShader( m_basicShader );
@@ -76,6 +78,11 @@ void GGGraphics::HandleActionInput( GG_ACTION_INPUT _input, bool _down )
 		else if( _input == GG_ACTION_INPUT_MOVE_LEFTWARD )
 		{
 			m_cameraVelocity.x = -4.0f;
+		}
+
+		if( _input == GG_ACTION_INPUT_FILL_TYPE )
+		{
+			SwitchFillType();
 		}
 	}
 	else
@@ -115,6 +122,20 @@ void GGGraphics::HandleRangeInput( int _x, int _y )
 	}
 
 	m_cameraRot.y += _x * 0.1f;
+
+	return;
+}
+
+void GGGraphics::SwitchFillType()
+{
+	if( m_currentFillType == GGRenderer::FILL_TYPE_SOLID )
+	{
+		m_currentFillType = GGRenderer::FILL_TYPE_WIREFRAME;
+	}
+	else
+	{
+		m_currentFillType = GGRenderer::FILL_TYPE_SOLID;
+	}
 
 	return;
 }

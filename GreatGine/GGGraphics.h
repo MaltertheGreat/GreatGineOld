@@ -27,6 +27,9 @@ public:
 	virtual void HandleRangeInput( int _x, int _y ) override;
 
 private:
+	void SwitchFillType();
+
+private:
 	GGDirectXDriver m_driver;
 	GGDevice m_device;
 	GGRenderer m_renderer;
@@ -34,6 +37,7 @@ private:
 	GGShader m_basicShader;
 	GGMesh m_mesh;
 
+	GGRenderer::FILL_TYPE m_currentFillType;
 	DirectX::XMFLOAT3 m_cameraPos;
 	DirectX::XMFLOAT3 m_cameraVelocity;
 	DirectX::XMFLOAT3 m_cameraRot;
