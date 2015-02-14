@@ -75,20 +75,20 @@ void GGGraphics::HandleActionInput( GG_ACTION_INPUT _input, bool _down )
 	{
 		if( _input == GG_ACTION_INPUT_MOVE_FORWARD )
 		{
-			m_cameraVelocity.z = 4.0f;
+			m_cameraVelocity.z = 5.0f;
 		}
 		else if( _input == GG_ACTION_INPUT_MOVE_BACKWARD )
 		{
-			m_cameraVelocity.z = -4.0f;
+			m_cameraVelocity.z = -5.0f;
 		}
 
 		if( _input == GG_ACTION_INPUT_MOVE_RIGHTWARD )
 		{
-			m_cameraVelocity.x = 4.0f;
+			m_cameraVelocity.x = 5.0f;
 		}
 		else if( _input == GG_ACTION_INPUT_MOVE_LEFTWARD )
 		{
-			m_cameraVelocity.x = -4.0f;
+			m_cameraVelocity.x = -5.0f;
 		}
 
 		if( _input == GG_ACTION_INPUT_FILL_TYPE )
