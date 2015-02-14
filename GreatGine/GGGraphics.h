@@ -1,7 +1,5 @@
 #pragma once
 
-#include <memory>
-
 #include "GGInputHandler.h"
 #include "GGDirectXDriver.h"
 #include "GGDevice.h"
@@ -9,6 +7,7 @@
 #include "GGCamera.h"
 #include "GGShader.h"
 #include "GGMesh.h"
+#include "GGFPSCounter.h"
 
 class GGWindow;
 class GGConfig;
@@ -30,12 +29,15 @@ private:
 	void SwitchFillType();
 
 private:
+	float m_fps = 0.0f;
+
 	GGDirectXDriver m_driver;
 	GGDevice m_device;
 	GGRenderer m_renderer;
 	GGCamera m_camera;
 	GGShader m_basicShader;
 	GGMesh m_mesh;
+	GGFPSCounter m_fpsCounter;
 
 	GGRenderer::FILL_TYPE m_currentFillType;
 	DirectX::XMFLOAT3 m_cameraPos;

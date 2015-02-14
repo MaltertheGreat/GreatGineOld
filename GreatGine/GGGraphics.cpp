@@ -3,12 +3,13 @@
 #include "GGConfig.h"
 #include <DirectXMath.h>
 using namespace DirectX;
+using namespace std;
 
 GGGraphics::GGGraphics( const GGWindow& _window, const GGConfig& _config )
 	:
 	m_driver( _window, _config.GetInt( "resolutionX" ), _config.GetInt( "resolutionY" ) ),
 	m_device( m_driver ),
-	m_renderer( m_driver ),
+	m_renderer( m_driver, _config.GetInt( "sync_interval" ) ),
 	m_camera( m_device.CreateCamera( XMConvertToRadians( _config.GetFloat( "fov" ) ), _config.GetInt( "resolutionX" ), _config.GetInt( "resolutionY" ) ) ),
 	m_basicShader( m_device.CreateShader() ),
 	m_mesh( m_device.CreateCubeMesh() )
@@ -16,6 +17,9 @@ GGGraphics::GGGraphics( const GGWindow& _window, const GGConfig& _config )
 
 void GGGraphics::Update( float _frameTime )
 {
+	m_fpsCounter.Update( _frameTime );
+
+	// Camera update( that code shouldn't really be here, but I'm too lazy )
 	float pitch = XMConvertToRadians( m_cameraRot.x );
 	float yaw = XMConvertToRadians( m_cameraRot.y );
 	float roll = XMConvertToRadians( m_cameraRot.z );
@@ -52,6 +56,13 @@ void GGGraphics::Render()
 
 	m_renderer.SetMesh( m_mesh );
 	m_renderer.RenderMesh( m_mesh );
+
+	wstring fpsCount = L"FPS: ";
+	fpsCount += to_wstring( m_fpsCounter.GetFPS() );
+
+	m_renderer.RenderIn2D();
+
+	m_renderer.RenderText( fpsCount );
 
 	m_renderer.PresentScene();
 

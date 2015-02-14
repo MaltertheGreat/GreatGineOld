@@ -11,6 +11,8 @@ Iwindow_height=720
 IresolutionX=1280
 IresolutionY=720
 
+Isync_interval=0
+
 #human fov ~= 107.2856052
 Ffov=80.0
 

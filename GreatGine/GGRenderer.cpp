@@ -6,11 +6,13 @@
 #include "GGError.h"
 using namespace DirectX;
 
-GGRenderer::GGRenderer( GGDirectXDriver& _driver )
+GGRenderer::GGRenderer( GGDirectXDriver& _driver, int _syncInterval )
 	:
 	m_device( _driver.GetDevice() ),
 	m_deviceContext( _driver.GetDeviceContext() ),
-	m_swapChain( _driver.GetSwapChain() )
+	m_swapChain( _driver.GetSwapChain() ),
+	m_factory2d( _driver.GetFactory2D() ),
+	m_syncInterval( _syncInterval )
 {
 	// Back buffer creation
 	CComPtr<ID3D11Texture2D> backBuffer;
@@ -92,6 +94,43 @@ GGRenderer::GGRenderer( GGDirectXDriver& _driver )
 	}
 
 	m_deviceContext->VSSetConstantBuffers( 0, 1, &m_worldBuffer.p );
+
+	CComPtr<IDXGISurface> backBufferDXGI;
+	hr = m_swapChain->GetBuffer( 0, IID_PPV_ARGS( &backBufferDXGI ) );
+	if( FAILED( hr ) )
+	{
+		GG_THROW;
+	}
+
+	float dpiX;
+	float dpiY;
+	m_factory2d->GetDesktopDpi( &dpiX, &dpiY );
+
+	D2D1_RENDER_TARGET_PROPERTIES props = D2D1::RenderTargetProperties( D2D1_RENDER_TARGET_TYPE_DEFAULT, D2D1::PixelFormat( DXGI_FORMAT_UNKNOWN, D2D1_ALPHA_MODE_IGNORE ), dpiX, dpiY );
+	hr = m_factory2d->CreateDxgiSurfaceRenderTarget( backBufferDXGI, &props, &m_renderTarget2D );
+	if( FAILED( hr ) )
+	{
+		GG_THROW;
+	}
+	m_renderTarget2D->SetTransform( D2D1::Matrix3x2F::Identity() );
+
+	hr = m_renderTarget2D->CreateSolidColorBrush( D2D1::ColorF( D2D1::ColorF::LightSlateGray ), &m_solidBrush );
+	if( FAILED( hr ) )
+	{
+		GG_THROW;
+	}
+
+	hr = DWriteCreateFactory( DWRITE_FACTORY_TYPE_SHARED, __uuidof(IDWriteFactory), reinterpret_cast<IUnknown**>(&m_writeFactory) );
+	if( FAILED( hr ) )
+	{
+		GG_THROW;
+	}
+
+	hr = m_writeFactory->CreateTextFormat( L"Candara", NULL, DWRITE_FONT_WEIGHT_REGULAR, DWRITE_FONT_STYLE_NORMAL, DWRITE_FONT_STRETCH_NORMAL, 18.0f, L"en-us", &m_textFormat );
+	if( FAILED( hr ) )
+	{
+		GG_THROW;
+	}
 }
 
 void GGRenderer::ClearScene()
@@ -104,7 +143,19 @@ void GGRenderer::ClearScene()
 
 void GGRenderer::PresentScene()
 {
-	m_swapChain->Present( 0, 0 );
+	m_renderTarget2D->BeginDraw();
+	D2D1_RECT_F rectangle1 = D2D1::RectF( 0.0f, 0.0f, 256.0f, 32.0f );
+	m_renderTarget2D->DrawRectangle( rectangle1, m_solidBrush );
+	m_renderTarget2D->EndDraw();
+
+	m_swapChain->Present( m_syncInterval, 0 );
+
+	return;
+}
+
+void GGRenderer::SetSyncInterval( int _syncInterval )
+{
+	m_syncInterval = _syncInterval;
 
 	return;
 }
@@ -149,9 +200,24 @@ void GGRenderer::SetMesh( const GGMesh& _mesh )
 	return;
 }
 
+void GGRenderer::RenderIn2D()
+{
+	m_renderTarget2D->BeginDraw();
+
+	return;
+}
+
 void GGRenderer::RenderMesh( const GGMesh& _mesh )
 {
 	m_deviceContext->DrawIndexed( _mesh.GetIndexCount(), 0, 0 );
+
+	return;
+}
+
+void GGRenderer::RenderText( const std::wstring& _text )
+{
+	D2D1_RECT_F rectangle1 = D2D1::RectF( 0.0f, 0.0f, 256.0f, 32.0f );
+	m_renderTarget2D->DrawText( _text.c_str(), _text.length(), m_textFormat, rectangle1, m_solidBrush );
 
 	return;
 }

@@ -7,7 +7,7 @@ GGDirectXDriver::GGDirectXDriver( const GGWindow& _window, UINT _resX, UINT _res
 	m_resX( _resX ),
 	m_resY( _resY )
 {
-	UINT createDeviceFlags = 0;
+	UINT createDeviceFlags = D3D11_CREATE_DEVICE_BGRA_SUPPORT;
 #ifdef _DEBUG
 	createDeviceFlags |= D3D11_CREATE_DEVICE_DEBUG;
 #endif
@@ -23,7 +23,7 @@ GGDirectXDriver::GGDirectXDriver( const GGWindow& _window, UINT _resX, UINT _res
 	sd.BufferCount = 1;
 	sd.BufferDesc.Width = _resX;
 	sd.BufferDesc.Height = _resY;
-	sd.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+	sd.BufferDesc.Format = DXGI_FORMAT_B8G8R8A8_UNORM;
 	sd.BufferDesc.RefreshRate.Numerator = 60;
 	sd.BufferDesc.RefreshRate.Denominator = 1;
 	sd.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
@@ -37,29 +37,40 @@ GGDirectXDriver::GGDirectXDriver( const GGWindow& _window, UINT _resX, UINT _res
 	{
 		GG_THROW;
 	}
+
+	hr = D2D1CreateFactory( D2D1_FACTORY_TYPE_SINGLE_THREADED, &m_factory2d );
+	if( FAILED( hr ) )
+	{
+		GG_THROW;
+	}
 }
 
-UINT GGDirectXDriver::GetResX()
+UINT GGDirectXDriver::GetResX() const
 {
 	return m_resX;
 }
 
-UINT GGDirectXDriver::GetResY()
+UINT GGDirectXDriver::GetResY() const
 {
 	return m_resY;
 }
 
-ID3D11Device* GGDirectXDriver::GetDevice()
+ID3D11Device* GGDirectXDriver::GetDevice() const
 {
 	return m_device.p;
 }
 
-ID3D11DeviceContext* GGDirectXDriver::GetDeviceContext()
+ID3D11DeviceContext* GGDirectXDriver::GetDeviceContext() const
 {
 	return m_deviceContext.p;
 }
 
-IDXGISwapChain* GGDirectXDriver::GetSwapChain()
+IDXGISwapChain* GGDirectXDriver::GetSwapChain() const
 {
 	return m_swapChain.p;
+}
+
+ID2D1Factory* GGDirectXDriver::GetFactory2D() const
+{
+	return m_factory2d.p;
 }
