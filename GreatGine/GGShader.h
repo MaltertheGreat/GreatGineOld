@@ -1,22 +1,18 @@
 #pragma once
 
-#include <d3d11.h>
-#include <atlbase.h>
+#include "PCH.h"
 
 class GGShader
 {
 public:
-	GGShader( ID3D11VertexShader* _vertexShader, ID3D11PixelShader* _pixelShader, ID3D11InputLayout* _inputLayout );
-	GGShader( const GGShader& ) = delete;
-	// Visual optimizes this, so move ctor isn't even called, but without it error occures
-	GGShader( GGShader&& _from );
+	GGShader( Microsoft::WRL::ComPtr<ID3D11VertexShader> _vertexShader, Microsoft::WRL::ComPtr<ID3D11PixelShader> _pixelShader, Microsoft::WRL::ComPtr<ID3D11InputLayout> _inputLayout );
 
-	ID3D11VertexShader* GetVertexShader() const;
-	ID3D11PixelShader* GetPixelShader() const;
-	ID3D11InputLayout* GetInputLayout() const;
+	Microsoft::WRL::ComPtr<ID3D11VertexShader> GetVertexShader() const;
+	Microsoft::WRL::ComPtr<ID3D11PixelShader> GetPixelShader() const;
+	Microsoft::WRL::ComPtr<ID3D11InputLayout> GetInputLayout() const;
 
 private:
-	CComPtr<ID3D11VertexShader> m_vertexShader;
-	CComPtr<ID3D11PixelShader> m_pixelShader;
-	CComPtr<ID3D11InputLayout> m_inputLayout;
+	Microsoft::WRL::ComPtr<ID3D11VertexShader> m_vertexShader;
+	Microsoft::WRL::ComPtr<ID3D11PixelShader> m_pixelShader;
+	Microsoft::WRL::ComPtr<ID3D11InputLayout> m_inputLayout;
 };

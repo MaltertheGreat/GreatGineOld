@@ -29,7 +29,7 @@ private:
 	void SwitchFillType();
 
 private:
-	float m_fps = 0.0f;
+	GGRenderer::FILL_TYPE m_currentFillType;
 
 	GGDirectXDriver m_driver;
 	GGDevice m_device;
@@ -39,8 +39,7 @@ private:
 	GGMesh m_mesh;
 	GGFPSCounter m_fpsCounter;
 
-	GGRenderer::FILL_TYPE m_currentFillType;
-	DirectX::XMFLOAT3 m_cameraPos;
+	DirectX::XMFLOAT3 m_cameraPos = { 0.0f, 0.0f, -5.0f };
 	DirectX::XMFLOAT3 m_cameraVelocity;
 	DirectX::XMFLOAT3 m_cameraRot;
 };

@@ -1,12 +1,13 @@
+#include "PCH.h"
 #include "GGGraphics.h"
 #include "GGWindow.h"
 #include "GGConfig.h"
-#include <DirectXMath.h>
 using namespace DirectX;
 using namespace std;
 
 GGGraphics::GGGraphics( const GGWindow& _window, const GGConfig& _config )
 	:
+	m_currentFillType( GGRenderer::FILL_TYPE_SOLID ),
 	m_driver( _window, _config.GetInt( "resolutionX" ), _config.GetInt( "resolutionY" ) ),
 	m_device( m_driver ),
 	m_renderer( m_driver, _config.GetInt( "sync_interval" ) ),

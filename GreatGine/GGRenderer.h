@@ -1,11 +1,6 @@
 #pragma once
 
-#include <d3d11.h>
-#include <d2d1.h>
-#include <Dwrite.h>
-#include <atlbase.h>
-#include <DirectXMath.h>
-#include <string>
+#include "PCH.h"
 
 class GGDirectXDriver;
 class GGCamera;
@@ -42,16 +37,15 @@ public:
 private:
 	int m_syncInterval;
 
-	ID3D11Device* m_device;
-	ID3D11DeviceContext* m_deviceContext;
-	IDXGISwapChain* m_swapChain;
-	ID2D1Factory* m_factory2d;
-
-	CComPtr<ID3D11RenderTargetView> m_renderTargetView;
-	CComPtr<ID3D11RasterizerState> m_rasterizerState[ FILL_TYPE_COUNT ];
-	CComPtr<ID3D11Buffer> m_worldBuffer;
-	CComPtr<ID2D1RenderTarget> m_renderTarget2D;
-	CComPtr<ID2D1SolidColorBrush> m_solidBrush;
-	CComPtr<IDWriteFactory> m_writeFactory;
-	CComPtr<IDWriteTextFormat> m_textFormat;
+	Microsoft::WRL::ComPtr<ID3D11Device> m_device;
+	Microsoft::WRL::ComPtr<ID3D11DeviceContext> m_deviceContext;
+	Microsoft::WRL::ComPtr<IDXGISwapChain> m_swapChain;
+	Microsoft::WRL::ComPtr<ID2D1Factory> m_factory2d;
+	Microsoft::WRL::ComPtr<ID3D11RenderTargetView> m_renderTargetView;
+	Microsoft::WRL::ComPtr<ID3D11RasterizerState> m_rasterizerState[ FILL_TYPE_COUNT ];
+	Microsoft::WRL::ComPtr<ID3D11Buffer> m_worldBuffer;
+	Microsoft::WRL::ComPtr<ID2D1RenderTarget> m_renderTarget2D;
+	Microsoft::WRL::ComPtr<ID2D1SolidColorBrush> m_solidBrush;
+	Microsoft::WRL::ComPtr<IDWriteFactory> m_writeFactory;
+	Microsoft::WRL::ComPtr<IDWriteTextFormat> m_textFormat;
 };

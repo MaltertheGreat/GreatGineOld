@@ -11,7 +11,7 @@ Iwindow_height=720
 IresolutionX=1280
 IresolutionY=720
 
-Isync_interval=1
+Isync_interval=0
 
 #human vertical field of view ~= 107.2856052
 Ffov=80.0

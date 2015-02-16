@@ -1,6 +1,8 @@
+#include "PCH.h"
 #include "GGDirectXDriver.h"
 #include "GGWindow.h"
 #include "GGError.h"
+using Microsoft::WRL::ComPtr;
 
 GGDirectXDriver::GGDirectXDriver( const GGWindow& _window, UINT _resX, UINT _resY )
 	:
@@ -32,13 +34,13 @@ GGDirectXDriver::GGDirectXDriver( const GGWindow& _window, UINT _resX, UINT _res
 	sd.SampleDesc.Quality = 0;
 	sd.Windowed = TRUE;
 
-	HRESULT hr = D3D11CreateDeviceAndSwapChain( nullptr, D3D_DRIVER_TYPE_HARDWARE, nullptr, createDeviceFlags, featureLevels, numFeatureLevels, D3D11_SDK_VERSION, &sd, &m_swapChain, &m_device, nullptr, &m_deviceContext );
+	HRESULT hr = D3D11CreateDeviceAndSwapChain( nullptr, D3D_DRIVER_TYPE_HARDWARE, nullptr, createDeviceFlags, featureLevels, numFeatureLevels, D3D11_SDK_VERSION, &sd, m_swapChain.GetAddressOf(), m_device.GetAddressOf(), nullptr, m_deviceContext.GetAddressOf() );
 	if( FAILED( hr ) )
 	{
 		GG_THROW;
 	}
 
-	hr = D2D1CreateFactory( D2D1_FACTORY_TYPE_SINGLE_THREADED, &m_factory2d );
+	hr = D2D1CreateFactory( D2D1_FACTORY_TYPE_SINGLE_THREADED, static_cast<ID2D1Factory**>(m_factory2d.GetAddressOf()) );
 	if( FAILED( hr ) )
 	{
 		GG_THROW;
@@ -55,22 +57,22 @@ UINT GGDirectXDriver::GetResY() const
 	return m_resY;
 }
 
-ID3D11Device* GGDirectXDriver::GetDevice() const
+ComPtr<ID3D11Device> GGDirectXDriver::GetDevice() const
 {
-	return m_device.p;
+	return m_device;
 }
 
-ID3D11DeviceContext* GGDirectXDriver::GetDeviceContext() const
+ComPtr<ID3D11DeviceContext> GGDirectXDriver::GetDeviceContext() const
 {
-	return m_deviceContext.p;
+	return m_deviceContext;
 }
 
-IDXGISwapChain* GGDirectXDriver::GetSwapChain() const
+ComPtr<IDXGISwapChain> GGDirectXDriver::GetSwapChain() const
 {
-	return m_swapChain.p;
+	return m_swapChain;
 }
 
-ID2D1Factory* GGDirectXDriver::GetFactory2D() const
+ComPtr<ID2D1Factory> GGDirectXDriver::GetFactory2D() const
 {
-	return m_factory2d.p;
+	return m_factory2d;
 }

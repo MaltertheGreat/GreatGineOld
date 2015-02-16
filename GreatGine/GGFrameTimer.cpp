@@ -1,7 +1,6 @@
+#include "PCH.h"
 #include "GGFrameTimer.h"
 #include "GGError.h"
-
-#include <Windows.h>
 
 GGFrameTimer::GGFrameTimer()
 {

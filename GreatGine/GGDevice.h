@@ -1,7 +1,6 @@
 #pragma once
 
-#include <d3d11.h>
-#include <DirectXMath.h>
+#include "PCH.h"
 
 #include "GGCamera.h"
 #include "GGShader.h"
@@ -28,7 +27,7 @@ public:
 	void UpdateCamera( GGCamera& _camera, DirectX::XMFLOAT4X4& viewMatrix );
 
 private:
-	ID3D11Device* m_device;
-	ID3D11DeviceContext* m_deviceContext;
-	IDXGISwapChain* m_swapChain;
+	Microsoft::WRL::ComPtr<ID3D11Device> m_device;
+	Microsoft::WRL::ComPtr<ID3D11DeviceContext> m_deviceContext;
+	Microsoft::WRL::ComPtr<IDXGISwapChain> m_swapChain;
 };

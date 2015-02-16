@@ -1,22 +1,18 @@
 #pragma once
 
-#include <d3d11.h>
-#include <atlbase.h>
+#include "PCH.h"
 
 class GGCamera
 {
 public:
-	GGCamera( ID3D11Buffer* _viewBuffer, ID3D11Buffer* _projectionBuffer );
-	GGCamera( const GGCamera& ) = delete;
-	// Visual optimizes this, so move ctor isn't even called, but without it error occures
-	GGCamera( GGCamera&& _from );
+	GGCamera( Microsoft::WRL::ComPtr<ID3D11Buffer> _viewBuffer, Microsoft::WRL::ComPtr<ID3D11Buffer> _projectionBuffer );
 
 public:
 
-	ID3D11Buffer* GetViewBuffer() const;
-	ID3D11Buffer* GetProjectionBuffer() const;
+	Microsoft::WRL::ComPtr<ID3D11Buffer> GetViewBuffer() const;
+	Microsoft::WRL::ComPtr<ID3D11Buffer> GetProjectionBuffer() const;
 
 private:
-	CComPtr<ID3D11Buffer> m_viewBuffer;
-	CComPtr<ID3D11Buffer> m_projectionBuffer;
+	Microsoft::WRL::ComPtr<ID3D11Buffer> m_viewBuffer;
+	Microsoft::WRL::ComPtr<ID3D11Buffer> m_projectionBuffer;
 };

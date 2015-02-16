@@ -1,10 +1,11 @@
+#include "PCH.h"
 #include "GGDevice.h"
 #include "GGDirectXDriver.h"
 #include "GGError.h"
 #include "Shaders/BasicVS.h"
 #include "Shaders/BasicPS.h"
 
-#include <atlbase.h>
+using Microsoft::WRL::ComPtr;
 using namespace DirectX;
 
 GGDevice::GGDevice( GGDirectXDriver& _driver )
@@ -24,8 +25,8 @@ GGCamera GGDevice::CreateCamera( float _fovAngle, UINT _viewWidth, UINT _viewHei
 	bd.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
 	bd.CPUAccessFlags = 0;
 
-	CComPtr<ID3D11Buffer> viewBuffer;
-	HRESULT hr = m_device->CreateBuffer( &bd, nullptr, &viewBuffer );
+	ComPtr<ID3D11Buffer> viewBuffer;
+	HRESULT hr = m_device->CreateBuffer( &bd, nullptr, viewBuffer.GetAddressOf() );
 	if( FAILED( hr ) )
 	{
 		GG_THROW;
@@ -46,8 +47,8 @@ GGCamera GGDevice::CreateCamera( float _fovAngle, UINT _viewWidth, UINT _viewHei
 	ZeroMemory( &InitData, sizeof( InitData ) );
 	InitData.pSysMem = projectionMatrix.m;
 
-	CComPtr<ID3D11Buffer> projectionBuffer;
-	hr = m_device->CreateBuffer( &bd, &InitData, &projectionBuffer );
+	ComPtr<ID3D11Buffer> projectionBuffer;
+	hr = m_device->CreateBuffer( &bd, &InitData, projectionBuffer.GetAddressOf() );
 	if( FAILED( hr ) )
 	{
 		GG_THROW;
@@ -58,17 +59,17 @@ GGCamera GGDevice::CreateCamera( float _fovAngle, UINT _viewWidth, UINT _viewHei
 
 GGShader GGDevice::CreateShader()
 {
-	CComPtr<ID3D11VertexShader> vertexShader;
-	CComPtr<ID3D11PixelShader> pixelShader;
-	CComPtr<ID3D11InputLayout> inputLayout;
+	ComPtr<ID3D11VertexShader> vertexShader;
+	ComPtr<ID3D11PixelShader> pixelShader;
+	ComPtr<ID3D11InputLayout> inputLayout;
 
-	HRESULT hr = m_device->CreateVertexShader( g_vertexShader, sizeof( g_vertexShader ), nullptr, &vertexShader );
+	HRESULT hr = m_device->CreateVertexShader( g_vertexShader, sizeof( g_vertexShader ), nullptr, vertexShader.GetAddressOf() );
 	if( FAILED( hr ) )
 	{
 		GG_THROW;
 	}
 
-	hr = m_device->CreatePixelShader( g_pixelShader, sizeof( g_pixelShader ), nullptr, &pixelShader );
+	hr = m_device->CreatePixelShader( g_pixelShader, sizeof( g_pixelShader ), nullptr, pixelShader.GetAddressOf() );
 	if( FAILED( hr ) )
 	{
 		GG_THROW;
@@ -80,7 +81,7 @@ GGShader GGDevice::CreateShader()
 	};
 	UINT numElements = ARRAYSIZE( layout );
 
-	hr = m_device->CreateInputLayout( layout, numElements, g_vertexShader, sizeof( g_vertexShader ), &inputLayout );
+	hr = m_device->CreateInputLayout( layout, numElements, g_vertexShader, sizeof( g_vertexShader ), inputLayout.GetAddressOf() );
 	if( FAILED( hr ) )
 	{
 		GG_THROW;
@@ -111,8 +112,8 @@ GGMesh GGDevice::CreateTriangleMesh()
 	ZeroMemory( &InitData, sizeof( InitData ) );
 	InitData.pSysMem = vertices;
 
-	CComPtr<ID3D11Buffer> vertexBuffer;
-	HRESULT hr = m_device->CreateBuffer( &bd, &InitData, &vertexBuffer );
+	ComPtr<ID3D11Buffer> vertexBuffer;
+	HRESULT hr = m_device->CreateBuffer( &bd, &InitData, vertexBuffer.GetAddressOf() );
 	if( FAILED( hr ) )
 	{
 		GG_THROW;
@@ -126,8 +127,8 @@ GGMesh GGDevice::CreateTriangleMesh()
 	bd.BindFlags = D3D11_BIND_INDEX_BUFFER;
 
 	InitData.pSysMem = indices;
-	CComPtr<ID3D11Buffer> indexBuffer;
-	hr = m_device->CreateBuffer( &bd, &InitData, &indexBuffer );
+	ComPtr<ID3D11Buffer> indexBuffer;
+	hr = m_device->CreateBuffer( &bd, &InitData, indexBuffer.GetAddressOf() );
 	if( FAILED( hr ) )
 	{
 		GG_THROW;
@@ -163,8 +164,8 @@ GGMesh GGDevice::CreateCubeMesh()
 	ZeroMemory( &InitData, sizeof( InitData ) );
 	InitData.pSysMem = vertices;
 
-	CComPtr<ID3D11Buffer> vertexBuffer;
-	HRESULT hr = m_device->CreateBuffer( &bd, &InitData, &vertexBuffer );
+	ComPtr<ID3D11Buffer> vertexBuffer;
+	HRESULT hr = m_device->CreateBuffer( &bd, &InitData, vertexBuffer.GetAddressOf() );
 	if( FAILED( hr ) )
 	{
 		GG_THROW;
@@ -197,8 +198,8 @@ GGMesh GGDevice::CreateCubeMesh()
 	bd.BindFlags = D3D11_BIND_INDEX_BUFFER;
 
 	InitData.pSysMem = indices;
-	CComPtr<ID3D11Buffer> indexBuffer;
-	hr = m_device->CreateBuffer( &bd, &InitData, &indexBuffer );
+	ComPtr<ID3D11Buffer> indexBuffer;
+	hr = m_device->CreateBuffer( &bd, &InitData, indexBuffer.GetAddressOf() );
 	if( FAILED( hr ) )
 	{
 		GG_THROW;
@@ -209,7 +210,7 @@ GGMesh GGDevice::CreateCubeMesh()
 
 void GGDevice::UpdateCamera( GGCamera& _camera, XMFLOAT4X4& viewMatrix )
 {
-	m_deviceContext->UpdateSubresource( _camera.GetViewBuffer(), 0, nullptr, viewMatrix.m, 0, 0 );
+	m_deviceContext->UpdateSubresource( _camera.GetViewBuffer().Get(), 0, nullptr, viewMatrix.m, 0, 0 );
 
 	return;
 }

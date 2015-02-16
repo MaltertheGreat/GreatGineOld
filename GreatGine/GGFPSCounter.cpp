@@ -1,3 +1,4 @@
+#include "PCH.h"
 #include "GGFPSCounter.h"
 
 void GGFPSCounter::Update( float _frameTime )

@@ -1,6 +1,4 @@
-#define WIN32_LEAN_AND_MEAN
-#include <Windows.h>
-
+#include "PCH.h"
 #include "GGConfig.h"
 #include "GGApplication.h"
 

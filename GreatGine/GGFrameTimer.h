@@ -12,7 +12,7 @@ public:
 	float GetFrameTime() const;
 
 private:
-	double m_frequency;
-	__int64 m_startTime;
-	float m_frameTime;
+	double m_frequency = 0.0;
+	__int64 m_startTime = 0;
+	float m_frameTime = 0.0f;
 };

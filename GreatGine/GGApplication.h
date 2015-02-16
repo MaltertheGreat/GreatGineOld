@@ -25,8 +25,8 @@ public:
 	virtual void HandleRangeInput( int _x, int _y ) override;
 
 private:
-	const std::wstring m_title = L"GreatGine";
-	const std::wstring m_version = L"0.0.1 DEV";
+	std::wstring m_title = L"GreatGine";
+	std::wstring m_version = L"0.0.1 DEV";
 
 private:
 	bool m_running = false;

@@ -1,10 +1,10 @@
+#include "PCH.h"
 #include "GGInputProcessor.h"
 #include "GGWindow.h"
 #include "GGConfig.h"
 #include "GGError.h"
 
 #include <bitset>
-#include <memory>
 #include <assert.h>
 using namespace std;
 
