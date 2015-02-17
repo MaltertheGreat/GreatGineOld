@@ -11,6 +11,7 @@
 
 class GGWindow;
 class GGConfig;
+class GGWorld;
 
 class GGGraphics : public GGInputHandler
 {
@@ -18,7 +19,7 @@ public:
 	GGGraphics( const GGWindow& _window, const GGConfig& _config );
 
 public:
-	void Update( float _frameTime );
+	void Update( const GGWorld& _world, float _frameTime );
 	void Render();
 
 public:
@@ -27,6 +28,9 @@ public:
 
 private:
 	void SwitchFillType();
+
+	void Render3D();
+	void Render2D();
 
 private:
 	GGRenderer::FILL_TYPE m_currentFillType;
@@ -38,8 +42,4 @@ private:
 	GGShader m_basicShader;
 	GGMesh m_mesh;
 	GGFPSCounter m_fpsCounter;
-
-	DirectX::XMFLOAT3 m_cameraPos = { 0.0f, 0.0f, -5.0f };
-	DirectX::XMFLOAT3 m_cameraVelocity;
-	DirectX::XMFLOAT3 m_cameraRot;
 };

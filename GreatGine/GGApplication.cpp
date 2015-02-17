@@ -7,7 +7,8 @@ GGApplication::GGApplication( HINSTANCE _hInstance, const GGConfig& _config )
 	:
 	m_window( m_title + L" v." + m_version, _hInstance, _config ),
 	m_input( m_window, _config ),
-	m_graphics( m_window, _config )
+	m_graphics( m_window, _config ),
+	m_world( m_input )
 {
 	m_input.RegisterHandler( this );
 	m_input.RegisterHandler( &m_graphics );
@@ -46,7 +47,8 @@ void GGApplication::Update()
 	m_timer.Update();
 	float frameTime = m_timer.GetFrameTime();
 
-	m_graphics.Update( frameTime );
+	m_world.Update( frameTime );
+	m_graphics.Update( m_world, frameTime );
 
 	return;
 }

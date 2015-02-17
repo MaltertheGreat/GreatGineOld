@@ -208,8 +208,18 @@ GGMesh GGDevice::CreateCubeMesh()
 	return GGMesh( indexCount, vertexBuffer, indexBuffer );
 }
 
-void GGDevice::UpdateCamera( GGCamera& _camera, XMFLOAT4X4& viewMatrix )
+void GGDevice::UpdateCamera( GGCamera& _camera, const DirectX::XMFLOAT3& _position, const DirectX::XMFLOAT3& _rotation )
 {
+	XMVECTOR position = XMLoadFloat3( &_position );
+	XMVECTOR rotation = XMLoadFloat3( &_rotation );
+	rotation = XMQuaternionRotationRollPitchYawFromVector( rotation );	// Convert rotation vector to quaternion
+	XMVECTOR lookDir = XMVector3Rotate( XMVectorSet( 0.0f, 0.0f, 1.0f, 0.0f ), rotation );
+	XMVECTOR upDir = XMVectorSet( 0.0f, 1.0f, 0.0f, 0.0f );
+
+	XMFLOAT4X4 viewMatrix;
+	XMMATRIX view = XMMatrixLookToLH( position, lookDir, upDir );
+	XMStoreFloat4x4( &viewMatrix, XMMatrixTranspose( view ) );
+
 	m_deviceContext->UpdateSubresource( _camera.GetViewBuffer().Get(), 0, nullptr, viewMatrix.m, 0, 0 );
 
 	return;

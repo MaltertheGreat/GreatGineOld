@@ -8,7 +8,6 @@ public:
 	GGCamera( Microsoft::WRL::ComPtr<ID3D11Buffer> _viewBuffer, Microsoft::WRL::ComPtr<ID3D11Buffer> _projectionBuffer );
 
 public:
-
 	Microsoft::WRL::ComPtr<ID3D11Buffer> GetViewBuffer() const;
 	Microsoft::WRL::ComPtr<ID3D11Buffer> GetProjectionBuffer() const;
 

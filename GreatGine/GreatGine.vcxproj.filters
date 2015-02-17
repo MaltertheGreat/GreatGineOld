@@ -69,6 +69,12 @@
     <ClCompile Include="PCH.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="GGWorld.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GGFreeCamera.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GGApplication.h">
@@ -120,6 +126,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="PCH.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GGIWorldViewer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GGFreeCamera.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

@@ -5,6 +5,7 @@
 #include "GGInputProcessor.h"
 #include "GGFrameTimer.h"
 #include "GGGraphics.h"
+#include "GGWorld.h"
 
 class GGConfig;
 
@@ -35,4 +36,5 @@ private:
 	GGInputProcessor m_input;
 	GGFrameTimer m_timer;
 	GGGraphics m_graphics;
+	GGWorld m_world;
 };

@@ -24,7 +24,7 @@ public:
 	GGMesh CreateTriangleMesh();
 	GGMesh CreateCubeMesh();
 
-	void UpdateCamera( GGCamera& _camera, DirectX::XMFLOAT4X4& viewMatrix );
+	void UpdateCamera( GGCamera& _camera, const DirectX::XMFLOAT3& _position, const DirectX::XMFLOAT3& _rotation );
 
 private:
 	Microsoft::WRL::ComPtr<ID3D11Device> m_device;

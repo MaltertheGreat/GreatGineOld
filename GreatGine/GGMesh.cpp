@@ -11,13 +11,6 @@ GGMesh::GGMesh( UINT _indexCount, ComPtr<ID3D11Buffer> _vertexBuffer, ComPtr<ID3
 	m_indexBuffer( _indexBuffer )
 {}
 
-/*GGMesh::GGMesh( GGMesh&& _from )
-{
-m_indexCount = _from.m_indexCount;
-m_vertexBuffer.Attach( _from.m_vertexBuffer.Detach() );
-m_indexBuffer.Attach( _from.m_indexBuffer.Detach() );
-}*/
-
 UINT GGMesh::GetIndexCount() const
 {
 	return m_indexCount;
