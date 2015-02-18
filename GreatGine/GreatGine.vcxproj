@@ -305,6 +305,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">Use</PrecompiledHeader>
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">PCH.h</PrecompiledHeaderFile>
     </ClCompile>
+    <ClCompile Include="GGDebugInfo.cpp" />
     <ClCompile Include="GGDirectXDriver.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Use</PrecompiledHeader>
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">PCH.h</PrecompiledHeaderFile>
@@ -494,6 +495,7 @@
     <ClInclude Include="GGApplication.h" />
     <ClInclude Include="GGCamera.h" />
     <ClInclude Include="GGConfig.h" />
+    <ClInclude Include="GGDebugInfo.h" />
     <ClInclude Include="GGDirectXDriver.h" />
     <ClInclude Include="GGError.h" />
     <ClInclude Include="GGFPSCounter.h" />

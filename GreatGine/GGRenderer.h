@@ -32,7 +32,7 @@ public:
 
 	void RenderIn2D();
 	void RenderMesh( const GGMesh& _mesh );
-	void RenderText( const std::wstring& _text );
+	void RenderText( const std::wstring& _text, const DirectX::XMFLOAT2& _pos );
 
 private:
 	int m_syncInterval;

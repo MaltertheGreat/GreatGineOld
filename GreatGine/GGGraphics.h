@@ -7,7 +7,7 @@
 #include "GGCamera.h"
 #include "GGShader.h"
 #include "GGMesh.h"
-#include "GGFPSCounter.h"
+#include "GGDebugInfo.h"
 
 class GGWindow;
 class GGConfig;
@@ -41,5 +41,5 @@ private:
 	GGCamera m_camera;
 	GGShader m_basicShader;
 	GGMesh m_mesh;
-	GGFPSCounter m_fpsCounter;
+	GGDebugInfo m_debugInfo;
 };

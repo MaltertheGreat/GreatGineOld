@@ -19,10 +19,10 @@ GGGraphics::GGGraphics( const GGWindow& _window, const GGConfig& _config )
 
 void GGGraphics::Update( const GGWorld& _world, float _frameTime )
 {
-	m_fpsCounter.Update( _frameTime );
-
 	const GGIWorldViewer* worldViewer = _world.GetActiveWorldViewer();
 	m_device.UpdateCamera( m_camera, worldViewer->GetPosition(), worldViewer->GetRotation() );
+
+	m_debugInfo.Update( _frameTime, worldViewer->GetPosition() );
 
 	return;
 }
@@ -87,12 +87,13 @@ void GGGraphics::Render3D()
 
 void GGGraphics::Render2D()
 {
-	wstring fpsCount = L"FPS: ";
-	fpsCount += to_wstring( m_fpsCounter.GetFPS() );
-
 	m_renderer.RenderIn2D();
 
-	m_renderer.RenderText( fpsCount );
+	for( int i = 0; i < GGDebugInfo::LINE_COUNT; ++i )
+	{
+		float textY = i * 19.0f;
+		m_renderer.RenderText( m_debugInfo.GetLine( i ), { 0.0f, textY } );
+	}
 
 	return;
 }
