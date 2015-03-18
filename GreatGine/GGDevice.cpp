@@ -137,19 +137,20 @@ GGMesh GGDevice::CreateTriangleMesh()
 	return GGMesh( indexCount, vertexBuffer, indexBuffer );
 }
 
-GGMesh GGDevice::CreateCubeMesh()
+GGMesh GGDevice::CreateCubeMesh( float _diameter )
 {
+	float radius = _diameter / 2.0f;
 	// Vertex buffer
 	GGMesh::GGBasicVertex vertices[] =
 	{
-		XMFLOAT3( -1.0f, 1.0f, -1.0f ),
-		XMFLOAT3( 1.0f, 1.0f, -1.0f ),
-		XMFLOAT3( 1.0f, 1.0f, 1.0f ),
-		XMFLOAT3( -1.0f, 1.0f, 1.0f ),
-		XMFLOAT3( -1.0f, -1.0f, -1.0f ),
-		XMFLOAT3( 1.0f, -1.0f, -1.0f ),
-		XMFLOAT3( 1.0f, -1.0f, 1.0f ),
-		XMFLOAT3( -1.0f, -1.0f, 1.0f )
+		XMFLOAT3( -radius, radius, -radius ),
+		XMFLOAT3( radius, radius, -radius ),
+		XMFLOAT3( radius, radius, radius ),
+		XMFLOAT3( -radius, radius, radius ),
+		XMFLOAT3( -radius, -radius, -radius ),
+		XMFLOAT3( radius, -radius, -radius ),
+		XMFLOAT3( radius, -radius, radius ),
+		XMFLOAT3( -radius, -radius, radius )
 	};
 	UINT vertexCount = ARRAYSIZE( vertices );
 

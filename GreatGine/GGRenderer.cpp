@@ -8,6 +8,11 @@
 using Microsoft::WRL::ComPtr;
 using namespace DirectX;
 
+
+const UINT WORLD_BUFFER_SLOT = 0;
+const UINT VIEW_BUFFER_SLOT = 1;
+const UINT PROJECTION_BUFFER_SLOT = 2;
+
 GGRenderer::GGRenderer( GGDirectXDriver& _driver, int _syncInterval )
 	:
 	m_device( _driver.GetDevice() ),
@@ -74,9 +79,6 @@ GGRenderer::GGRenderer( GGDirectXDriver& _driver, int _syncInterval )
 	m_deviceContext->IASetPrimitiveTopology( D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST );
 
 	// World constant buffer
-	XMFLOAT4X4 worldMatrix;
-	XMStoreFloat4x4( &worldMatrix, XMMatrixTranspose( XMMatrixIdentity() ) );
-
 	D3D11_BUFFER_DESC bd;
 	ZeroMemory( &bd, sizeof( bd ) );
 	bd.Usage = D3D11_USAGE_DEFAULT;
@@ -85,18 +87,15 @@ GGRenderer::GGRenderer( GGDirectXDriver& _driver, int _syncInterval )
 	bd.CPUAccessFlags = 0;
 	bd.ByteWidth = sizeof( XMFLOAT4X4 );
 
-	D3D11_SUBRESOURCE_DATA InitData;
-	ZeroMemory( &InitData, sizeof( InitData ) );
-	InitData.pSysMem = worldMatrix.m;
-
-	hr = m_device->CreateBuffer( &bd, &InitData, m_worldBuffer.GetAddressOf() );
+	hr = m_device->CreateBuffer( &bd, nullptr, m_worldBuffer.GetAddressOf() );
 	if( FAILED( hr ) )
 	{
 		GG_THROW;
 	}
 
-	m_deviceContext->VSSetConstantBuffers( 0, 1, m_worldBuffer.GetAddressOf() );
+	m_deviceContext->VSSetConstantBuffers( WORLD_BUFFER_SLOT, 1, m_worldBuffer.GetAddressOf() );
 
+	// Back buffer
 	ComPtr<IDXGISurface> backBufferDXGI;
 	hr = m_swapChain->GetBuffer( 0, IID_PPV_ARGS( &backBufferDXGI ) );
 	if( FAILED( hr ) )
@@ -108,6 +107,7 @@ GGRenderer::GGRenderer( GGDirectXDriver& _driver, int _syncInterval )
 	float dpiY;
 	m_factory2d->GetDesktopDpi( &dpiX, &dpiY );
 
+	// 2D render target
 	D2D1_RENDER_TARGET_PROPERTIES props = D2D1::RenderTargetProperties( D2D1_RENDER_TARGET_TYPE_DEFAULT, D2D1::PixelFormat( DXGI_FORMAT_UNKNOWN, D2D1_ALPHA_MODE_IGNORE ), dpiX, dpiY );
 	hr = m_factory2d->CreateDxgiSurfaceRenderTarget( backBufferDXGI.Get(), &props, m_renderTarget2D.GetAddressOf() );
 	if( FAILED( hr ) )
@@ -171,11 +171,8 @@ void GGRenderer::SetFillType( FILL_TYPE _fillType )
 
 void GGRenderer::SetCamera( const GGCamera& _camera )
 {
-	UINT viewBufferSlot = 1;
-	UINT projectionBufferSlot = 2;
-
-	m_deviceContext->VSSetConstantBuffers( viewBufferSlot, 1, _camera.GetViewBuffer().GetAddressOf() );
-	m_deviceContext->VSSetConstantBuffers( projectionBufferSlot, 1, _camera.GetProjectionBuffer().GetAddressOf() );
+	m_deviceContext->VSSetConstantBuffers( VIEW_BUFFER_SLOT, 1, _camera.GetViewBuffer().GetAddressOf() );
+	m_deviceContext->VSSetConstantBuffers(PROJECTION_BUFFER_SLOT, 1, _camera.GetProjectionBuffer().GetAddressOf() );
 
 	return;
 }
@@ -206,14 +203,18 @@ void GGRenderer::RenderIn2D()
 	return;
 }
 
-void GGRenderer::RenderMesh( const GGMesh& _mesh )
+void GGRenderer::RenderMesh( const GGMesh& _mesh, const XMFLOAT4X4& _transform )
 {
+	XMFLOAT4X4 matrix;
+	XMStoreFloat4x4( &matrix, XMMatrixTranspose( XMLoadFloat4x4( &_transform ) ) );
+	m_deviceContext->UpdateSubresource( m_worldBuffer.Get(), 0, nullptr, matrix.m, 0, 0 );
+
 	m_deviceContext->DrawIndexed( _mesh.GetIndexCount(), 0, 0 );
 
 	return;
 }
 
-void GGRenderer::RenderText( const std::wstring& _text, const DirectX::XMFLOAT2& _pos )
+void GGRenderer::RenderText( const std::wstring& _text, const XMFLOAT2& _pos )
 {
 	D2D1_RECT_F rectangle1 = D2D1::RectF( _pos.x, _pos.y, _pos.x + 512.0f, _pos.y + 18.0f );
 	m_renderTarget2D->DrawText( _text.c_str(), _text.length(), m_textFormat.Get(), rectangle1, m_solidBrush.Get() );

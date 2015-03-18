@@ -14,7 +14,7 @@ GGGraphics::GGGraphics( const GGWindow& _window, const GGConfig& _config )
 	m_renderer( m_driver, _config.GetInt( "sync_interval" ) ),
 	m_camera( m_device.CreateCamera( XMConvertToRadians( _config.GetFloat( "fov" ) ), _config.GetInt( "resolutionX" ), _config.GetInt( "resolutionY" ) ) ),
 	m_basicShader( m_device.CreateShader() ),
-	m_mesh( m_device.CreateCubeMesh() )
+	m_mesh( m_device.CreateCubeMesh( 16.0f ) )
 {}
 
 void GGGraphics::Update( const GGWorld& _world, float _frameTime )
@@ -22,16 +22,16 @@ void GGGraphics::Update( const GGWorld& _world, float _frameTime )
 	const GGIWorldViewer* worldViewer = _world.GetActiveWorldViewer();
 	m_device.UpdateCamera( m_camera, worldViewer->GetPosition(), worldViewer->GetRotation() );
 
-	m_debugInfo.Update( _frameTime, worldViewer->GetPosition() );
+	m_debugInfo.Update( _frameTime, worldViewer->GetPosition(), worldViewer->GetRotation() );
 
 	return;
 }
 
-void GGGraphics::Render()
+void GGGraphics::Render( const GGWorld& _world )
 {
 	m_renderer.ClearScene();
 
-	Render3D();
+	Render3D( _world );
 	Render2D();
 
 	m_renderer.PresentScene();
@@ -71,7 +71,7 @@ void GGGraphics::SwitchFillType()
 	return;
 }
 
-void GGGraphics::Render3D()
+void GGGraphics::Render3D( const GGWorld& _world )
 {
 	m_renderer.SetFillType( m_currentFillType );
 
@@ -80,7 +80,11 @@ void GGGraphics::Render3D()
 	m_renderer.SetShader( m_basicShader );
 
 	m_renderer.SetMesh( m_mesh );
-	m_renderer.RenderMesh( m_mesh );
+
+	for( auto& chunk : _world.GetChunkArray() )
+	{
+		m_renderer.RenderMesh( m_mesh, chunk.GetTransformation() );
+	}
 
 	return;
 }

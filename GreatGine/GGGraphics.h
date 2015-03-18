@@ -20,7 +20,7 @@ public:
 
 public:
 	void Update( const GGWorld& _world, float _frameTime );
-	void Render();
+	void Render( const GGWorld& _world );
 
 public:
 	virtual void HandleActionInput( GG_ACTION_INPUT _input, bool _down ) override;
@@ -29,7 +29,7 @@ public:
 private:
 	void SwitchFillType();
 
-	void Render3D();
+	void Render3D( const GGWorld& _world );
 	void Render2D();
 
 private:

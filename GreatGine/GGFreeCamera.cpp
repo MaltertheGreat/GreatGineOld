@@ -73,16 +73,24 @@ void GGFreeCamera::HandleActionInput( GG_ACTION_INPUT _input, bool _down )
 void GGFreeCamera::HandleRangeInput( int _x, int _y )
 {
 	m_rotation.x += _y * 0.005f;
-	if( m_rotation.x >= XMConvertToRadians( 89.9f ) )
+	if( m_rotation.x >= XMConvertToRadians( 89.9999f ) )
 	{
-		m_rotation.x = XMConvertToRadians( 89.9f );
+		m_rotation.x = XMConvertToRadians( 89.9999f );
 	}
-	else if( m_rotation.x <= XMConvertToRadians( -89.9f ) )
+	else if( m_rotation.x <= XMConvertToRadians( -89.9999f ) )
 	{
-		m_rotation.x = XMConvertToRadians( -89.9f );
+		m_rotation.x = XMConvertToRadians( -89.9999f );
 	}
 
 	m_rotation.y += _x * 0.005f;
+	if( m_rotation.y > XMConvertToRadians( 360.0f ) )
+	{
+		m_rotation.y -= XMConvertToRadians( 360.0f );
+	}
+	else if( m_rotation.y < 0 )
+	{
+		m_rotation.y += XMConvertToRadians( 360.0f );
+	}
 
 	return;
 }

@@ -22,7 +22,7 @@ public:
 	GGCamera CreateCamera( float _fovAngle, UINT _viewWidth, UINT _viewHeight );
 	GGShader CreateShader();
 	GGMesh CreateTriangleMesh();
-	GGMesh CreateCubeMesh();
+	GGMesh CreateCubeMesh( float _diameter );
 
 	void UpdateCamera( GGCamera& _camera, const DirectX::XMFLOAT3& _position, const DirectX::XMFLOAT3& _rotation );
 

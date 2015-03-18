@@ -19,6 +19,18 @@
     <Filter Include="Other">
       <UniqueIdentifier>{5c6205f5-9ae5-46d2-b42e-73743f23ba58}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\World">
+      <UniqueIdentifier>{06d4fe4f-3710-4b93-a1b5-9bd78f73a4a9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\World">
+      <UniqueIdentifier>{302cd125-6fa4-40ea-9a42-6ce1e536d25d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Graphics">
+      <UniqueIdentifier>{cf6b26e5-49be-4865-bdb1-319095e7121c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Graphics">
+      <UniqueIdentifier>{befcecd7-621c-4fc3-ab50-7759a0811eaa}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="GreatGine.cpp">
@@ -36,24 +48,6 @@
     <ClCompile Include="GGError.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="GGRenderer.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="GGDevice.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="GGDirectXDriver.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="GGMesh.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="GGShader.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="GGCamera.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="GGInputProcessor.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -63,20 +57,44 @@
     <ClCompile Include="GGFrameTimer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="GGFPSCounter.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="PCH.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="GGWorld.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="GGFreeCamera.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="GGChunk.cpp">
+      <Filter>Source Files\World</Filter>
+    </ClCompile>
+    <ClCompile Include="GGDepthLevel.cpp">
+      <Filter>Source Files\World</Filter>
+    </ClCompile>
+    <ClCompile Include="GGCamera.cpp">
+      <Filter>Source Files\Graphics</Filter>
     </ClCompile>
     <ClCompile Include="GGDebugInfo.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="GGDirectXDriver.cpp">
+      <Filter>Source Files\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="GGDevice.cpp">
+      <Filter>Source Files\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="GGFPSCounter.cpp">
+      <Filter>Source Files\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="GGFreeCamera.cpp">
+      <Filter>Source Files\World</Filter>
+    </ClCompile>
+    <ClCompile Include="GGMesh.cpp">
+      <Filter>Source Files\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="GGRenderer.cpp">
+      <Filter>Source Files\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="GGShader.cpp">
+      <Filter>Source Files\Graphics</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -92,24 +110,6 @@
     <ClInclude Include="GGError.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="GGRenderer.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="GGShader.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="GGDevice.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="GGDirectXDriver.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="GGMesh.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="GGCamera.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="GGInputProcessor.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -122,23 +122,50 @@
     <ClInclude Include="GGFrameTimer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="GGFPSCounter.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="GGWorld.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="PCH.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="GGChunk.h">
+      <Filter>Header Files\World</Filter>
+    </ClInclude>
+    <ClInclude Include="GGVoxel.h">
+      <Filter>Header Files\World</Filter>
+    </ClInclude>
     <ClInclude Include="GGIWorldViewer.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\World</Filter>
     </ClInclude>
     <ClInclude Include="GGFreeCamera.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\World</Filter>
+    </ClInclude>
+    <ClInclude Include="GGDepthLevel.h">
+      <Filter>Header Files\World</Filter>
+    </ClInclude>
+    <ClInclude Include="GGCamera.h">
+      <Filter>Header Files\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="GGDevice.h">
+      <Filter>Header Files\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="GGDirectXDriver.h">
+      <Filter>Header Files\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="GGFPSCounter.h">
+      <Filter>Header Files\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="GGMesh.h">
+      <Filter>Header Files\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="GGRenderer.h">
+      <Filter>Header Files\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="GGShader.h">
+      <Filter>Header Files\Graphics</Filter>
     </ClInclude>
     <ClInclude Include="GGDebugInfo.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\Graphics</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

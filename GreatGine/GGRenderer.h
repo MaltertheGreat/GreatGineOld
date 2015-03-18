@@ -31,7 +31,7 @@ public:
 	void SetMesh( const GGMesh& _mesh );
 
 	void RenderIn2D();
-	void RenderMesh( const GGMesh& _mesh );
+	void RenderMesh( const GGMesh& _mesh, const DirectX::XMFLOAT4X4& _transform );
 	void RenderText( const std::wstring& _text, const DirectX::XMFLOAT2& _pos );
 
 private:

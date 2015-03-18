@@ -3,7 +3,7 @@
 using namespace DirectX;
 using namespace std;
 
-void GGDebugInfo::Update( float _frameTime, const XMFLOAT3& _cameraPos )
+void GGDebugInfo::Update( float _frameTime, const XMFLOAT3& _cameraPos, const DirectX::XMFLOAT3& _cameraRot )
 {
 	m_fpsCounter.Update( _frameTime );
 
@@ -16,6 +16,13 @@ void GGDebugInfo::Update( float _frameTime, const XMFLOAT3& _cameraPos )
 	m_lines[ 1 ] += to_wstring( _cameraPos.y );
 	m_lines[ 1 ] += L" / ";
 	m_lines[ 1 ] += to_wstring( _cameraPos.z );
+
+	m_lines[ 2 ] = L"Roll/Pitch/Yaw ";
+	m_lines[ 2 ] += to_wstring( XMConvertToDegrees( _cameraRot.x ) );
+	m_lines[ 2 ] += L" / ";
+	m_lines[ 2 ] += to_wstring( XMConvertToDegrees( _cameraRot.y ) );
+	m_lines[ 2 ] += L" / ";
+	m_lines[ 2 ] += to_wstring( XMConvertToDegrees( _cameraRot.z ) );
 
 	return;
 }

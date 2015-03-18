@@ -6,7 +6,7 @@
 class GGFreeCamera : public GGInputHandler, public GGIWorldViewer
 {
 public:
-	GGFreeCamera( const DirectX::XMFLOAT3& _position = { 0.0f, 0.0f, 0.0f } );
+	explicit GGFreeCamera( const DirectX::XMFLOAT3& _position = { 0.0f, 0.0f, 0.0f } );
 
 public:
 	void Update( float _frameTime );
