@@ -3,6 +3,7 @@
 #include "GGWindow.h"
 #include "GGConfig.h"
 #include "GGWorld.h"
+#include "GGMeshData.h"
 using namespace DirectX;
 using namespace std;
 
@@ -13,25 +14,39 @@ GGGraphics::GGGraphics( const GGWindow& _window, const GGConfig& _config )
 	m_device( m_driver ),
 	m_renderer( m_driver, _config.GetInt( "sync_interval" ) ),
 	m_camera( m_device.CreateCamera( XMConvertToRadians( _config.GetFloat( "fov" ) ), _config.GetInt( "resolutionX" ), _config.GetInt( "resolutionY" ) ) ),
-	m_basicShader( m_device.CreateShader() ),
-	m_mesh( m_device.CreateCubeMesh( 16.0f ) )
-{}
+	m_basicShader( m_device.CreateShader() )
+{
+}
 
-void GGGraphics::Update( const GGWorld& _world, float _frameTime )
+void GGGraphics::Update( GGWorld& _world, float _frameTime )
 {
 	const GGIWorldViewer* worldViewer = _world.GetActiveWorldViewer();
 	m_device.UpdateCamera( m_camera, worldViewer->GetPosition(), worldViewer->GetRotation() );
+
+	auto& chunks = _world.GetChunkArray();
+	for( UINT i = 0; i < (m_dimension * m_dimension); ++i )
+	{
+		auto& chunk = chunks[ i ];
+		auto& model = m_chunkModels[ i ];
+
+		if( chunk.HasChanged() )
+		{
+			model.Create( m_device, chunk );
+
+			chunk.SetChangeState( false );
+		}
+	}
 
 	m_debugInfo.Update( _frameTime, worldViewer->GetPosition(), worldViewer->GetRotation() );
 
 	return;
 }
 
-void GGGraphics::Render( const GGWorld& _world )
+void GGGraphics::Render()
 {
 	m_renderer.ClearScene();
 
-	Render3D( _world );
+	Render3D();
 	Render2D();
 
 	m_renderer.PresentScene();
@@ -71,7 +86,7 @@ void GGGraphics::SwitchFillType()
 	return;
 }
 
-void GGGraphics::Render3D( const GGWorld& _world )
+void GGGraphics::Render3D()
 {
 	m_renderer.SetFillType( m_currentFillType );
 
@@ -79,11 +94,14 @@ void GGGraphics::Render3D( const GGWorld& _world )
 
 	m_renderer.SetShader( m_basicShader );
 
-	m_renderer.SetMesh( m_mesh );
-
-	for( auto& chunk : _world.GetChunkArray() )
+	for( auto& model : m_chunkModels )
 	{
-		m_renderer.RenderMesh( m_mesh, chunk.GetTransformation() );
+		auto mesh = model.GetMesh();
+		if( mesh )
+		{
+			m_renderer.SetMesh( mesh );
+			m_renderer.RenderMesh( mesh, model.GetTransformation() );
+		}
 	}
 
 	return;

@@ -292,6 +292,7 @@
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">PCH.h</PrecompiledHeaderFile>
     </ClCompile>
     <ClCompile Include="GGChunk.cpp" />
+    <ClCompile Include="GGChunkModel.cpp" />
     <ClCompile Include="GGConfig.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Use</PrecompiledHeader>
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">PCH.h</PrecompiledHeaderFile>
@@ -421,6 +422,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">Use</PrecompiledHeader>
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">PCH.h</PrecompiledHeaderFile>
     </ClCompile>
+    <ClCompile Include="GGMeshData.cpp" />
     <ClCompile Include="GGRenderer.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Use</PrecompiledHeader>
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">PCH.h</PrecompiledHeaderFile>
@@ -497,6 +499,7 @@
     <ClInclude Include="GGApplication.h" />
     <ClInclude Include="GGCamera.h" />
     <ClInclude Include="GGChunk.h" />
+    <ClInclude Include="GGChunkModel.h" />
     <ClInclude Include="GGConfig.h" />
     <ClInclude Include="GGDebugInfo.h" />
     <ClInclude Include="GGDirectXDriver.h" />
@@ -506,6 +509,7 @@
     <ClInclude Include="GGFreeCamera.h" />
     <ClInclude Include="GGGraphics.h" />
     <ClInclude Include="GGDevice.h" />
+    <ClInclude Include="GGMeshData.h" />
     <ClInclude Include="GGInputHandler.h" />
     <ClInclude Include="GGInputProcessor.h" />
     <ClInclude Include="GGDepthLevel.h" />

@@ -1,12 +1,14 @@
 #pragma once
 
+#include <array>
+
 #include "GGInputHandler.h"
 #include "GGDirectXDriver.h"
 #include "GGDevice.h"
 #include "GGRenderer.h"
 #include "GGCamera.h"
+#include "GGChunkModel.h"
 #include "GGShader.h"
-#include "GGMesh.h"
 #include "GGDebugInfo.h"
 
 class GGWindow;
@@ -19,8 +21,8 @@ public:
 	GGGraphics( const GGWindow& _window, const GGConfig& _config );
 
 public:
-	void Update( const GGWorld& _world, float _frameTime );
-	void Render( const GGWorld& _world );
+	void Update( GGWorld& _world, float _frameTime );
+	void Render();
 
 public:
 	virtual void HandleActionInput( GG_ACTION_INPUT _input, bool _down ) override;
@@ -29,17 +31,18 @@ public:
 private:
 	void SwitchFillType();
 
-	void Render3D( const GGWorld& _world );
+	void Render3D();
 	void Render2D();
 
 private:
 	GGRenderer::FILL_TYPE m_currentFillType;
+	static const UINT m_dimension = 8;
 
 	GGDirectXDriver m_driver;
 	GGDevice m_device;
 	GGRenderer m_renderer;
 	GGCamera m_camera;
+	std::array<GGChunkModel, m_dimension * m_dimension> m_chunkModels;
 	GGShader m_basicShader;
-	GGMesh m_mesh;
 	GGDebugInfo m_debugInfo;
 };

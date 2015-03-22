@@ -19,10 +19,11 @@ public:
 	void Update( float _frameTime );
 
 	const GGIWorldViewer* GetActiveWorldViewer() const;
-	const std::array<GGChunk, dimension * dimension>& GetChunkArray() const;
+	std::array<GGChunk, dimension * dimension>& GetChunkArray();
 
 private:
 	void CreateWorld();
+	void RandomlyPopulateDepthLevel( std::vector<std::unique_ptr<GGDepthLevel>>& _depthLevels, std::vector<bool>& _subdivisions );
 
 private:
 	GGFreeCamera m_freeCamera;

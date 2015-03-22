@@ -1,6 +1,7 @@
 #include "PCH.h"
 #include "GGDevice.h"
 #include "GGDirectXDriver.h"
+#include "GGMeshData.h"
 #include "GGError.h"
 #include "Shaders/BasicVS.h"
 #include "Shaders/BasicPS.h"
@@ -15,7 +16,7 @@ GGDevice::GGDevice( GGDirectXDriver& _driver )
 	m_swapChain( _driver.GetSwapChain() )
 {}
 
-GGCamera GGDevice::CreateCamera( float _fovAngle, UINT _viewWidth, UINT _viewHeight )
+GGCamera GGDevice::CreateCamera( float _fovAngle, UINT _viewWidth, UINT _viewHeight ) const
 {
 	// View matrix constant buffer
 	D3D11_BUFFER_DESC bd;
@@ -33,7 +34,7 @@ GGCamera GGDevice::CreateCamera( float _fovAngle, UINT _viewWidth, UINT _viewHei
 	}
 
 	XMFLOAT4X4 projectionMatrix;
-	XMMATRIX projection = XMMatrixPerspectiveFovLH( _fovAngle, _viewWidth / static_cast<float>(_viewHeight), 0.01f, 100.0f );
+	XMMATRIX projection = XMMatrixPerspectiveFovLH( _fovAngle, _viewWidth / static_cast<float>(_viewHeight), 0.01f, 1000.0f );
 	XMStoreFloat4x4( &projectionMatrix, XMMatrixTranspose( projection ) );
 
 	// Projection matrix constant buffer
@@ -57,7 +58,7 @@ GGCamera GGDevice::CreateCamera( float _fovAngle, UINT _viewWidth, UINT _viewHei
 	return GGCamera( viewBuffer, projectionBuffer );
 }
 
-GGShader GGDevice::CreateShader()
+GGShader GGDevice::CreateShader() const
 {
 	ComPtr<ID3D11VertexShader> vertexShader;
 	ComPtr<ID3D11PixelShader> pixelShader;
@@ -90,27 +91,19 @@ GGShader GGDevice::CreateShader()
 	return GGShader( vertexShader, pixelShader, inputLayout );
 }
 
-GGMesh GGDevice::CreateTriangleMesh()
+std::unique_ptr<GGMesh> GGDevice::CreateMesh( const GGMeshData& _grid ) const
 {
 	// Vertex buffer
-	GGMesh::GGBasicVertex vertices[] =
-	{
-		XMFLOAT3( 0.0f, 0.5f, 0.5f ),
-		XMFLOAT3( 0.5f, -0.5f, 0.5f ),
-		XMFLOAT3( -0.5f, -0.5f, 0.5f ),
-	};
-	UINT vertexCount = ARRAYSIZE( vertices );
-
 	D3D11_BUFFER_DESC bd;
 	ZeroMemory( &bd, sizeof( bd ) );
 	bd.Usage = D3D11_USAGE_DEFAULT;
-	bd.ByteWidth = sizeof( GGMesh::GGBasicVertex ) * vertexCount;
+	bd.ByteWidth = sizeof( GGMeshData::GGVertex ) * _grid.vertices.size();
 	bd.BindFlags = D3D11_BIND_VERTEX_BUFFER;
 	bd.CPUAccessFlags = 0;
 
 	D3D11_SUBRESOURCE_DATA InitData;
 	ZeroMemory( &InitData, sizeof( InitData ) );
-	InitData.pSysMem = vertices;
+	InitData.pSysMem = _grid.vertices.data();
 
 	ComPtr<ID3D11Buffer> vertexBuffer;
 	HRESULT hr = m_device->CreateBuffer( &bd, &InitData, vertexBuffer.GetAddressOf() );
@@ -120,13 +113,11 @@ GGMesh GGDevice::CreateTriangleMesh()
 	}
 
 	// Index buffer
-	WORD indices[] = { 0, 1, 2 };
-	UINT indexCount = ARRAYSIZE( indices );
-
-	bd.ByteWidth = sizeof( WORD ) * indexCount;
+	bd.ByteWidth = sizeof( GGMeshData::GGIndex ) * _grid.indices.size();
 	bd.BindFlags = D3D11_BIND_INDEX_BUFFER;
 
-	InitData.pSysMem = indices;
+	InitData.pSysMem = _grid.indices.data();
+
 	ComPtr<ID3D11Buffer> indexBuffer;
 	hr = m_device->CreateBuffer( &bd, &InitData, indexBuffer.GetAddressOf() );
 	if( FAILED( hr ) )
@@ -134,82 +125,10 @@ GGMesh GGDevice::CreateTriangleMesh()
 		GG_THROW;
 	}
 
-	return GGMesh( indexCount, vertexBuffer, indexBuffer );
+	return std::make_unique<GGMesh>( _grid.indices.size(), vertexBuffer, indexBuffer );
 }
 
-GGMesh GGDevice::CreateCubeMesh( float _diameter )
-{
-	float radius = _diameter / 2.0f;
-	// Vertex buffer
-	GGMesh::GGBasicVertex vertices[] =
-	{
-		XMFLOAT3( -radius, radius, -radius ),
-		XMFLOAT3( radius, radius, -radius ),
-		XMFLOAT3( radius, radius, radius ),
-		XMFLOAT3( -radius, radius, radius ),
-		XMFLOAT3( -radius, -radius, -radius ),
-		XMFLOAT3( radius, -radius, -radius ),
-		XMFLOAT3( radius, -radius, radius ),
-		XMFLOAT3( -radius, -radius, radius )
-	};
-	UINT vertexCount = ARRAYSIZE( vertices );
-
-	D3D11_BUFFER_DESC bd;
-	ZeroMemory( &bd, sizeof( bd ) );
-	bd.Usage = D3D11_USAGE_DEFAULT;
-	bd.ByteWidth = sizeof( GGMesh::GGBasicVertex ) * vertexCount;
-	bd.BindFlags = D3D11_BIND_VERTEX_BUFFER;
-	bd.CPUAccessFlags = 0;
-
-	D3D11_SUBRESOURCE_DATA InitData;
-	ZeroMemory( &InitData, sizeof( InitData ) );
-	InitData.pSysMem = vertices;
-
-	ComPtr<ID3D11Buffer> vertexBuffer;
-	HRESULT hr = m_device->CreateBuffer( &bd, &InitData, vertexBuffer.GetAddressOf() );
-	if( FAILED( hr ) )
-	{
-		GG_THROW;
-	}
-
-	// Index buffer
-	WORD indices[] =
-	{
-		3, 1, 0,
-		2, 1, 3,
-
-		0, 5, 4,
-		1, 5, 0,
-
-		3, 4, 7,
-		0, 4, 3,
-
-		1, 6, 5,
-		2, 6, 1,
-
-		2, 7, 6,
-		3, 7, 2,
-
-		6, 4, 5,
-		7, 4, 6,
-	};
-	UINT indexCount = ARRAYSIZE( indices );
-
-	bd.ByteWidth = sizeof( WORD ) * indexCount;
-	bd.BindFlags = D3D11_BIND_INDEX_BUFFER;
-
-	InitData.pSysMem = indices;
-	ComPtr<ID3D11Buffer> indexBuffer;
-	hr = m_device->CreateBuffer( &bd, &InitData, indexBuffer.GetAddressOf() );
-	if( FAILED( hr ) )
-	{
-		GG_THROW;
-	}
-
-	return GGMesh( indexCount, vertexBuffer, indexBuffer );
-}
-
-void GGDevice::UpdateCamera( GGCamera& _camera, const DirectX::XMFLOAT3& _position, const DirectX::XMFLOAT3& _rotation )
+void GGDevice::UpdateCamera( GGCamera& _camera, const DirectX::XMFLOAT3& _position, const DirectX::XMFLOAT3& _rotation ) const
 {
 	XMVECTOR position = XMLoadFloat3( &_position );
 	XMVECTOR rotation = XMLoadFloat3( &_rotation );

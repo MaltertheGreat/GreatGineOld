@@ -28,10 +28,10 @@ public:
 	void SetFillType( FILL_TYPE _fillType );
 	void SetCamera( const GGCamera& _camera );
 	void SetShader( const GGShader& _shader );
-	void SetMesh( const GGMesh& _mesh );
+	void SetMesh( const GGMesh* _mesh );
 
 	void RenderIn2D();
-	void RenderMesh( const GGMesh& _mesh, const DirectX::XMFLOAT4X4& _transform );
+	void RenderMesh( const GGMesh* _mesh, const DirectX::XMFLOAT4X4& _transform );
 	void RenderText( const std::wstring& _text, const DirectX::XMFLOAT2& _pos );
 
 private:

@@ -55,7 +55,7 @@ void GGApplication::Update()
 
 void GGApplication::Render()
 {
-	m_graphics.Render( m_world );
+	m_graphics.Render();
 
 	return;
 }

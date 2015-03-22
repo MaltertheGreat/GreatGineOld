@@ -4,11 +4,6 @@
 
 class GGMesh
 {
-public:
-	struct GGBasicVertex
-	{
-		DirectX::XMFLOAT3 outputpos;
-	};
 
 public:
 	GGMesh( UINT _indexCount, Microsoft::WRL::ComPtr<ID3D11Buffer> _vertexBuffer, Microsoft::WRL::ComPtr<ID3D11Buffer> _indexBuffer );

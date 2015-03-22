@@ -12,14 +12,17 @@ public:
 	GGChunk();
 
 public:
+	void SetChangeState( bool _hasChanged );
 	void SetContent( std::vector<std::unique_ptr<GGDepthLevel>>&& _depthLevels );
-	void SetTransformation( DirectX::XMFLOAT4X4& _transformation );
+	void SetPosition( const DirectX::XMFLOAT3& _position );
 
-	const DirectX::XMFLOAT4X4& GetTransformation() const;
+	bool HasChanged() const;
+	const std::vector<std::unique_ptr<GGDepthLevel>>& GetDepthLevels() const;
+	const DirectX::XMFLOAT3& GetPosition() const;
 
 private:
 	bool m_hasChanged;
 	std::vector<std::unique_ptr<GGDepthLevel>> m_depthLevels;
 
-	DirectX::XMFLOAT4X4 m_transformation;
+	DirectX::XMFLOAT3 m_position;
 };

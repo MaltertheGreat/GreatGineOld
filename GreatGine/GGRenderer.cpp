@@ -4,6 +4,7 @@
 #include "GGCamera.h"
 #include "GGShader.h"
 #include "GGMesh.h"
+#include "GGMeshData.h"
 #include "GGError.h"
 using Microsoft::WRL::ComPtr;
 using namespace DirectX;
@@ -186,12 +187,12 @@ void GGRenderer::SetShader( const GGShader& _shader )
 	return;
 }
 
-void GGRenderer::SetMesh( const GGMesh& _mesh )
+void GGRenderer::SetMesh( const GGMesh* _mesh )
 {
-	UINT stride = sizeof( GGMesh::GGBasicVertex );
+	UINT stride = sizeof( GGMeshData::GGVertex );
 	UINT offset = 0;
-	m_deviceContext->IASetVertexBuffers( 0, 1, _mesh.GetVertexBuffer().GetAddressOf(), &stride, &offset );
-	m_deviceContext->IASetIndexBuffer( _mesh.GetIndexBuffer().Get(), DXGI_FORMAT_R16_UINT, offset );
+	m_deviceContext->IASetVertexBuffers( 0, 1, _mesh->GetVertexBuffer().GetAddressOf(), &stride, &offset );
+	m_deviceContext->IASetIndexBuffer( _mesh->GetIndexBuffer().Get(), DXGI_FORMAT_R32_UINT, offset );
 
 	return;
 }
@@ -203,13 +204,13 @@ void GGRenderer::RenderIn2D()
 	return;
 }
 
-void GGRenderer::RenderMesh( const GGMesh& _mesh, const XMFLOAT4X4& _transform )
+void GGRenderer::RenderMesh( const GGMesh* _mesh, const XMFLOAT4X4& _transform )
 {
 	XMFLOAT4X4 matrix;
 	XMStoreFloat4x4( &matrix, XMMatrixTranspose( XMLoadFloat4x4( &_transform ) ) );
 	m_deviceContext->UpdateSubresource( m_worldBuffer.Get(), 0, nullptr, matrix.m, 0, 0 );
 
-	m_deviceContext->DrawIndexed( _mesh.GetIndexCount(), 0, 0 );
+	m_deviceContext->DrawIndexed( _mesh->GetIndexCount(), 0, 0 );
 
 	return;
 }
