@@ -17,7 +17,7 @@ void GGChunk::SetChangeState( bool _hasChanged )
 	return;
 }
 
-void GGChunk::SetContent( vector<unique_ptr<GGDepthLevel>>&& _depthLevels )
+void GGChunk::SetContent( vector<GGDepthLevel>&& _depthLevels )
 {
 	m_depthLevels = move(_depthLevels);
 
@@ -36,7 +36,7 @@ bool GGChunk::HasChanged() const
 	return m_hasChanged;
 }
 
-const vector<unique_ptr<GGDepthLevel>>& GGChunk::GetDepthLevels() const
+const vector<GGDepthLevel>& GGChunk::GetDepthLevels() const
 {
 	return m_depthLevels;
 }

@@ -17,7 +17,8 @@ public:
 	const DirectX::XMFLOAT4X4& GetTransformation() const;
 
 private:
-	void CreateMeshData( GGMeshData& _meshData, const std::vector<std::unique_ptr<GGDepthLevel>>& _depthLevels, UINT _lod, UINT _count = 0, const DirectX::XMFLOAT3& _center = { 0.0f, 0.0f, 0.0f } );
+	void CreateMeshData( GGMeshData& _meshData, const std::vector<GGDepthLevel>& _depthLevels, UINT _lod, UINT _count = 1, const DirectX::XMFLOAT3& _center = { 0.0f, 0.0f, 0.0f } );
+	void CreateCube( GGMeshData& _meshData, const DirectX::XMFLOAT3& _center, float _radius );
 
 private:
 	std::unique_ptr<GGMesh> m_mesh;

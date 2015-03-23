@@ -39,7 +39,35 @@ void GGWorld::CreateWorld()
 
 	for( auto& chunk: m_chunks )
 	{
-		vector<unique_ptr<GGDepthLevel>> depthLevels;
+		GGSubdivisionLevel level = { { 1, 1, 1, 1, 1, 1, 1, 1 }, { 1 } };
+		vector<GGSubdivisionLevel> subdivisionLevels = { level };
+
+		vector<GGDepthLevel> depthLevels = { { subdivisionLevels } };
+
+		// Testing code for debug purposes ;)
+		// 2. depth level
+		subdivisionLevels = { level };
+		depthLevels.push_back( { subdivisionLevels } );
+
+		// 3. depth level
+		level.subdivisions.reset();
+		subdivisionLevels = { level };
+		depthLevels.push_back( { subdivisionLevels } );
+
+
+		chunk.SetContent( move( depthLevels ) );
+
+		XMFLOAT3 position = { x, 0.0f, z };
+		chunk.SetPosition( position );
+
+		x += m_chunkDiameter;
+		if( x > chunkOffset )
+		{
+			x = -chunkOffset;
+			z += m_chunkDiameter;
+		}
+
+		/*vector<unique_ptr<GGDepthLevel>> depthLevels;
 
 		vector<GGVoxel> voxels = { 1 };
 		vector<bool> subdivisions( voxels.size(), true );
@@ -48,17 +76,7 @@ void GGWorld::CreateWorld()
 		RandomlyPopulateDepthLevel( depthLevels, subdivisions );
 		RandomlyPopulateDepthLevel( depthLevels, depthLevels.back()->subdivisions );
 
-		chunk.SetContent( move( depthLevels ) );
-
-		XMFLOAT3 position = { x, 0.0f, z };
-		chunk.SetPosition( position );
-		
-		x += m_chunkDiameter;
-		if( x > chunkOffset )
-		{
-			x = -chunkOffset;
-			z += m_chunkDiameter;
-		}
+		chunk.SetContent( move( depthLevels ) );*/
 	}
 	
 	return;
@@ -66,7 +84,7 @@ void GGWorld::CreateWorld()
 
 void GGWorld::RandomlyPopulateDepthLevel( vector<unique_ptr<GGDepthLevel>>& _depthLevels, vector<bool>& _subdivisions )
 {
-	static const UINT subvoxelsInVoxel = 8;
+	/*static const UINT subvoxelsInVoxel = 8;
 	vector<GGVoxel> voxels;
 	vector<bool> subdivisions;
 
@@ -89,7 +107,7 @@ void GGWorld::RandomlyPopulateDepthLevel( vector<unique_ptr<GGDepthLevel>>& _dep
 		}
 	}
 
-	_depthLevels.emplace_back( new GGDepthLevel( move( voxels ), move( subdivisions ) ) );
+	_depthLevels.emplace_back( new GGDepthLevel( move( voxels ), move( subdivisions ) ) );*/
 
 	return;
 }

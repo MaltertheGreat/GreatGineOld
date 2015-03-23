@@ -308,7 +308,6 @@
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">PCH.h</PrecompiledHeaderFile>
     </ClCompile>
     <ClCompile Include="GGDebugInfo.cpp" />
-    <ClCompile Include="GGDepthLevel.cpp" />
     <ClCompile Include="GGDirectXDriver.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Use</PrecompiledHeader>
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">PCH.h</PrecompiledHeaderFile>
@@ -521,6 +520,7 @@
     <ClInclude Include="GGWorld.h" />
     <ClInclude Include="GGIWorldViewer.h" />
     <ClInclude Include="PCH.h" />
+    <ClInclude Include="GGSubdivisionLevel.h" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="basicPS.hlsl">
