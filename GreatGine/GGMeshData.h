@@ -7,7 +7,8 @@ struct GGMeshData
 public:
 	struct GGVertex
 	{
-		DirectX::XMFLOAT3 outputpos;
+		DirectX::XMFLOAT3 position;
+		DirectX::XMFLOAT3 normal;
 	};
 
 	typedef unsigned int GGIndex;

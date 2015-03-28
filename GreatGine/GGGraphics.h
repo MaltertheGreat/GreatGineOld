@@ -36,7 +36,7 @@ private:
 
 private:
 	GGRenderer::FILL_TYPE m_currentFillType;
-	static const UINT m_dimension = 8;
+	static const UINT m_dimension = 1;
 
 	GGDirectXDriver m_driver;
 	GGDevice m_device;

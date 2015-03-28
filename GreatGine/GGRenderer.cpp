@@ -9,7 +9,6 @@
 using Microsoft::WRL::ComPtr;
 using namespace DirectX;
 
-
 const UINT WORLD_BUFFER_SLOT = 0;
 const UINT VIEW_BUFFER_SLOT = 1;
 const UINT PROJECTION_BUFFER_SLOT = 2;
@@ -30,13 +29,44 @@ GGRenderer::GGRenderer( GGDirectXDriver& _driver, int _syncInterval )
 		GG_THROW;
 	}
 
-	hr = m_device->CreateRenderTargetView( backBuffer.Get(), nullptr, m_renderTargetView.GetAddressOf() );
+	hr = m_device->CreateRenderTargetView( backBuffer.Get(), nullptr, &m_renderTargetView );
 	if( FAILED( hr ) )
 	{
 		GG_THROW;
 	}
 
-	m_deviceContext->OMSetRenderTargets( 1, m_renderTargetView.GetAddressOf(), nullptr );
+	// Depth stencil
+	D3D11_TEXTURE2D_DESC descDepth;
+	ZeroMemory( &descDepth, sizeof( descDepth ) );
+	descDepth.Width = _driver.GetResX();
+	descDepth.Height = _driver.GetResY();
+	descDepth.MipLevels = 1;
+	descDepth.ArraySize = 1;
+	descDepth.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
+	descDepth.SampleDesc.Count = 1;
+	descDepth.SampleDesc.Quality = 0;
+	descDepth.Usage = D3D11_USAGE_DEFAULT;
+	descDepth.BindFlags = D3D11_BIND_DEPTH_STENCIL;
+	descDepth.CPUAccessFlags = 0;
+	descDepth.MiscFlags = 0;
+	hr = m_device->CreateTexture2D( &descDepth, nullptr, &m_depthStencil );
+	if( FAILED( hr ) )
+	{
+		GG_THROW;
+	}
+
+	D3D11_DEPTH_STENCIL_VIEW_DESC descDSV;
+	ZeroMemory( &descDSV, sizeof( descDSV ) );
+	descDSV.Format = descDepth.Format;
+	descDSV.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
+	descDSV.Texture2D.MipSlice = 0;
+	hr = m_device->CreateDepthStencilView( m_depthStencil.Get(), &descDSV, &m_depthStencilView );
+	if( FAILED( hr ) )
+	{
+		GG_THROW;
+	}
+
+	m_deviceContext->OMSetRenderTargets( 1, m_renderTargetView.GetAddressOf(), m_depthStencilView.Get() );
 
 	D3D11_RASTERIZER_DESC rasterDesc;
 	rasterDesc.AntialiasedLineEnable = false;
@@ -140,6 +170,7 @@ void GGRenderer::ClearScene()
 {
 	float color[ 4 ] = { 0.2f, 0.2f, 0.8f, 1.0f };
 	m_deviceContext->ClearRenderTargetView( m_renderTargetView.Get(), color );
+	m_deviceContext->ClearDepthStencilView( m_depthStencilView.Get(), D3D11_CLEAR_DEPTH, 1.0f, 0 );
 
 	return;
 }
@@ -173,7 +204,7 @@ void GGRenderer::SetFillType( FILL_TYPE _fillType )
 void GGRenderer::SetCamera( const GGCamera& _camera )
 {
 	m_deviceContext->VSSetConstantBuffers( VIEW_BUFFER_SLOT, 1, _camera.GetViewBuffer().GetAddressOf() );
-	m_deviceContext->VSSetConstantBuffers(PROJECTION_BUFFER_SLOT, 1, _camera.GetProjectionBuffer().GetAddressOf() );
+	m_deviceContext->VSSetConstantBuffers( PROJECTION_BUFFER_SLOT, 1, _camera.GetProjectionBuffer().GetAddressOf() );
 
 	return;
 }

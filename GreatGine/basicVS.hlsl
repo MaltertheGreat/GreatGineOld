@@ -13,11 +13,22 @@ cbuffer ProjectionBuffer : register(b2)
 	matrix projectionMatrix;
 }
 
-float4 main( float4 pos : POSITION ) : SV_POSITION
+struct PixelInputType
 {
-	float4 output = mul( pos, worldMatrix );
-	output = mul( output, viewMatrix );
-	output = mul( output, projectionMatrix );
+	float4 position : SV_POSITION;
+	float3 normal : NORMAL;
+};
+
+PixelInputType main( float4 _position : POSITION, float3 _normal : NORMAL )
+{
+	PixelInputType output;
+
+	output.position = mul( _position, worldMatrix );
+	output.position = mul( output.position, viewMatrix );
+	output.position = mul( output.position, projectionMatrix );
+
+	output.normal = mul( _normal, (float3x3)worldMatrix );
+	output.normal = normalize( output.normal );
 
 	return output;
 }

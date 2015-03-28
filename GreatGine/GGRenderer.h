@@ -43,6 +43,8 @@ private:
 	Microsoft::WRL::ComPtr<ID2D1Factory> m_factory2d;
 	Microsoft::WRL::ComPtr<ID3D11RenderTargetView> m_renderTargetView;
 	Microsoft::WRL::ComPtr<ID3D11RasterizerState> m_rasterizerState[ FILL_TYPE_COUNT ];
+	Microsoft::WRL::ComPtr<ID3D11Texture2D> m_depthStencil;
+	Microsoft::WRL::ComPtr<ID3D11DepthStencilView> m_depthStencilView;
 	Microsoft::WRL::ComPtr<ID3D11Buffer> m_worldBuffer;
 	Microsoft::WRL::ComPtr<ID2D1RenderTarget> m_renderTarget2D;
 	Microsoft::WRL::ComPtr<ID2D1SolidColorBrush> m_solidBrush;

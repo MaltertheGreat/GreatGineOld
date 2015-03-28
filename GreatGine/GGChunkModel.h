@@ -18,7 +18,8 @@ public:
 
 private:
 	void CreateMeshData( GGMeshData& _meshData, const std::vector<GGDepthLevel>& _depthLevels, UINT _lod, UINT _count = 1, const DirectX::XMFLOAT3& _center = { 0.0f, 0.0f, 0.0f } );
-	void CreateCube( GGMeshData& _meshData, const DirectX::XMFLOAT3& _center, float _radius );
+	std::array<DirectX::XMFLOAT3, 8> CreateCentersArray( const DirectX::XMFLOAT3& _center, float _voxelRadius );
+	void CreateVoxel( GGMeshData& _meshData, const DirectX::XMFLOAT3& _center, float _radius );
 
 private:
 	std::unique_ptr<GGMesh> m_mesh;

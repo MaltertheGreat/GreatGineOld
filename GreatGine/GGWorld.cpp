@@ -37,23 +37,29 @@ void GGWorld::CreateWorld()
 	float x = -chunkOffset;
 	float z = -chunkOffset;
 
-	for( auto& chunk: m_chunks )
+	for( auto& chunk : m_chunks )
 	{
-		GGSubdivisionLevel level = { { 1, 1, 1, 1, 1, 1, 1, 1 }, { 1 } };
+		GGSubdivisionLevel level = { { 1, 1, 0, 1, 1, 1, 1, 1 }, {} };
+		level.subdivisions[ 2 ] = 1;
 		vector<GGSubdivisionLevel> subdivisionLevels = { level };
 
 		vector<GGDepthLevel> depthLevels = { { subdivisionLevels } };
 
 		// Testing code for debug purposes ;)
 		// 2. depth level
+		level.voxels = { { 0, 0, 0, 0, 0, 1, 0, 0 } };
+		level.subdivisions.reset();
+		level.subdivisions[ 1 ] = 1;
+		level.subdivisions[ 4 ] = 1;
+		level.subdivisions[ 7 ] = 1;
 		subdivisionLevels = { level };
 		depthLevels.push_back( { subdivisionLevels } );
 
 		// 3. depth level
 		level.subdivisions.reset();
 		subdivisionLevels = { level };
+		level.voxels = { { 0, 0, 0, 1, 0, 0, 0, 0 } };
 		depthLevels.push_back( { subdivisionLevels } );
-
 
 		chunk.SetContent( move( depthLevels ) );
 
@@ -78,11 +84,11 @@ void GGWorld::CreateWorld()
 
 		chunk.SetContent( move( depthLevels ) );*/
 	}
-	
+
 	return;
 }
 
-void GGWorld::RandomlyPopulateDepthLevel( vector<unique_ptr<GGDepthLevel>>& _depthLevels, vector<bool>& _subdivisions )
+void GGWorld::RandomlyPopulateDepthLevel( vector<unique_ptr<GGDepthLevel>>&, vector<bool>& )
 {
 	/*static const UINT subvoxelsInVoxel = 8;
 	vector<GGVoxel> voxels;
@@ -91,20 +97,19 @@ void GGWorld::RandomlyPopulateDepthLevel( vector<unique_ptr<GGDepthLevel>>& _dep
 	vector<GGVoxel> voxelsTemp( subvoxelsInVoxel, 1 );
 	vector<bool> subdivisionsTemp( subvoxelsInVoxel, false );
 
-
 	for( auto subdivision : _subdivisions )	// Every spot marked for subdivision gets 8 voxels
 	{
-		if( subdivision )
-		{
-			for( auto voxel : voxelsTemp )
-			{
-				voxels.push_back( voxel );
-			}
-			for( auto subdivision : subdivisionsTemp )
-			{
-				subdivisions.push_back( subdivision );
-			}
-		}
+	if( subdivision )
+	{
+	for( auto voxel : voxelsTemp )
+	{
+	voxels.push_back( voxel );
+	}
+	for( auto subdivision : subdivisionsTemp )
+	{
+	subdivisions.push_back( subdivision );
+	}
+	}
 	}
 
 	_depthLevels.emplace_back( new GGDepthLevel( move( voxels ), move( subdivisions ) ) );*/

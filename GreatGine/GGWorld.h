@@ -10,7 +10,7 @@
 class GGWorld
 {
 public:
-	static const int dimension = 8;
+	static const int dimension = 1;
 
 public:
 	GGWorld( GGInputProcessor& _inputProcessor );

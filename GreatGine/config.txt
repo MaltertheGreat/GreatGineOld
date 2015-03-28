@@ -21,4 +21,6 @@ Hkey_forward=0x57
 Hkey_backward=0x53
 Hkey_rightward=0x44
 Hkey_leftward=0x41
+Hkey_upward=0x20
+Hkey_downward=0x10
 Hkey_fill_type=0x70

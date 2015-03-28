@@ -13,7 +13,8 @@ void GGFreeCamera::Update( float _frameTime )
 {
 	XMVECTOR position = XMLoadFloat3( &m_position );
 	XMVECTOR velocity = XMLoadFloat3( &m_velocity );
-	XMVECTOR rotation = XMLoadFloat3( &m_rotation );
+	XMFLOAT3 horizontalRotation = { 0.0f, m_rotation.y, 0.0f };
+	XMVECTOR rotation = XMLoadFloat3( &horizontalRotation );
 
 	rotation = XMQuaternionRotationRollPitchYawFromVector( rotation );
 	velocity = XMVector3Rotate( velocity, rotation );
@@ -45,6 +46,15 @@ void GGFreeCamera::HandleActionInput( GG_ACTION_INPUT _input, bool _down )
 		{
 			m_velocity.x = -5.0f;
 		}
+
+		if( _input == GG_ACTION_INPUT_MOVE_UPWARD )
+		{
+			m_velocity.y = 5.0f;
+		}
+		else if( _input == GG_ACTION_INPUT_MOVE_DOWNWARD )
+		{
+			m_velocity.y = -5.0f;
+		}
 	}
 	else
 	{
@@ -64,6 +74,15 @@ void GGFreeCamera::HandleActionInput( GG_ACTION_INPUT _input, bool _down )
 		else if( _input == GG_ACTION_INPUT_MOVE_LEFTWARD )
 		{
 			m_velocity.x = 0.0f;
+		}
+
+		if( _input == GG_ACTION_INPUT_MOVE_UPWARD )
+		{
+			m_velocity.y = 0.0f;
+		}
+		else if( _input == GG_ACTION_INPUT_MOVE_DOWNWARD )
+		{
+			m_velocity.y = 0.0f;
 		}
 	}
 

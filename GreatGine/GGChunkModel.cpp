@@ -34,158 +34,186 @@ const DirectX::XMFLOAT4X4& GGChunkModel::GetTransformation() const
 
 void GGChunkModel::CreateMeshData( GGMeshData& _meshData, const vector<GGDepthLevel>& _depthLevels, UINT _lod, UINT _count, const XMFLOAT3& _center )
 {
-	// Work in progress
-
-	float voxelRadius = 4 / static_cast<float>(_count);
+	float chunkRadius = 4.0f;
+	float depthLevelDimension = powf( 2, static_cast<float>(_count - 1) ); // Count in voxels
+	float voxelRadius = chunkRadius / depthLevelDimension;
+	array<XMFLOAT3, 8> newCenters = CreateCentersArray( _center, voxelRadius );
 
 	auto& depthLevel = _depthLevels[ _count - 1 ];
 	for( auto& subdivisionLevel : depthLevel.subdivisionLevels )
 	{
 		auto& subdivisions = subdivisionLevel.subdivisions;
-		
-		// Left, down, front
+		for( UINT i = 0; i < 8; ++i )
 		{
-			XMFLOAT3 newCenter = _center;
-			newCenter.x -= voxelRadius;
-			newCenter.y -= voxelRadius;
-			newCenter.z -= voxelRadius;
-
-			if( subdivisions[ 0 ] )
+			XMFLOAT3 newCenter = newCenters[ i ];
+			if( subdivisions[ i ] )
 			{
 				CreateMeshData( _meshData, _depthLevels, _lod, _count + 1, newCenter );
 			}
 			else
 			{
-				CreateCube( _meshData, newCenter, voxelRadius );
-			}
-		}
-
-		// Left, down, back
-		{
-			XMFLOAT3 newCenter = _center;
-			newCenter.x -= voxelRadius;
-			newCenter.y -= voxelRadius;
-			newCenter.z += voxelRadius;
-
-			if( subdivisions[ 1 ] )
-			{
-				CreateMeshData( _meshData, _depthLevels, _lod, _count + 1, newCenter );
-			}
-			else
-			{
-				CreateCube( _meshData, newCenter, voxelRadius );
-			}
-		}
-
-		// Left, up, front
-		{
-			XMFLOAT3 newCenter = _center;
-			newCenter.x -= voxelRadius;
-			newCenter.y += voxelRadius;
-			newCenter.z -= voxelRadius;
-
-			if( subdivisions[ 2 ] )
-			{
-				CreateMeshData( _meshData, _depthLevels, _lod, _count + 1, newCenter );
-			}
-			else
-			{
-				CreateCube( _meshData, newCenter, voxelRadius );
-			}
-		}
-
-		// Left, up, back
-		{
-			XMFLOAT3 newCenter = _center;
-			newCenter.x -= voxelRadius;
-			newCenter.y += voxelRadius;
-			newCenter.z += voxelRadius;
-
-			if( subdivisions[ 3 ] )
-			{
-				CreateMeshData( _meshData, _depthLevels, _lod, _count + 1, newCenter );
-			}
-			else
-			{
-				CreateCube( _meshData, newCenter, voxelRadius );
-			}
-		}
-
-		// Right, down, front
-		{
-			XMFLOAT3 newCenter = _center;
-			newCenter.x += voxelRadius;
-			newCenter.y -= voxelRadius;
-			newCenter.z -= voxelRadius;
-
-			if( subdivisions[ 4 ] )
-			{
-				CreateMeshData( _meshData, _depthLevels, _lod, _count + 1, newCenter );
-			}
-			else
-			{
-				CreateCube( _meshData, newCenter, voxelRadius );
-			}
-		}
-
-		// Right, down, back
-		{
-			XMFLOAT3 newCenter = _center;
-			newCenter.x += voxelRadius;
-			newCenter.y -= voxelRadius;
-			newCenter.z += voxelRadius;
-
-			if( subdivisions[ 5 ] )
-			{
-				CreateMeshData( _meshData, _depthLevels, _lod, _count + 1, newCenter );
-			}
-			else
-			{
-				CreateCube( _meshData, newCenter, voxelRadius );
-			}
-		}
-
-		// Right, up, back
-		{
-			XMFLOAT3 newCenter = _center;
-			newCenter.x += voxelRadius;
-			newCenter.y += voxelRadius;
-			newCenter.z -= voxelRadius;
-
-			if( subdivisions[ 6 ] )
-			{
-				CreateMeshData( _meshData, _depthLevels, _lod, _count + 1, newCenter );
-			}
-			else
-			{
-				CreateCube( _meshData, newCenter, voxelRadius );
-			}
-		}
-
-		// Right, up, front
-		{
-			XMFLOAT3 newCenter = _center;
-			newCenter.x += voxelRadius;
-			newCenter.y += voxelRadius;
-			newCenter.z += voxelRadius;
-
-			if( subdivisions[ 7 ] )
-			{
-				CreateMeshData( _meshData, _depthLevels, _lod, _count + 1, newCenter );
-			}
-			else
-			{
-				CreateCube( _meshData, newCenter, voxelRadius );
+				if( subdivisionLevel.voxels[ i ].element )
+				{
+					CreateVoxel( _meshData, newCenter, voxelRadius );
+				}
 			}
 		}
 	}
 }
 
-void GGChunkModel::CreateCube( GGMeshData& _meshData, const DirectX::XMFLOAT3& _center, float _radius )
+array<XMFLOAT3, 8> GGChunkModel::CreateCentersArray( const XMFLOAT3& _center, float _voxelRadius )
 {
-	GGMeshData::GGIndex lastIndex = _meshData.vertices.size();
+	array<XMFLOAT3, 8> newCenters;
+	newCenters.fill( _center );
 
-	_meshData.vertices.push_back( { XMFLOAT3( _center.x - _radius, _center.y + _radius, _center.z - _radius ) } );
+	// Left, down, front
+	newCenters[ 0 ].x -= _voxelRadius;
+	newCenters[ 0 ].y -= _voxelRadius;
+	newCenters[ 0 ].z -= _voxelRadius;
+
+	// Left, down, back
+	newCenters[ 1 ].x -= _voxelRadius;
+	newCenters[ 1 ].y -= _voxelRadius;
+	newCenters[ 1 ].z += _voxelRadius;
+
+	// Left, up, front
+	newCenters[ 2 ].x -= _voxelRadius;
+	newCenters[ 2 ].y += _voxelRadius;
+	newCenters[ 2 ].z -= _voxelRadius;
+
+	// Left, up, back
+	newCenters[ 3 ].x -= _voxelRadius;
+	newCenters[ 3 ].y += _voxelRadius;
+	newCenters[ 3 ].z += _voxelRadius;
+
+	// Right, down, front
+	newCenters[ 4 ].x += _voxelRadius;
+	newCenters[ 4 ].y -= _voxelRadius;
+	newCenters[ 4 ].z -= _voxelRadius;
+
+	// Right, down, back
+	newCenters[ 5 ].x += _voxelRadius;
+	newCenters[ 5 ].y -= _voxelRadius;
+	newCenters[ 5 ].z += _voxelRadius;
+
+	// Right, up, back
+	newCenters[ 6 ].x += _voxelRadius;
+	newCenters[ 6 ].y += _voxelRadius;
+	newCenters[ 6 ].z -= _voxelRadius;
+
+	// Right, up, front
+	newCenters[ 7 ].x += _voxelRadius;
+	newCenters[ 7 ].y += _voxelRadius;
+	newCenters[ 7 ].z += _voxelRadius;
+
+	return newCenters;
+}
+
+void GGChunkModel::CreateVoxel( GGMeshData& _meshData, const DirectX::XMFLOAT3& _center, float _radius )
+{
+	// Front
+	{
+		UINT indexCount = _meshData.vertices.size();
+		_meshData.vertices.push_back( { { _center.x - _radius, _center.y - _radius, _center.z - _radius }, { 0.0f, 0.0f, -1.0f } } );
+		_meshData.vertices.push_back( { { _center.x - _radius, _center.y + _radius, _center.z - _radius }, { 0.0f, 0.0f, -1.0f } } );
+		_meshData.vertices.push_back( { { _center.x + _radius, _center.y + _radius, _center.z - _radius }, { 0.0f, 0.0f, -1.0f } } );
+		_meshData.vertices.push_back( { { _center.x + _radius, _center.y - _radius, _center.z - _radius }, { 0.0f, 0.0f, -1.0f } } );
+
+		_meshData.indices.push_back( indexCount + 0 );
+		_meshData.indices.push_back( indexCount + 1 );
+		_meshData.indices.push_back( indexCount + 2 );
+
+		_meshData.indices.push_back( indexCount + 2 );
+		_meshData.indices.push_back( indexCount + 3 );
+		_meshData.indices.push_back( indexCount + 0 );
+	}
+
+	// Back
+	{
+		UINT indexCount = _meshData.vertices.size();
+		_meshData.vertices.push_back( { { _center.x + _radius, _center.y - _radius, _center.z + _radius }, { 0.0f, 0.0f, 1.0f } } );
+		_meshData.vertices.push_back( { { _center.x + _radius, _center.y + _radius, _center.z + _radius }, { 0.0f, 0.0f, 1.0f } } );
+		_meshData.vertices.push_back( { { _center.x - _radius, _center.y + _radius, _center.z + _radius }, { 0.0f, 0.0f, 1.0f } } );
+		_meshData.vertices.push_back( { { _center.x - _radius, _center.y - _radius, _center.z + _radius }, { 0.0f, 0.0f, 1.0f } } );
+
+		_meshData.indices.push_back( indexCount + 0 );
+		_meshData.indices.push_back( indexCount + 1 );
+		_meshData.indices.push_back( indexCount + 2 );
+
+		_meshData.indices.push_back( indexCount + 2 );
+		_meshData.indices.push_back( indexCount + 3 );
+		_meshData.indices.push_back( indexCount + 0 );
+	}
+
+	// Right
+	{
+		UINT indexCount = _meshData.vertices.size();
+		_meshData.vertices.push_back( { { _center.x + _radius, _center.y - _radius, _center.z - _radius }, { 1.0f, 0.0f, 0.0f } } );
+		_meshData.vertices.push_back( { { _center.x + _radius, _center.y + _radius, _center.z - _radius }, { 1.0f, 0.0f, 0.0f } } );
+		_meshData.vertices.push_back( { { _center.x + _radius, _center.y + _radius, _center.z + _radius }, { 1.0f, 0.0f, 0.0f } } );
+		_meshData.vertices.push_back( { { _center.x + _radius, _center.y - _radius, _center.z + _radius }, { 1.0f, 0.0f, 0.0f } } );
+
+		_meshData.indices.push_back( indexCount + 0 );
+		_meshData.indices.push_back( indexCount + 1 );
+		_meshData.indices.push_back( indexCount + 2 );
+
+		_meshData.indices.push_back( indexCount + 2 );
+		_meshData.indices.push_back( indexCount + 3 );
+		_meshData.indices.push_back( indexCount + 0 );
+	}
+
+	// Left
+	{
+		UINT indexCount = _meshData.vertices.size();
+		_meshData.vertices.push_back( { { _center.x - _radius, _center.y - _radius, _center.z + _radius }, { -1.0f, 0.0f, 0.0f } } );
+		_meshData.vertices.push_back( { { _center.x - _radius, _center.y + _radius, _center.z + _radius }, { -1.0f, 0.0f, 0.0f } } );
+		_meshData.vertices.push_back( { { _center.x - _radius, _center.y + _radius, _center.z - _radius }, { -1.0f, 0.0f, 0.0f } } );
+		_meshData.vertices.push_back( { { _center.x - _radius, _center.y - _radius, _center.z - _radius }, { -1.0f, 0.0f, 0.0f } } );
+
+		_meshData.indices.push_back( indexCount + 0 );
+		_meshData.indices.push_back( indexCount + 1 );
+		_meshData.indices.push_back( indexCount + 2 );
+
+		_meshData.indices.push_back( indexCount + 2 );
+		_meshData.indices.push_back( indexCount + 3 );
+		_meshData.indices.push_back( indexCount + 0 );
+	}
+
+	// Top
+	{
+		UINT indexCount = _meshData.vertices.size();
+		_meshData.vertices.push_back( { { _center.x - _radius, _center.y + _radius, _center.z - _radius }, { 0.0f, 1.0f, 0.0f } } );
+		_meshData.vertices.push_back( { { _center.x - _radius, _center.y + _radius, _center.z + _radius }, { 0.0f, 1.0f, 0.0f } } );
+		_meshData.vertices.push_back( { { _center.x + _radius, _center.y + _radius, _center.z + _radius }, { 0.0f, 1.0f, 0.0f } } );
+		_meshData.vertices.push_back( { { _center.x + _radius, _center.y + _radius, _center.z - _radius }, { 0.0f, 1.0f, 0.0f } } );
+
+		_meshData.indices.push_back( indexCount + 0 );
+		_meshData.indices.push_back( indexCount + 1 );
+		_meshData.indices.push_back( indexCount + 2 );
+
+		_meshData.indices.push_back( indexCount + 2 );
+		_meshData.indices.push_back( indexCount + 3 );
+		_meshData.indices.push_back( indexCount + 0 );
+	}
+
+	// Bottom
+	{
+		UINT indexCount = _meshData.vertices.size();
+		_meshData.vertices.push_back( { { _center.x - _radius, _center.y - _radius, _center.z + _radius }, { 0.0f, -1.0f, 0.0f } } );
+		_meshData.vertices.push_back( { { _center.x - _radius, _center.y - _radius, _center.z - _radius }, { 0.0f, -1.0f, 0.0f } } );
+		_meshData.vertices.push_back( { { _center.x + _radius, _center.y - _radius, _center.z - _radius }, { 0.0f, -1.0f, 0.0f } } );
+		_meshData.vertices.push_back( { { _center.x + _radius, _center.y - _radius, _center.z + _radius }, { 0.0f, -1.0f, 0.0f } } );
+
+		_meshData.indices.push_back( indexCount + 0 );
+		_meshData.indices.push_back( indexCount + 1 );
+		_meshData.indices.push_back( indexCount + 2 );
+
+		_meshData.indices.push_back( indexCount + 2 );
+		_meshData.indices.push_back( indexCount + 3 );
+		_meshData.indices.push_back( indexCount + 0 );
+	}
+
+	/*_meshData.vertices.push_back( { XMFLOAT3( _center.x - _radius, _center.y + _radius, _center.z - _radius ) } );
 	_meshData.vertices.push_back( { XMFLOAT3( _center.x + _radius, _center.y + _radius, _center.z - _radius ) } );
 	_meshData.vertices.push_back( { XMFLOAT3( _center.x + _radius, _center.y + _radius, _center.z + _radius ) } );
 	_meshData.vertices.push_back( { XMFLOAT3( _center.x - _radius, _center.y + _radius, _center.z + _radius ) } );
@@ -240,7 +268,7 @@ void GGChunkModel::CreateCube( GGMeshData& _meshData, const DirectX::XMFLOAT3& _
 
 	_meshData.indices.push_back( lastIndex + 7 );
 	_meshData.indices.push_back( lastIndex + 4 );
-	_meshData.indices.push_back( lastIndex + 6 );
+	_meshData.indices.push_back( lastIndex + 6 );*/
 
 	return;
 }
