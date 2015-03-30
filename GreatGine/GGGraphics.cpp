@@ -15,8 +15,7 @@ GGGraphics::GGGraphics( const GGWindow& _window, const GGConfig& _config )
 	m_renderer( m_driver, _config.GetInt( "sync_interval" ) ),
 	m_camera( m_device.CreateCamera( XMConvertToRadians( _config.GetFloat( "fov" ) ), _config.GetInt( "resolutionX" ), _config.GetInt( "resolutionY" ) ) ),
 	m_basicShader( m_device.CreateShader() )
-{
-}
+{}
 
 void GGGraphics::Update( GGWorld& _world, float _frameTime )
 {

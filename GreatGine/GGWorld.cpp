@@ -1,5 +1,6 @@
 #include "PCH.h"
 #include "GGWorld.h"
+#include <random>
 using namespace DirectX;
 using namespace std;
 
@@ -39,7 +40,7 @@ void GGWorld::CreateWorld()
 
 	for( auto& chunk : m_chunks )
 	{
-		GGSubdivisionLevel level = { { 1, 1, 0, 1, 1, 1, 1, 1 }, {} };
+		/*GGSubdivisionLevel level = { { 1, 1, 0, 1, 1, 1, 1, 1 }, {} };
 		level.subdivisions[ 2 ] = 1;
 		vector<GGSubdivisionLevel> subdivisionLevels = { level };
 
@@ -57,11 +58,14 @@ void GGWorld::CreateWorld()
 
 		// 3. depth level
 		level.subdivisions.reset();
-		subdivisionLevels = { level };
-		level.voxels = { { 0, 0, 0, 1, 0, 0, 0, 0 } };
-		depthLevels.push_back( { subdivisionLevels } );
+		level.voxels = { { 0, 0, 0, 0, 0, 1, 0, 0 } };
+		subdivisionLevels = { level, level, level };
+		depthLevels.push_back( { subdivisionLevels } );*/
 
-		chunk.SetContent( move( depthLevels ) );
+		vector<std::unique_ptr<GGDepthLevel>> depthLevels;
+		RandomlyPopulateChunk( depthLevels );
+
+		chunk.SetContent( depthLevels );
 
 		XMFLOAT3 position = { x, 0.0f, z };
 		chunk.SetPosition( position );
@@ -72,47 +76,56 @@ void GGWorld::CreateWorld()
 			x = -chunkOffset;
 			z += m_chunkDiameter;
 		}
-
-		/*vector<unique_ptr<GGDepthLevel>> depthLevels;
-
-		vector<GGVoxel> voxels = { 1 };
-		vector<bool> subdivisions( voxels.size(), true );
-		depthLevels.emplace_back( new GGDepthLevel( move( voxels ), move( subdivisions ) ) );
-
-		RandomlyPopulateDepthLevel( depthLevels, subdivisions );
-		RandomlyPopulateDepthLevel( depthLevels, depthLevels.back()->subdivisions );
-
-		chunk.SetContent( move( depthLevels ) );*/
 	}
 
 	return;
 }
 
-void GGWorld::RandomlyPopulateDepthLevel( vector<unique_ptr<GGDepthLevel>>&, vector<bool>& )
+bool GGWorld::RandomlyPopulateChunk( vector<std::unique_ptr<GGDepthLevel>>& _depthLevels, UINT _maxDepth, UINT _depth )
 {
-	/*static const UINT subvoxelsInVoxel = 8;
-	vector<GGVoxel> voxels;
-	vector<bool> subdivisions;
+	static default_random_engine gen;
+	static bernoulli_distribution subdivide( 0.25 );
+	static bernoulli_distribution solid( 0.2 );
 
-	vector<GGVoxel> voxelsTemp( subvoxelsInVoxel, 1 );
-	vector<bool> subdivisionsTemp( subvoxelsInVoxel, false );
+	int solidVoxelCount = 0;
 
-	for( auto subdivision : _subdivisions )	// Every spot marked for subdivision gets 8 voxels
+	if( _depthLevels.size() <= _depth )
 	{
-	if( subdivision )
-	{
-	for( auto voxel : voxelsTemp )
-	{
-	voxels.push_back( voxel );
-	}
-	for( auto subdivision : subdivisionsTemp )
-	{
-	subdivisions.push_back( subdivision );
-	}
-	}
+		_depthLevels.push_back( {} );
 	}
 
-	_depthLevels.emplace_back( new GGDepthLevel( move( voxels ), move( subdivisions ) ) );*/
+	GGSubdivisionLevel subdivisionLevel;
+	auto& voxels = subdivisionLevel.voxels;
+	auto& subdivisions = subdivisionLevel.subdivisions;
+	for( UINT i = 0; i < subdivisions.size(); ++i )
+	{
+		if( subdivide( gen ) && (_depth + 1 < _maxDepth) )
+		{
+			if( RandomlyPopulateChunk( _depthLevels, _maxDepth, _depth + 1 ) )
+			{
+				voxels[ i ].element = _depth + 1;
+			}
+			subdivisions[ i ] = true;
+		}
+		else
+		{
+			if( solid( gen ) )
+			{
+				voxels[ i ].element = _depth + 1;
+				++solidVoxelCount;
+			}
+		}
+	}
 
-	return;
+	auto& depthLevel = _depthLevels[ _depth ];
+	if( _depthLevels[ _depth ] )
+	{
+		depthLevel->subdivisionLevels.push_back( subdivisionLevel );
+	}
+	else
+	{
+		depthLevel.reset( new GGDepthLevel{ { subdivisionLevel } } );
+	}
+
+	return (solidVoxelCount >= 4);
 }

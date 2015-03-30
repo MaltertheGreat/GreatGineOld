@@ -10,7 +10,7 @@
 class GGWorld
 {
 public:
-	static const int dimension = 1;
+	static const int dimension = 8;
 
 public:
 	GGWorld( GGInputProcessor& _inputProcessor );
@@ -23,7 +23,7 @@ public:
 
 private:
 	void CreateWorld();
-	void RandomlyPopulateDepthLevel( std::vector<std::unique_ptr<GGDepthLevel>>& _depthLevels, std::vector<bool>& _subdivisions );
+	bool RandomlyPopulateChunk( std::vector<std::unique_ptr<GGDepthLevel>>& _depthLevels, UINT _maxDepth = 8, UINT _depth = 0 );
 
 private:
 	GGFreeCamera m_freeCamera;

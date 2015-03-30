@@ -6,9 +6,7 @@ using namespace std;
 GGChunk::GGChunk()
 	:
 	m_hasChanged( true )
-{
-
-}
+{}
 
 void GGChunk::SetChangeState( bool _hasChanged )
 {
@@ -17,9 +15,9 @@ void GGChunk::SetChangeState( bool _hasChanged )
 	return;
 }
 
-void GGChunk::SetContent( vector<GGDepthLevel>&& _depthLevels )
+void GGChunk::SetContent( vector<std::unique_ptr<GGDepthLevel>>& _depthLevels )
 {
-	m_depthLevels = move(_depthLevels);
+	m_depthLevels = move( _depthLevels );
 
 	return;
 }
@@ -36,7 +34,7 @@ bool GGChunk::HasChanged() const
 	return m_hasChanged;
 }
 
-const vector<GGDepthLevel>& GGChunk::GetDepthLevels() const
+const vector<std::unique_ptr<GGDepthLevel>>& GGChunk::GetDepthLevels() const
 {
 	return m_depthLevels;
 }

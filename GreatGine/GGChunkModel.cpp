@@ -6,7 +6,6 @@ using namespace std;
 
 void GGChunkModel::Create( const GGDevice& _device, const GGChunk& _chunk, UINT _lod )
 {
-	//m_mesh = _device.CreateMesh( GGCubeMeshData( 16.0f ) );
 	auto& depthLevels = _chunk.GetDepthLevels();
 	if( _lod == 0 || _lod > depthLevels.size() )
 	{
@@ -15,7 +14,11 @@ void GGChunkModel::Create( const GGDevice& _device, const GGChunk& _chunk, UINT 
 
 	GGMeshData meshData;
 	CreateMeshData( meshData, depthLevels, _lod );
-	m_mesh = _device.CreateMesh( meshData );
+
+	if( meshData.indices.size() )
+	{
+		m_mesh = _device.CreateMesh( meshData );
+	}
 
 	// Set chunk model transformation matrix
 	XMFLOAT3 position = _chunk.GetPosition();
@@ -32,30 +35,30 @@ const DirectX::XMFLOAT4X4& GGChunkModel::GetTransformation() const
 	return m_transformation;
 }
 
-void GGChunkModel::CreateMeshData( GGMeshData& _meshData, const vector<GGDepthLevel>& _depthLevels, UINT _lod, UINT _count, const XMFLOAT3& _center )
+void GGChunkModel::CreateMeshData( GGMeshData& _meshData, const vector<std::unique_ptr<GGDepthLevel>>& _depthLevels, UINT _lod, UINT _depth, UINT _subdivision, const XMFLOAT3& _center )
 {
 	float chunkRadius = 4.0f;
-	float depthLevelDimension = powf( 2, static_cast<float>(_count - 1) ); // Count in voxels
+	float depthLevelDimension = powf( 2, static_cast<float>(_depth) ); // Count in voxels
 	float voxelRadius = chunkRadius / depthLevelDimension;
 	array<XMFLOAT3, 8> newCenters = CreateCentersArray( _center, voxelRadius );
 
-	auto& depthLevel = _depthLevels[ _count - 1 ];
-	for( auto& subdivisionLevel : depthLevel.subdivisionLevels )
+	auto& depthLevel = _depthLevels[ _depth ];
+	auto& subdivisionLevel = depthLevel->subdivisionLevels[ _subdivision ];
+	auto& subdivisions = subdivisionLevel.subdivisions;
+	UINT newSubdivision = 0;
+	for( UINT i = 0; i < 8; ++i )
 	{
-		auto& subdivisions = subdivisionLevel.subdivisions;
-		for( UINT i = 0; i < 8; ++i )
+		XMFLOAT3 newCenter = newCenters[ i ];
+		if( subdivisions[ i ] )
 		{
-			XMFLOAT3 newCenter = newCenters[ i ];
-			if( subdivisions[ i ] )
+			CreateMeshData( _meshData, _depthLevels, _lod, _depth + 1, newSubdivision++, newCenter );
+		}
+		else
+		{
+			if( subdivisionLevel.voxels[ i ].element )
 			{
-				CreateMeshData( _meshData, _depthLevels, _lod, _count + 1, newCenter );
-			}
-			else
-			{
-				if( subdivisionLevel.voxels[ i ].element )
-				{
-					CreateVoxel( _meshData, newCenter, voxelRadius );
-				}
+				XMFLOAT3 color = GetVoxelColor( subdivisionLevel.voxels[ i ].element );
+				CreateVoxel( _meshData, newCenter, voxelRadius, color );
 			}
 		}
 	}
@@ -109,15 +112,15 @@ array<XMFLOAT3, 8> GGChunkModel::CreateCentersArray( const XMFLOAT3& _center, fl
 	return newCenters;
 }
 
-void GGChunkModel::CreateVoxel( GGMeshData& _meshData, const DirectX::XMFLOAT3& _center, float _radius )
+void GGChunkModel::CreateVoxel( GGMeshData& _meshData, const DirectX::XMFLOAT3& _center, float _radius, const DirectX::XMFLOAT3& _color )
 {
 	// Front
 	{
 		UINT indexCount = _meshData.vertices.size();
-		_meshData.vertices.push_back( { { _center.x - _radius, _center.y - _radius, _center.z - _radius }, { 0.0f, 0.0f, -1.0f } } );
-		_meshData.vertices.push_back( { { _center.x - _radius, _center.y + _radius, _center.z - _radius }, { 0.0f, 0.0f, -1.0f } } );
-		_meshData.vertices.push_back( { { _center.x + _radius, _center.y + _radius, _center.z - _radius }, { 0.0f, 0.0f, -1.0f } } );
-		_meshData.vertices.push_back( { { _center.x + _radius, _center.y - _radius, _center.z - _radius }, { 0.0f, 0.0f, -1.0f } } );
+		_meshData.vertices.push_back( { { _center.x - _radius, _center.y - _radius, _center.z - _radius }, { 0.0f, 0.0f, -1.0f }, _color } );
+		_meshData.vertices.push_back( { { _center.x - _radius, _center.y + _radius, _center.z - _radius }, { 0.0f, 0.0f, -1.0f }, _color } );
+		_meshData.vertices.push_back( { { _center.x + _radius, _center.y + _radius, _center.z - _radius }, { 0.0f, 0.0f, -1.0f }, _color } );
+		_meshData.vertices.push_back( { { _center.x + _radius, _center.y - _radius, _center.z - _radius }, { 0.0f, 0.0f, -1.0f }, _color } );
 
 		_meshData.indices.push_back( indexCount + 0 );
 		_meshData.indices.push_back( indexCount + 1 );
@@ -131,10 +134,10 @@ void GGChunkModel::CreateVoxel( GGMeshData& _meshData, const DirectX::XMFLOAT3& 
 	// Back
 	{
 		UINT indexCount = _meshData.vertices.size();
-		_meshData.vertices.push_back( { { _center.x + _radius, _center.y - _radius, _center.z + _radius }, { 0.0f, 0.0f, 1.0f } } );
-		_meshData.vertices.push_back( { { _center.x + _radius, _center.y + _radius, _center.z + _radius }, { 0.0f, 0.0f, 1.0f } } );
-		_meshData.vertices.push_back( { { _center.x - _radius, _center.y + _radius, _center.z + _radius }, { 0.0f, 0.0f, 1.0f } } );
-		_meshData.vertices.push_back( { { _center.x - _radius, _center.y - _radius, _center.z + _radius }, { 0.0f, 0.0f, 1.0f } } );
+		_meshData.vertices.push_back( { { _center.x + _radius, _center.y - _radius, _center.z + _radius }, { 0.0f, 0.0f, 1.0f }, _color } );
+		_meshData.vertices.push_back( { { _center.x + _radius, _center.y + _radius, _center.z + _radius }, { 0.0f, 0.0f, 1.0f }, _color } );
+		_meshData.vertices.push_back( { { _center.x - _radius, _center.y + _radius, _center.z + _radius }, { 0.0f, 0.0f, 1.0f }, _color } );
+		_meshData.vertices.push_back( { { _center.x - _radius, _center.y - _radius, _center.z + _radius }, { 0.0f, 0.0f, 1.0f }, _color } );
 
 		_meshData.indices.push_back( indexCount + 0 );
 		_meshData.indices.push_back( indexCount + 1 );
@@ -148,10 +151,10 @@ void GGChunkModel::CreateVoxel( GGMeshData& _meshData, const DirectX::XMFLOAT3& 
 	// Right
 	{
 		UINT indexCount = _meshData.vertices.size();
-		_meshData.vertices.push_back( { { _center.x + _radius, _center.y - _radius, _center.z - _radius }, { 1.0f, 0.0f, 0.0f } } );
-		_meshData.vertices.push_back( { { _center.x + _radius, _center.y + _radius, _center.z - _radius }, { 1.0f, 0.0f, 0.0f } } );
-		_meshData.vertices.push_back( { { _center.x + _radius, _center.y + _radius, _center.z + _radius }, { 1.0f, 0.0f, 0.0f } } );
-		_meshData.vertices.push_back( { { _center.x + _radius, _center.y - _radius, _center.z + _radius }, { 1.0f, 0.0f, 0.0f } } );
+		_meshData.vertices.push_back( { { _center.x + _radius, _center.y - _radius, _center.z - _radius }, { 1.0f, 0.0f, 0.0f }, _color } );
+		_meshData.vertices.push_back( { { _center.x + _radius, _center.y + _radius, _center.z - _radius }, { 1.0f, 0.0f, 0.0f }, _color } );
+		_meshData.vertices.push_back( { { _center.x + _radius, _center.y + _radius, _center.z + _radius }, { 1.0f, 0.0f, 0.0f }, _color } );
+		_meshData.vertices.push_back( { { _center.x + _radius, _center.y - _radius, _center.z + _radius }, { 1.0f, 0.0f, 0.0f }, _color } );
 
 		_meshData.indices.push_back( indexCount + 0 );
 		_meshData.indices.push_back( indexCount + 1 );
@@ -165,10 +168,10 @@ void GGChunkModel::CreateVoxel( GGMeshData& _meshData, const DirectX::XMFLOAT3& 
 	// Left
 	{
 		UINT indexCount = _meshData.vertices.size();
-		_meshData.vertices.push_back( { { _center.x - _radius, _center.y - _radius, _center.z + _radius }, { -1.0f, 0.0f, 0.0f } } );
-		_meshData.vertices.push_back( { { _center.x - _radius, _center.y + _radius, _center.z + _radius }, { -1.0f, 0.0f, 0.0f } } );
-		_meshData.vertices.push_back( { { _center.x - _radius, _center.y + _radius, _center.z - _radius }, { -1.0f, 0.0f, 0.0f } } );
-		_meshData.vertices.push_back( { { _center.x - _radius, _center.y - _radius, _center.z - _radius }, { -1.0f, 0.0f, 0.0f } } );
+		_meshData.vertices.push_back( { { _center.x - _radius, _center.y - _radius, _center.z + _radius }, { -1.0f, 0.0f, 0.0f }, _color } );
+		_meshData.vertices.push_back( { { _center.x - _radius, _center.y + _radius, _center.z + _radius }, { -1.0f, 0.0f, 0.0f }, _color } );
+		_meshData.vertices.push_back( { { _center.x - _radius, _center.y + _radius, _center.z - _radius }, { -1.0f, 0.0f, 0.0f }, _color } );
+		_meshData.vertices.push_back( { { _center.x - _radius, _center.y - _radius, _center.z - _radius }, { -1.0f, 0.0f, 0.0f }, _color } );
 
 		_meshData.indices.push_back( indexCount + 0 );
 		_meshData.indices.push_back( indexCount + 1 );
@@ -182,10 +185,10 @@ void GGChunkModel::CreateVoxel( GGMeshData& _meshData, const DirectX::XMFLOAT3& 
 	// Top
 	{
 		UINT indexCount = _meshData.vertices.size();
-		_meshData.vertices.push_back( { { _center.x - _radius, _center.y + _radius, _center.z - _radius }, { 0.0f, 1.0f, 0.0f } } );
-		_meshData.vertices.push_back( { { _center.x - _radius, _center.y + _radius, _center.z + _radius }, { 0.0f, 1.0f, 0.0f } } );
-		_meshData.vertices.push_back( { { _center.x + _radius, _center.y + _radius, _center.z + _radius }, { 0.0f, 1.0f, 0.0f } } );
-		_meshData.vertices.push_back( { { _center.x + _radius, _center.y + _radius, _center.z - _radius }, { 0.0f, 1.0f, 0.0f } } );
+		_meshData.vertices.push_back( { { _center.x - _radius, _center.y + _radius, _center.z - _radius }, { 0.0f, 1.0f, 0.0f }, _color } );
+		_meshData.vertices.push_back( { { _center.x - _radius, _center.y + _radius, _center.z + _radius }, { 0.0f, 1.0f, 0.0f }, _color } );
+		_meshData.vertices.push_back( { { _center.x + _radius, _center.y + _radius, _center.z + _radius }, { 0.0f, 1.0f, 0.0f }, _color } );
+		_meshData.vertices.push_back( { { _center.x + _radius, _center.y + _radius, _center.z - _radius }, { 0.0f, 1.0f, 0.0f }, _color } );
 
 		_meshData.indices.push_back( indexCount + 0 );
 		_meshData.indices.push_back( indexCount + 1 );
@@ -199,10 +202,10 @@ void GGChunkModel::CreateVoxel( GGMeshData& _meshData, const DirectX::XMFLOAT3& 
 	// Bottom
 	{
 		UINT indexCount = _meshData.vertices.size();
-		_meshData.vertices.push_back( { { _center.x - _radius, _center.y - _radius, _center.z + _radius }, { 0.0f, -1.0f, 0.0f } } );
-		_meshData.vertices.push_back( { { _center.x - _radius, _center.y - _radius, _center.z - _radius }, { 0.0f, -1.0f, 0.0f } } );
-		_meshData.vertices.push_back( { { _center.x + _radius, _center.y - _radius, _center.z - _radius }, { 0.0f, -1.0f, 0.0f } } );
-		_meshData.vertices.push_back( { { _center.x + _radius, _center.y - _radius, _center.z + _radius }, { 0.0f, -1.0f, 0.0f } } );
+		_meshData.vertices.push_back( { { _center.x - _radius, _center.y - _radius, _center.z + _radius }, { 0.0f, -1.0f, 0.0f }, _color } );
+		_meshData.vertices.push_back( { { _center.x - _radius, _center.y - _radius, _center.z - _radius }, { 0.0f, -1.0f, 0.0f }, _color } );
+		_meshData.vertices.push_back( { { _center.x + _radius, _center.y - _radius, _center.z - _radius }, { 0.0f, -1.0f, 0.0f }, _color } );
+		_meshData.vertices.push_back( { { _center.x + _radius, _center.y - _radius, _center.z + _radius }, { 0.0f, -1.0f, 0.0f }, _color } );
 
 		_meshData.indices.push_back( indexCount + 0 );
 		_meshData.indices.push_back( indexCount + 1 );
@@ -271,4 +274,29 @@ void GGChunkModel::CreateVoxel( GGMeshData& _meshData, const DirectX::XMFLOAT3& 
 	_meshData.indices.push_back( lastIndex + 6 );*/
 
 	return;
+}
+
+XMFLOAT3 GGChunkModel::GetVoxelColor( UINT _element )
+{
+	switch( _element )
+	{
+	case 1:
+		return{ 1.0f, 0.0f, 0.0f };
+	case 2:
+		return{ 1.0f, 0.65f, 0.0f };
+	case 3:
+		return{ 1.0f, 1.0f, 0.0f };
+	case 4:
+		return{ 0.6f, 1.0f, 0.0f };
+	case 5:
+		return{ 0.0f, 0.5f, 0.0f };
+	case 6:
+		return{ 0.0f, 1.0f, 1.0f };
+	case 7:
+		return{ 0.0f, 0.0f, 1.0f };
+	case 8:
+		return{ 0.93f, 0.51f, 0.93f };
+	default:
+		return{ 0.0f, 0.0f, 0.0f };
+	}
 }

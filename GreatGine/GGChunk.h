@@ -13,16 +13,16 @@ public:
 
 public:
 	void SetChangeState( bool _hasChanged );
-	void SetContent( std::vector<GGDepthLevel>&& _depthLevels );
+	void SetContent( std::vector<std::unique_ptr<GGDepthLevel>>& _depthLevels );
 	void SetPosition( const DirectX::XMFLOAT3& _position );
 
 	bool HasChanged() const;
-	const std::vector<GGDepthLevel>& GetDepthLevels() const;
+	const std::vector<std::unique_ptr<GGDepthLevel>>& GetDepthLevels() const;
 	const DirectX::XMFLOAT3& GetPosition() const;
 
 private:
 	bool m_hasChanged;
-	std::vector<GGDepthLevel> m_depthLevels;
+	std::vector<std::unique_ptr<GGDepthLevel>> m_depthLevels;
 
 	DirectX::XMFLOAT3 m_position;
 };
