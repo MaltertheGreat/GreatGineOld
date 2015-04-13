@@ -1,6 +1,7 @@
 #pragma once
 
 #include <array>
+#include <memory>
 
 #include "GGInputProcessor.h"
 #include "GGIWorldViewer.h"
@@ -10,7 +11,8 @@
 class GGWorld
 {
 public:
-	static const int dimension = 8;
+	static const UINT DIMENSION = 32;
+	typedef std::array<std::unique_ptr<GGChunk>, DIMENSION * DIMENSION> GGChunkArray;
 
 public:
 	GGWorld( GGInputProcessor& _inputProcessor );
@@ -19,16 +21,15 @@ public:
 	void Update( float _frameTime );
 
 	const GGIWorldViewer* GetActiveWorldViewer() const;
-	std::array<GGChunk, dimension * dimension>& GetChunkArray();
+	GGChunkArray& GetChunkArray();
 
 private:
 	void CreateWorld();
-	bool RandomlyPopulateChunk( std::vector<std::unique_ptr<GGDepthLevel>>& _depthLevels, UINT _maxDepth = 8, UINT _depth = 0 );
+	GGChunk::GGVoxelArray CreateRandomVoxels();
 
 private:
 	GGFreeCamera m_freeCamera;
 
 	static const float m_chunkDiameter;
-	std::array<GGChunk, dimension * dimension> m_chunks;
-	// GGPlayerCamera m_playerCamera;
+	GGChunkArray m_chunks;
 };

@@ -2,7 +2,6 @@
 #include "GGGraphics.h"
 #include "GGWindow.h"
 #include "GGConfig.h"
-#include "GGWorld.h"
 #include "GGMeshData.h"
 using namespace DirectX;
 using namespace std;
@@ -23,16 +22,16 @@ void GGGraphics::Update( GGWorld& _world, float _frameTime )
 	m_device.UpdateCamera( m_camera, worldViewer->GetPosition(), worldViewer->GetRotation() );
 
 	auto& chunks = _world.GetChunkArray();
-	for( UINT i = 0; i < (m_dimension * m_dimension); ++i )
+	for( UINT i = 0; i < (GGWorld::DIMENSION * GGWorld::DIMENSION); ++i )
 	{
 		auto& chunk = chunks[ i ];
 		auto& model = m_chunkModels[ i ];
 
-		if( chunk.HasChanged() )
+		if( chunk && chunk->HasChanged() )
 		{
-			model.Create( m_device, chunk );
+			model.Create( m_device, *chunk );
 
-			chunk.SetChangeState( false );
+			chunk->SetChangeState( false );
 		}
 	}
 

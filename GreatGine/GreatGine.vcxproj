@@ -511,7 +511,6 @@
     <ClInclude Include="GGMeshData.h" />
     <ClInclude Include="GGInputHandler.h" />
     <ClInclude Include="GGInputProcessor.h" />
-    <ClInclude Include="GGDepthLevel.h" />
     <ClInclude Include="GGMesh.h" />
     <ClInclude Include="GGRenderer.h" />
     <ClInclude Include="GGShader.h" />
@@ -520,7 +519,6 @@
     <ClInclude Include="GGWorld.h" />
     <ClInclude Include="GGIWorldViewer.h" />
     <ClInclude Include="PCH.h" />
-    <ClInclude Include="GGSubdivisionLevel.h" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="basicPS.hlsl">
