@@ -11,7 +11,7 @@
 class GGWorld
 {
 public:
-	static const UINT DIMENSION = 32;
+	static const UINT DIMENSION = 1;
 	typedef std::array<std::unique_ptr<GGChunk>, DIMENSION * DIMENSION> GGChunkArray;
 
 public:

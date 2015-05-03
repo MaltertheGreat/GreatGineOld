@@ -81,13 +81,13 @@ void GGGraphics::SwitchFillType()
 		m_currentFillType = GGRenderer::FILL_TYPE_SOLID;
 	}
 
+	m_renderer.SetFillType( m_currentFillType );
+
 	return;
 }
 
 void GGGraphics::Render3D()
 {
-	m_renderer.SetFillType( m_currentFillType );
-
 	m_renderer.SetCamera( m_camera );
 
 	m_renderer.SetShader( m_basicShader );
