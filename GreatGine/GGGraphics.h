@@ -10,13 +10,14 @@
 #include "GGChunkModel.h"
 #include "GGShader.h"
 #include "GGDebugInfo.h"
+#include "GGWorld.h"
 
 class GGWindow;
 class GGConfig;
-class GGWorld;
 
 class GGGraphics : public GGInputHandler
 {
+	typedef std::array<GGChunkModel, GGWorld::DIMENSION * GGWorld::DIMENSION> GGChunkModelArray;
 public:
 	GGGraphics( const GGWindow& _window, const GGConfig& _config );
 
@@ -36,13 +37,12 @@ private:
 
 private:
 	GGRenderer::FILL_TYPE m_currentFillType;
-	static const UINT m_dimension = 8;
 
 	GGDirectXDriver m_driver;
 	GGDevice m_device;
 	GGRenderer m_renderer;
 	GGCamera m_camera;
-	std::array<GGChunkModel, m_dimension * m_dimension> m_chunkModels;
+	GGChunkModelArray m_chunkModels;
 	GGShader m_basicShader;
 	GGDebugInfo m_debugInfo;
 };

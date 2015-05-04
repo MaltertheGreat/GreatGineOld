@@ -5,28 +5,27 @@ using namespace std;
 
 GGChunk::GGChunk()
 	:
-	m_hasChanged( true )
+	m_hasChanged( true ),
+	m_voxels( { { 0 } } )
 {}
 
-void GGChunk::SetChangeState( bool _hasChanged )
+GGChunk::GGChunk( GGVoxelArray&& _voxels, const XMFLOAT3& _position )
+	:
+	m_hasChanged( true ),
+	m_position( _position ),
+	m_voxels( _voxels )
+{}
+
+void GGChunk::SetChangeState( bool _state )
 {
-	m_hasChanged = _hasChanged;
+	m_hasChanged = _state;
 
 	return;
 }
 
-void GGChunk::SetContent( vector<std::unique_ptr<GGDepthLevel>>& _depthLevels )
+const XMFLOAT3& GGChunk::GetPosition() const
 {
-	m_depthLevels = move( _depthLevels );
-
-	return;
-}
-
-void GGChunk::SetPosition( const DirectX::XMFLOAT3& _position )
-{
-	m_position = _position;
-
-	return;
+	return m_position;
 }
 
 bool GGChunk::HasChanged() const
@@ -34,12 +33,7 @@ bool GGChunk::HasChanged() const
 	return m_hasChanged;
 }
 
-const vector<std::unique_ptr<GGDepthLevel>>& GGChunk::GetDepthLevels() const
+const GGChunk::GGVoxelArray& GGChunk::GetVoxels() const
 {
-	return m_depthLevels;
-}
-
-const XMFLOAT3& GGChunk::GetPosition() const
-{
-	return m_position;
+	return m_voxels;
 }

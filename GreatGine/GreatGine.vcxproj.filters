@@ -143,9 +143,6 @@
     <ClInclude Include="GGFreeCamera.h">
       <Filter>Header Files\World</Filter>
     </ClInclude>
-    <ClInclude Include="GGDepthLevel.h">
-      <Filter>Header Files\World</Filter>
-    </ClInclude>
     <ClInclude Include="GGCamera.h">
       <Filter>Header Files\Graphics</Filter>
     </ClInclude>
@@ -175,9 +172,6 @@
     </ClInclude>
     <ClInclude Include="GGChunkModel.h">
       <Filter>Header Files\Graphics</Filter>
-    </ClInclude>
-    <ClInclude Include="GGSubdivisionLevel.h">
-      <Filter>Header Files\World</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
