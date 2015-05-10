@@ -1,39 +1,15 @@
 #include "PCH.h"
 #include "GGChunk.h"
-using namespace DirectX;
 using namespace std;
 
-GGChunk::GGChunk()
-	:
-	m_hasChanged( true ),
-	m_voxels( { { 0 } } )
-{}
-
-GGChunk::GGChunk( GGVoxelArray&& _voxels, const XMFLOAT3& _position )
-	:
-	m_hasChanged( true ),
-	m_position( _position ),
-	m_voxels( _voxels )
-{}
-
-void GGChunk::SetChangeState( bool _state )
+void GGChunk::AddObject( GGObject && _object )
 {
-	m_hasChanged = _state;
+	m_objects.push_back( move( _object ) );
 
 	return;
 }
 
-const XMFLOAT3& GGChunk::GetPosition() const
+const std::vector<GGObject>& GGChunk::GetObjects() const
 {
-	return m_position;
-}
-
-bool GGChunk::HasChanged() const
-{
-	return m_hasChanged;
-}
-
-const GGChunk::GGVoxelArray& GGChunk::GetVoxels() const
-{
-	return m_voxels;
+	return m_objects;
 }

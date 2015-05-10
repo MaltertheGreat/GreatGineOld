@@ -7,7 +7,7 @@
 #include "GGDevice.h"
 #include "GGRenderer.h"
 #include "GGCamera.h"
-#include "GGChunkModel.h"
+#include "GGObjectModel.h"
 #include "GGShader.h"
 #include "GGDebugInfo.h"
 #include "GGWorld.h"
@@ -17,7 +17,7 @@ class GGConfig;
 
 class GGGraphics : public GGInputHandler
 {
-	typedef std::array<GGChunkModel, GGWorld::DIMENSION * GGWorld::DIMENSION> GGChunkModelArray;
+	typedef std::array<GGObjectModel, GGWorld::DIAMETER * GGWorld::DIAMETER> GGObjectModelArray;
 public:
 	GGGraphics( const GGWindow& _window, const GGConfig& _config );
 
@@ -42,7 +42,7 @@ private:
 	GGDevice m_device;
 	GGRenderer m_renderer;
 	GGCamera m_camera;
-	GGChunkModelArray m_chunkModels;
+	GGObjectModelArray m_objectModels;
 	GGShader m_basicShader;
 	GGDebugInfo m_debugInfo;
 };

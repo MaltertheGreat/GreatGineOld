@@ -99,6 +99,9 @@
     <ClCompile Include="GGChunkModel.cpp">
       <Filter>Source Files\Graphics</Filter>
     </ClCompile>
+    <ClCompile Include="GGObject.cpp">
+      <Filter>Source Files\World</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GGApplication.h">
@@ -170,7 +173,10 @@
     <ClInclude Include="GGMeshData.h">
       <Filter>Header Files\Graphics</Filter>
     </ClInclude>
-    <ClInclude Include="GGChunkModel.h">
+    <ClInclude Include="GGObject.h">
+      <Filter>Header Files\World</Filter>
+    </ClInclude>
+    <ClInclude Include="GGObjectModel.h">
       <Filter>Header Files\Graphics</Filter>
     </ClInclude>
   </ItemGroup>

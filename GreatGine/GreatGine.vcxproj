@@ -30,43 +30,44 @@
     <ProjectGuid>{650032DE-FDE7-42A7-B7AF-627C99577F25}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>GreatGine</RootNamespace>
+    <TargetPlatformVersion>8.1</TargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>CTP_Nov2013</PlatformToolset>
+    <PlatformToolset>v140</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Profile|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>CTP_Nov2013</PlatformToolset>
+    <PlatformToolset>v140</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>CTP_Nov2013</PlatformToolset>
+    <PlatformToolset>v140</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Profile|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>CTP_Nov2013</PlatformToolset>
+    <PlatformToolset>v140</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>CTP_Nov2013</PlatformToolset>
+    <PlatformToolset>v140</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>CTP_Nov2013</PlatformToolset>
+    <PlatformToolset>v140</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
@@ -422,6 +423,7 @@
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">PCH.h</PrecompiledHeaderFile>
     </ClCompile>
     <ClCompile Include="GGMeshData.cpp" />
+    <ClCompile Include="GGObject.cpp" />
     <ClCompile Include="GGRenderer.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Use</PrecompiledHeader>
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">PCH.h</PrecompiledHeaderFile>
@@ -498,7 +500,7 @@
     <ClInclude Include="GGApplication.h" />
     <ClInclude Include="GGCamera.h" />
     <ClInclude Include="GGChunk.h" />
-    <ClInclude Include="GGChunkModel.h" />
+    <ClInclude Include="GGObjectModel.h" />
     <ClInclude Include="GGConfig.h" />
     <ClInclude Include="GGDebugInfo.h" />
     <ClInclude Include="GGDirectXDriver.h" />
@@ -512,6 +514,7 @@
     <ClInclude Include="GGInputHandler.h" />
     <ClInclude Include="GGInputProcessor.h" />
     <ClInclude Include="GGMesh.h" />
+    <ClInclude Include="GGObject.h" />
     <ClInclude Include="GGRenderer.h" />
     <ClInclude Include="GGShader.h" />
     <ClInclude Include="GGVoxel.h" />

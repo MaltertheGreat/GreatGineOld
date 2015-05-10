@@ -11,8 +11,8 @@
 class GGWorld
 {
 public:
-	static const UINT DIMENSION = 1;
-	typedef std::array<std::unique_ptr<GGChunk>, DIMENSION * DIMENSION> GGChunkArray;
+	static constexpr UINT DIAMETER = 1;
+	typedef std::array<std::unique_ptr<GGChunk>, DIAMETER * DIAMETER> GGChunkArray;
 
 public:
 	GGWorld( GGInputProcessor& _inputProcessor );
@@ -25,7 +25,7 @@ public:
 
 private:
 	void CreateWorld();
-	GGChunk::GGVoxelArray CreateRandomVoxels();
+	GGObject::GGVoxelArray CreateRandomVoxels();
 
 private:
 	GGFreeCamera m_freeCamera;

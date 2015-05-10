@@ -1,29 +1,19 @@
 #pragma once
 
-#include <array>
-#include <DirectXMath.h>
+#include <vector>
 
-#include "GGVoxel.h"
+#include "GGObject.h"
 
 class GGChunk
 {
 public:
-	static const UINT DIMENSION = 16;
-	typedef std::array<GGVoxel, DIMENSION * DIMENSION * DIMENSION> GGVoxelArray;
+	static constexpr float DIMENSION = 16.0f;
 
 public:
-	GGChunk();
-	GGChunk( GGVoxelArray&& _voxels, const DirectX::XMFLOAT3& _position );
+	void AddObject( GGObject&& _object );
 
-public:
-	void SetChangeState( bool _state );
-
-	bool HasChanged() const;
-	const DirectX::XMFLOAT3& GetPosition() const;
-	const GGVoxelArray& GetVoxels() const;
+	const std::vector<GGObject>& GetObjects() const;
 
 private:
-	bool m_hasChanged;
-	DirectX::XMFLOAT3 m_position;
-	GGVoxelArray m_voxels;
+	std::vector<GGObject> m_objects;
 };

@@ -34,37 +34,40 @@ GGWorld::GGChunkArray& GGWorld::GetChunkArray()
 
 void GGWorld::CreateWorld()
 {
-	float chunkOffset = DIMENSION / 2.0f * m_chunkDiameter - m_chunkDiameter * 0.5f;
+	float chunkOffset = DIAMETER / 2.0f * m_chunkDiameter - m_chunkDiameter * 0.5f;
 	float x = -chunkOffset;
 	float z = -chunkOffset;
 
-	for( auto& chunk : m_chunks )
+	for(auto& chunk : m_chunks)
 	{
-		GGChunk::GGVoxelArray voxels = CreateRandomVoxels();
+		GGObject::GGVoxelArray voxels = CreateRandomVoxels();
 
 		XMFLOAT3 position = { x, 0.0f, z };
 		x += m_chunkDiameter;
-		if( x > chunkOffset )
+		if(x > chunkOffset)
 		{
 			x = -chunkOffset;
 			z += m_chunkDiameter;
 		}
 
-		chunk.reset( new GGChunk( std::move( voxels ), position ) );
+		unique_ptr<GGChunk> newChunk( new GGChunk() );
+		newChunk->AddObject( move( GGObject( move( voxels ), 1.0f, position ) ) );
+
+		chunk.swap( newChunk );
 	}
 
 	return;
 }
 
-GGChunk::GGVoxelArray GGWorld::CreateRandomVoxels()
+GGObject::GGVoxelArray GGWorld::CreateRandomVoxels()
 {
 	static default_random_engine gen;
 	static bernoulli_distribution solid( 0.1 );
 
-	GGChunk::GGVoxelArray voxels;
-	for( auto& voxel : voxels )
+	GGObject::GGVoxelArray voxels;
+	for(auto& voxel : voxels)
 	{
-		if( solid( gen ) )
+		if(solid( gen ))
 		{
 			voxel.element = 1;
 		}

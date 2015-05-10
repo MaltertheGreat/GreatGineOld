@@ -22,16 +22,19 @@ void GGGraphics::Update( GGWorld& _world, float _frameTime )
 	m_device.UpdateCamera( m_camera, worldViewer->GetPosition(), worldViewer->GetRotation() );
 
 	auto& chunks = _world.GetChunkArray();
-	for( UINT i = 0; i < (GGWorld::DIMENSION * GGWorld::DIMENSION); ++i )
+	for( UINT i = 0; i < (GGWorld::DIAMETER * GGWorld::DIAMETER); ++i )
 	{
 		auto& chunk = chunks[ i ];
-		auto& model = m_chunkModels[ i ];
+		auto& model = m_objectModels[ i ];
 
-		if( chunk && chunk->HasChanged() )
+		if( chunk )
 		{
-			model.Create( m_device, *chunk );
-
-			chunk->SetChangeState( false );
+			// TODO Check if object has changed
+			auto object = chunk->GetObjects().front();
+			if( object.HasChanged() )
+			{
+				model.Create( m_device, object );
+			}
 		}
 	}
 
@@ -92,7 +95,7 @@ void GGGraphics::Render3D()
 
 	m_renderer.SetShader( m_basicShader );
 
-	for( auto& model : m_chunkModels )
+	for( auto& model : m_objectModels )
 	{
 		auto mesh = model.GetMesh();
 		if( mesh )

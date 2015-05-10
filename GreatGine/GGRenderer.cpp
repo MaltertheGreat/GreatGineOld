@@ -98,8 +98,8 @@ GGRenderer::GGRenderer( GGDirectXDriver& _driver, int _syncInterval )
 	m_deviceContext->RSSetState( m_rasterizerState[ FILL_TYPE_SOLID ].Get() );
 
 	D3D11_VIEWPORT vp;
-	vp.Width = (FLOAT) _driver.GetResX();
-	vp.Height = (FLOAT) _driver.GetResY();
+	vp.Width = (FLOAT)_driver.GetResX();
+	vp.Height = (FLOAT)_driver.GetResY();
 	vp.MinDepth = 0.0f;
 	vp.MaxDepth = 1.0f;
 	vp.TopLeftX = 0;
