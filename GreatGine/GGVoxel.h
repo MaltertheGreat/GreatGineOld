@@ -5,5 +5,5 @@
 struct GGVoxel
 {
 public:
-	UINT element;
+	UINT element = 0;
 };

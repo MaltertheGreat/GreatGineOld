@@ -28,8 +28,11 @@ public:
 
 	void AddObject( GGObject&& _object );
 
-	GG_CHUNK_STATE GetState() const;
 	void SetState( GG_CHUNK_STATE _state );
+
+	GG_CHUNK_STATE GetState() const;
+
+	const DirectX::XMFLOAT3& GetPosition() const;
 
 	const GGObjectList& GetObjects() const;
 	const GGObjectList& GetNewObjects() const;

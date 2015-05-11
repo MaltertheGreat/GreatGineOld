@@ -4,15 +4,18 @@
 using namespace DirectX;
 using namespace std;
 
-void GGObjectModel::Create( const GGDevice& _device, const GGObject& _object )
+void GGObjectModel::Create( const GGDevice& _device, const GGObject& _object, const DirectX::XMFLOAT3& _position )
 {
 	GGMeshData grid = CreateObjectGrid( _object );
 	m_mesh = _device.CreateMesh( grid );
 
 	// Set object model transformation matrix
-	XMFLOAT3 position = _object.GetPosition();
+
+	XMVECTOR position = XMLoadFloat3( &_position );
+	position += XMLoadFloat3( &_object.GetPosition() );
+
 	XMMATRIX trasformation = XMMatrixScaling( 16.0f, 16.0f, 16.0f );
-	trasformation = XMMatrixMultiply( trasformation, XMMatrixTranslation( position.x, position.y, position.z ) );
+	trasformation = XMMatrixMultiply( trasformation, XMMatrixTranslationFromVector( position ) );
 	XMStoreFloat4x4( &m_transformation, trasformation );
 }
 
@@ -50,7 +53,7 @@ void GGObjectModel::CreateVoxel( UINT x, UINT y, UINT z, const GGObject::GGVoxel
 {
 	const float diameter = 1.0f / GGObject::DIAMETER;
 	const float radius = diameter / 2.0f;
-	const float offset = radius * static_cast<float>(GGObject::DIAMETER - 1);
+	const float offset = -radius * static_cast<float>(GGObject::DIAMETER - 1);
 
 	UINT voxelIndex = x * GGObject::DIAMETER * GGObject::DIAMETER + y * GGObject::DIAMETER + z;
 	if( voxels[ voxelIndex ].element == 0 )

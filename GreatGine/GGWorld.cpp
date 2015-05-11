@@ -45,20 +45,21 @@ GGWorld::GGChunkArray GGWorld::GenerateChunks()
 {
 	GGChunkArray chunks;
 
-	float chunkOffset = DIAMETER / 2.0f * GGChunk::DIMENSION - GGChunk::DIMENSION * 0.5f;
+	const float chunkOffset = DIAMETER / 2.0f * GGChunk::DIMENSION - GGChunk::DIMENSION * 0.5f;
 	float x = -chunkOffset;
 	float z = -chunkOffset;
 
 	for( auto& chunk : chunks )
 	{
-		XMFLOAT3 position = { x, 0.0f, z };
-		x += GGChunk::DIMENSION;
-		if( x > chunkOffset )
-		{
-			x = -chunkOffset;
-			z += GGChunk::DIMENSION;
-		}
 		chunk = GGChunk( { x, 0.0f, z } );
+
+		XMFLOAT3 position = { x, 0.0f, z };
+		z += GGChunk::DIMENSION;
+		if( z > chunkOffset )
+		{
+			z = -chunkOffset;
+			x += GGChunk::DIMENSION;
+		}
 	}
 
 	return chunks;

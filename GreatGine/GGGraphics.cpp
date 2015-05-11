@@ -25,11 +25,13 @@ void GGGraphics::Update( GGWorld& _world, float _frameTime )
 	for( UINT i = 0; i < (GGWorld::DIAMETER * GGWorld::DIAMETER); ++i )
 	{
 		auto& newObjects = chunks[ i ].GetNewObjects();
+		auto chunkPosition = chunks[ i ].GetPosition();
+
 		for( auto& object : newObjects )
 		{
 			auto& model = m_objectModels[ i ];
 
-			model.Create( m_device, object );
+			model.Create( m_device, object, chunkPosition );
 		}
 	}
 

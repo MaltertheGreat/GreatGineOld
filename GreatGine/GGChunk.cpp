@@ -25,16 +25,21 @@ void GGChunk::AddObject( GGObject&& _object )
 	return;
 }
 
-GGChunk::GG_CHUNK_STATE GGChunk::GetState() const
-{
-	return m_state;
-}
-
 void GGChunk::SetState( GGChunk::GG_CHUNK_STATE _state )
 {
 	m_state = _state;
 
 	return;
+}
+
+GGChunk::GG_CHUNK_STATE GGChunk::GetState() const
+{
+	return m_state;
+}
+
+const DirectX::XMFLOAT3& GGChunk::GetPosition() const
+{
+	return m_position;
 }
 
 const GGChunk::GGObjectList& GGChunk::GetObjects() const

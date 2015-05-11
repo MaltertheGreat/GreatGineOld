@@ -5,15 +5,14 @@ using namespace std;
 
 GGObject::GGObject( float _voxelDimension )
 	:
-	m_voxelDimension( _voxelDimension ),
-	m_voxels( { 0 } )
+	m_voxelDimension( _voxelDimension )
 {}
 
 GGObject::GGObject( GGVoxelArray && _voxels, float _voxelDimension, const XMFLOAT3 & _position )
 	:
 	m_voxelDimension( _voxelDimension ),
 	m_position( _position ),
-	m_voxels( _voxels )
+	m_voxels( move( _voxels ) )
 {}
 
 const XMFLOAT3& GGObject::GetPosition() const

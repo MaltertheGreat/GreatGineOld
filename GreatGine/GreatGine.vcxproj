@@ -293,7 +293,7 @@
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">PCH.h</PrecompiledHeaderFile>
     </ClCompile>
     <ClCompile Include="GGChunk.cpp" />
-    <ClCompile Include="GGChunkModel.cpp" />
+    <ClCompile Include="GGObjectModel.cpp" />
     <ClCompile Include="GGConfig.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Use</PrecompiledHeader>
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">PCH.h</PrecompiledHeaderFile>

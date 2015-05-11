@@ -11,7 +11,7 @@ class GGDevice;
 class GGObjectModel
 {
 public:
-	void Create( const GGDevice& _device, const GGObject& _object );
+	void Create( const GGDevice& _device, const GGObject& _object, const DirectX::XMFLOAT3& _position );
 
 	const GGMesh* GetMesh() const;
 	const DirectX::XMFLOAT4X4& GetTransformation() const;
