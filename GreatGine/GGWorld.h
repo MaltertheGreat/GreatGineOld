@@ -12,7 +12,7 @@ class GGWorld
 {
 public:
 	static constexpr UINT DIAMETER = 1;
-	typedef std::array<std::unique_ptr<GGChunk>, DIAMETER * DIAMETER> GGChunkArray;
+	typedef std::array<GGChunk, DIAMETER * DIAMETER> GGChunkArray;
 
 public:
 	GGWorld( GGInputProcessor& _inputProcessor );
@@ -24,12 +24,13 @@ public:
 	GGChunkArray& GetChunkArray();
 
 private:
-	void CreateWorld();
+	//TODO: Move these functions to some sort of world generator
+	static GGChunkArray GenerateChunks();
+	void GenerateChunk( GGChunk& _chunk );
 	GGObject::GGVoxelArray CreateRandomVoxels();
 
 private:
 	GGFreeCamera m_freeCamera;
 
-	static const float m_chunkDiameter;
-	GGChunkArray m_chunks;
+	GGChunkArray       m_chunks;
 };

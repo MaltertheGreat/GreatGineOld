@@ -2,14 +2,47 @@
 #include "GGChunk.h"
 using namespace std;
 
-void GGChunk::AddObject( GGObject && _object )
+GGChunk::GGChunk()
+{}
+
+GGChunk::GGChunk( DirectX::XMFLOAT3 _position )
+	:
+	m_position( _position )
+{}
+
+void GGChunk::Update()
 {
-	m_objects.push_back( move( _object ) );
+	// Mark new objects as no-longer new
+	m_objects.splice( m_objects.end(), move( m_newObjects ) );
 
 	return;
 }
 
-const std::vector<GGObject>& GGChunk::GetObjects() const
+void GGChunk::AddObject( GGObject&& _object )
+{
+	m_newObjects.push_front( move( _object ) );
+
+	return;
+}
+
+GGChunk::GG_CHUNK_STATE GGChunk::GetState() const
+{
+	return m_state;
+}
+
+void GGChunk::SetState( GGChunk::GG_CHUNK_STATE _state )
+{
+	m_state = _state;
+
+	return;
+}
+
+const GGChunk::GGObjectList& GGChunk::GetObjects() const
 {
 	return m_objects;
+}
+
+const GGChunk::GGObjectList& GGChunk::GetNewObjects() const
+{
+	return m_newObjects;
 }

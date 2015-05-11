@@ -24,17 +24,12 @@ void GGGraphics::Update( GGWorld& _world, float _frameTime )
 	auto& chunks = _world.GetChunkArray();
 	for( UINT i = 0; i < (GGWorld::DIAMETER * GGWorld::DIAMETER); ++i )
 	{
-		auto& chunk = chunks[ i ];
-		auto& model = m_objectModels[ i ];
-
-		if( chunk )
+		auto& newObjects = chunks[ i ].GetNewObjects();
+		for( auto& object : newObjects )
 		{
-			// TODO Check if object has changed
-			auto object = chunk->GetObjects().front();
-			if( object.HasChanged() )
-			{
-				model.Create( m_device, object );
-			}
+			auto& model = m_objectModels[ i ];
+
+			model.Create( m_device, object );
 		}
 	}
 

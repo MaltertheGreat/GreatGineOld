@@ -4,20 +4,29 @@
 using namespace DirectX;
 using namespace std;
 
-const float GGWorld::m_chunkDiameter = 16.0f;
+array<XMFLOAT3, 1> test{ { { 0.0f, 0.0f, 0.0f } } };
 
 GGWorld::GGWorld( GGInputProcessor& _inputProcessor )
 	:
-	m_freeCamera( { 0.0f, 10.0f, -5.0f } )
+	m_freeCamera( { 0.0f, 10.0f, -5.0f } ),
+	m_chunks( GenerateChunks() )
 {
 	_inputProcessor.RegisterHandler( &m_freeCamera );
-
-	CreateWorld();
 }
 
 void GGWorld::Update( float _frameTime )
 {
 	m_freeCamera.Update( _frameTime );
+
+	for( auto& chunk : m_chunks )
+	{
+		chunk.Update();
+
+		if( chunk.GetState() == GGChunk::GG_CHUNK_STATE_UNGENERATED )
+		{
+			GenerateChunk( chunk );
+		}
+	}
 
 	return;
 }
@@ -32,29 +41,37 @@ GGWorld::GGChunkArray& GGWorld::GetChunkArray()
 	return m_chunks;
 }
 
-void GGWorld::CreateWorld()
+GGWorld::GGChunkArray GGWorld::GenerateChunks()
 {
-	float chunkOffset = DIAMETER / 2.0f * m_chunkDiameter - m_chunkDiameter * 0.5f;
+	GGChunkArray chunks;
+
+	float chunkOffset = DIAMETER / 2.0f * GGChunk::DIMENSION - GGChunk::DIMENSION * 0.5f;
 	float x = -chunkOffset;
 	float z = -chunkOffset;
 
-	for(auto& chunk : m_chunks)
+	for( auto& chunk : chunks )
 	{
-		GGObject::GGVoxelArray voxels = CreateRandomVoxels();
-
 		XMFLOAT3 position = { x, 0.0f, z };
-		x += m_chunkDiameter;
-		if(x > chunkOffset)
+		x += GGChunk::DIMENSION;
+		if( x > chunkOffset )
 		{
 			x = -chunkOffset;
-			z += m_chunkDiameter;
+			z += GGChunk::DIMENSION;
 		}
-
-		unique_ptr<GGChunk> newChunk( new GGChunk() );
-		newChunk->AddObject( move( GGObject( move( voxels ), 1.0f, position ) ) );
-
-		chunk.swap( newChunk );
+		chunk = GGChunk( { x, 0.0f, z } );
 	}
+
+	return chunks;
+}
+
+void GGWorld::GenerateChunk( GGChunk & _chunk )
+{
+	float voxelDimension = GGChunk::DIMENSION / static_cast<float>(GGObject::DIAMETER);
+	XMFLOAT3 position = { 0.0f, 0.0f, 0.0f };
+	GGObject object( move( CreateRandomVoxels() ), voxelDimension, position );
+
+	_chunk.AddObject( move( object ) );
+	_chunk.SetState( GGChunk::GG_CHUNK_STATE_GENERAETD );
 
 	return;
 }
@@ -65,9 +82,9 @@ GGObject::GGVoxelArray GGWorld::CreateRandomVoxels()
 	static bernoulli_distribution solid( 0.1 );
 
 	GGObject::GGVoxelArray voxels;
-	for(auto& voxel : voxels)
+	for( auto& voxel : voxels )
 	{
-		if(solid( gen ))
+		if( solid( gen ) )
 		{
 			voxel.element = 1;
 		}
