@@ -32,6 +32,11 @@ void GGChunk::SetState( GGChunk::GG_CHUNK_STATE _state )
 	return;
 }
 
+UINT GGChunk::GetNextObjectID()
+{
+	return m_objectID++;
+}
+
 GGChunk::GG_CHUNK_STATE GGChunk::GetState() const
 {
 	return m_state;

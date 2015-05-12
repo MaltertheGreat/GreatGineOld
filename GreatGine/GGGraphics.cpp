@@ -24,15 +24,7 @@ void GGGraphics::Update( GGWorld& _world, float _frameTime )
 	auto& chunks = _world.GetChunkArray();
 	for( UINT i = 0; i < (GGWorld::DIAMETER * GGWorld::DIAMETER); ++i )
 	{
-		auto& newObjects = chunks[ i ].GetNewObjects();
-		auto chunkPosition = chunks[ i ].GetPosition();
-
-		for( auto& object : newObjects )
-		{
-			auto& model = m_objectModels[ i ];
-
-			model.Create( m_device, object, chunkPosition );
-		}
+		m_chunkModelSets[ i ].Update( m_device, chunks[ i ] );
 	}
 
 	m_debugInfo.Update( _frameTime, worldViewer->GetPosition(), worldViewer->GetRotation() );
@@ -92,14 +84,10 @@ void GGGraphics::Render3D()
 
 	m_renderer.SetShader( m_basicShader );
 
-	for( auto& model : m_objectModels )
+	for( auto& modelSet : m_chunkModelSets )
 	{
-		auto mesh = model.GetMesh();
-		if( mesh )
-		{
-			m_renderer.SetMesh( mesh );
-			m_renderer.RenderMesh( mesh, model.GetTransformation() );
-		}
+		// TODO: Chunk rendering here
+		modelSet.Render( m_renderer );
 	}
 
 	return;

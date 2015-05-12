@@ -69,9 +69,21 @@ void GGWorld::GenerateChunk( GGChunk & _chunk )
 {
 	float voxelDimension = GGChunk::DIMENSION / static_cast<float>(GGObject::DIAMETER);
 	XMFLOAT3 position = { 0.0f, 0.0f, 0.0f };
-	GGObject object( move( CreateRandomVoxels() ), voxelDimension, position );
+	GGObject object( _chunk.GetNextObjectID(), move( CreateRandomVoxels() ), voxelDimension, position );
 
 	_chunk.AddObject( move( object ) );
+
+	static default_random_engine gen;
+	static bernoulli_distribution solid( 0.1 );
+	if( solid( gen ) )
+	{
+		voxelDimension /= 4.0f;
+		position = { 0.0f, GGChunk::DIMENSION / 2.0f, 0.0f };
+		GGObject object( _chunk.GetNextObjectID(), move( CreateRandomVoxels() ), voxelDimension, position );
+
+		_chunk.AddObject( move( object ) );
+	}
+
 	_chunk.SetState( GGChunk::GG_CHUNK_STATE_GENERAETD );
 
 	return;

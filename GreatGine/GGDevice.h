@@ -15,12 +15,9 @@ public:
 	GGDevice( GGDirectXDriver& _driver );
 
 public:
-	UINT GetResolutionX() const;
-	UINT GetResolutionY() const;
-
 	GGCamera CreateCamera( float _fovAngle, UINT _viewWidth, UINT _viewHeight ) const;
 	GGShader CreateShader() const;
-	std::unique_ptr<GGMesh> CreateMesh( const GGMeshData& _grid ) const;
+	GGMesh CreateMesh( const GGMeshData& _grid ) const;
 
 	void UpdateCamera( GGCamera& _camera, const DirectX::XMFLOAT3& _position, const DirectX::XMFLOAT3& _rotation ) const;
 

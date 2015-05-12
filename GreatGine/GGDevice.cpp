@@ -93,7 +93,7 @@ GGShader GGDevice::CreateShader() const
 	return GGShader( vertexShader, pixelShader, inputLayout );
 }
 
-std::unique_ptr<GGMesh> GGDevice::CreateMesh( const GGMeshData& _grid ) const
+GGMesh GGDevice::CreateMesh( const GGMeshData& _grid ) const
 {
 	// Vertex buffer
 	D3D11_BUFFER_DESC bd;
@@ -127,7 +127,7 @@ std::unique_ptr<GGMesh> GGDevice::CreateMesh( const GGMeshData& _grid ) const
 		GG_THROW;
 	}
 
-	return std::make_unique<GGMesh>( _grid.indices.size(), vertexBuffer, indexBuffer );
+	return GGMesh( _grid.indices.size(), vertexBuffer, indexBuffer );
 }
 
 void GGDevice::UpdateCamera( GGCamera& _camera, const DirectX::XMFLOAT3& _position, const DirectX::XMFLOAT3& _rotation ) const

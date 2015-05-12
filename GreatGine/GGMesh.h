@@ -4,8 +4,8 @@
 
 class GGMesh
 {
-
 public:
+	GGMesh();
 	GGMesh( UINT _indexCount, Microsoft::WRL::ComPtr<ID3D11Buffer> _vertexBuffer, Microsoft::WRL::ComPtr<ID3D11Buffer> _indexBuffer );
 
 public:

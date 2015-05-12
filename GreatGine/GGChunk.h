@@ -30,14 +30,15 @@ public:
 
 	void SetState( GG_CHUNK_STATE _state );
 
+	UINT GetNextObjectID();
 	GG_CHUNK_STATE GetState() const;
-
 	const DirectX::XMFLOAT3& GetPosition() const;
 
 	const GGObjectList& GetObjects() const;
 	const GGObjectList& GetNewObjects() const;
 
 private:
+	UINT m_objectID = 0;
 	GG_CHUNK_STATE    m_state = GG_CHUNK_STATE_UNGENERATED;
 	DirectX::XMFLOAT3 m_position; // Relative to center of loaded world
 

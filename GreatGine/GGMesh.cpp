@@ -4,6 +4,11 @@
 using Microsoft::WRL::ComPtr;
 using namespace DirectX;
 
+GGMesh::GGMesh()
+	:
+	m_indexCount( 0 )
+{}
+
 GGMesh::GGMesh( UINT _indexCount, ComPtr<ID3D11Buffer> _vertexBuffer, ComPtr<ID3D11Buffer> _indexBuffer )
 	:
 	m_indexCount( _indexCount ),

@@ -4,24 +4,27 @@
 using namespace DirectX;
 using namespace std;
 
-void GGObjectModel::Create( const GGDevice& _device, const GGObject& _object, const DirectX::XMFLOAT3& _position )
-{
-	GGMeshData grid = CreateObjectGrid( _object );
-	m_mesh = _device.CreateMesh( grid );
+GGObjectModel::GGObjectModel()
+{}
 
+GGObjectModel::GGObjectModel( const GGDevice& _device, const GGObject& _object, const DirectX::XMFLOAT3& _position )
+	:
+	m_mesh( _device.CreateMesh( CreateObjectGrid( _object ) ) )
+{
 	// Set object model transformation matrix
 
 	XMVECTOR position = XMLoadFloat3( &_position );
 	position += XMLoadFloat3( &_object.GetPosition() );
 
-	XMMATRIX trasformation = XMMatrixScaling( 16.0f, 16.0f, 16.0f );
+	float objectScale = _object.GetVoxelDimension() * GGObject::DIAMETER;
+	XMMATRIX trasformation = XMMatrixScaling( objectScale, objectScale, objectScale );
 	trasformation = XMMatrixMultiply( trasformation, XMMatrixTranslationFromVector( position ) );
 	XMStoreFloat4x4( &m_transformation, trasformation );
 }
 
-const GGMesh* GGObjectModel::GetMesh() const
+const GGMesh GGObjectModel::GetMesh() const
 {
-	return m_mesh.get();
+	return m_mesh;
 }
 
 const DirectX::XMFLOAT4X4& GGObjectModel::GetTransformation() const

@@ -3,17 +3,23 @@
 using namespace DirectX;
 using namespace std;
 
-GGObject::GGObject( float _voxelDimension )
+GGObject::GGObject( UINT _id, GGVoxelArray && _voxels, float _voxelDimension, const XMFLOAT3 & _position )
 	:
-	m_voxelDimension( _voxelDimension )
-{}
-
-GGObject::GGObject( GGVoxelArray && _voxels, float _voxelDimension, const XMFLOAT3 & _position )
-	:
+	m_id( _id ),
 	m_voxelDimension( _voxelDimension ),
 	m_position( _position ),
 	m_voxels( move( _voxels ) )
 {}
+
+UINT GGObject::GetID() const
+{
+	return m_id;
+}
+
+const float GGObject::GetVoxelDimension() const
+{
+	return m_voxelDimension;
+}
 
 const XMFLOAT3& GGObject::GetPosition() const
 {
