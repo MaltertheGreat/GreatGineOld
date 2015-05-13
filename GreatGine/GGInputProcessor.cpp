@@ -18,6 +18,7 @@ GGInputProcessor::GGInputProcessor( const GGWindow& _window, const GGConfig& _co
 	m_actionKeysMap[ GG_ACTION_INPUT_MOVE_UPWARD ] = _config.GetInt( "key_upward" );
 	m_actionKeysMap[ GG_ACTION_INPUT_MOVE_DOWNWARD ] = _config.GetInt( "key_downward" );
 	m_actionKeysMap[ GG_ACTION_INPUT_FILL_TYPE ] = _config.GetInt( "key_fill_type" );
+	m_actionKeysMap[ GG_ACTION_INPUT_RENDER_CHUNKS ] = _config.GetInt( "key_render_chunks" );
 
 	RAWINPUTDEVICE mouse;
 	mouse.usUsagePage = 0x01;
@@ -42,17 +43,17 @@ void GGInputProcessor::ProcessInput( const MSG& _msg )
 {
 	switch( _msg.message )
 	{
-	case WM_KEYDOWN:
-		ProcessKeyPress( _msg.wParam, _msg.lParam );
-		break;
-	case WM_KEYUP:
-		ProcessKeyRelease( _msg.wParam );
-		break;
-	case WM_CHAR:
-		break;
-	case WM_INPUT:
-		ProcessRawInput( _msg.lParam );
-		break;
+		case WM_KEYDOWN:
+			ProcessKeyPress( _msg.wParam, _msg.lParam );
+			break;
+		case WM_KEYUP:
+			ProcessKeyRelease( _msg.wParam );
+			break;
+		case WM_CHAR:
+			break;
+		case WM_INPUT:
+			ProcessRawInput( _msg.lParam );
+			break;
 	}
 
 	TranslateMessage( &_msg );
@@ -95,23 +96,23 @@ void GGInputProcessor::ProcessRawInput( LPARAM _lParam )
 {
 	UINT dwSize;
 
-	GetRawInputData( (HRAWINPUT) _lParam, RID_INPUT, NULL, &dwSize, sizeof( RAWINPUTHEADER ) );
+	GetRawInputData( (HRAWINPUT)_lParam, RID_INPUT, NULL, &dwSize, sizeof( RAWINPUTHEADER ) );
 
 	unique_ptr<BYTE[]> buffer( new BYTE[ dwSize ] );
 
-	if( GetRawInputData( (HRAWINPUT) _lParam, RID_INPUT, buffer.get(), &dwSize,
-		sizeof( RAWINPUTHEADER ) ) != dwSize )
+	if( GetRawInputData( (HRAWINPUT)_lParam, RID_INPUT, buffer.get(), &dwSize,
+						 sizeof( RAWINPUTHEADER ) ) != dwSize )
 	{
 		GG_THROW;
 	}
 
-	RAWINPUT* input = (RAWINPUT*) buffer.get();
+	RAWINPUT* input = (RAWINPUT*)buffer.get();
 
 	if( input->header.dwType == RIM_TYPEMOUSE )
 	{
 		RAWMOUSE mouse = input->data.mouse;
 
-		assert( (mouse.usFlags & MOUSE_MOVE_RELATIVE) == 0 );	// For simplicity temporarly assume relative mouse movement
+		assert( (mouse.usFlags & MOUSE_MOVE_RELATIVE) == 0 );	// For simplicity temporarily assume relative mouse movement
 
 		SendRangeInput( mouse.lLastX, mouse.lLastY );
 	}

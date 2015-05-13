@@ -37,12 +37,15 @@ private:
 
 private:
 	GGRenderer::FILL_TYPE m_currentFillType;
+	bool m_renderChunks;
 
-	GGDirectXDriver m_driver;
-	GGDevice m_device;
-	GGRenderer m_renderer;
-	GGCamera m_camera;
+	GGDirectXDriver  m_driver;
+	GGDevice         m_device;
+	GGRenderer       m_renderer;
+	GGCamera         m_camera;
 	GGChunkModelSets m_chunkModelSets;
-	GGShader m_basicShader;
-	GGDebugInfo m_debugInfo;
+	GGShader         m_basicShader;
+	GGDebugInfo      m_debugInfo;
+	GGMesh           m_debugChunkMesh;
+	GGShader         m_debugChunkShader;
 };

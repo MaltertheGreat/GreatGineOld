@@ -2,9 +2,12 @@
 #include "GGDevice.h"
 #include "GGDirectXDriver.h"
 #include "GGMeshData.h"
+#include "GGLinesData.h"
 #include "GGError.h"
-#include "Shaders/BasicVS.h"
-#include "Shaders/BasicPS.h"
+#include "Shaders\BasicVS.h"
+#include "Shaders\BasicPS.h"
+#include "Shaders\LinesVS.h"
+#include "Shaders\LinesPS.h"
 
 using Microsoft::WRL::ComPtr;
 using namespace DirectX;
@@ -64,13 +67,13 @@ GGShader GGDevice::CreateShader() const
 	ComPtr<ID3D11PixelShader> pixelShader;
 	ComPtr<ID3D11InputLayout> inputLayout;
 
-	HRESULT hr = m_device->CreateVertexShader( g_vertexShader, sizeof( g_vertexShader ), nullptr, vertexShader.GetAddressOf() );
+	HRESULT hr = m_device->CreateVertexShader( g_basicVS, sizeof( g_basicVS ), nullptr, vertexShader.GetAddressOf() );
 	if( FAILED( hr ) )
 	{
 		GG_THROW;
 	}
 
-	hr = m_device->CreatePixelShader( g_pixelShader, sizeof( g_pixelShader ), nullptr, pixelShader.GetAddressOf() );
+	hr = m_device->CreatePixelShader( g_basicPS, sizeof( g_basicPS ), nullptr, pixelShader.GetAddressOf() );
 	if( FAILED( hr ) )
 	{
 		GG_THROW;
@@ -84,7 +87,41 @@ GGShader GGDevice::CreateShader() const
 	};
 	UINT numElements = ARRAYSIZE( layout );
 
-	hr = m_device->CreateInputLayout( layout, numElements, g_vertexShader, sizeof( g_vertexShader ), inputLayout.GetAddressOf() );
+	hr = m_device->CreateInputLayout( layout, numElements, g_basicVS, sizeof( g_basicVS ), inputLayout.GetAddressOf() );
+	if( FAILED( hr ) )
+	{
+		GG_THROW;
+	}
+
+	return GGShader( vertexShader, pixelShader, inputLayout );
+}
+
+GGShader GGDevice::CreateLinesShader() const
+{
+	ComPtr<ID3D11VertexShader> vertexShader;
+	ComPtr<ID3D11PixelShader> pixelShader;
+	ComPtr<ID3D11InputLayout> inputLayout;
+
+	HRESULT hr = m_device->CreateVertexShader( g_linesVS, sizeof( g_linesVS ), nullptr, vertexShader.GetAddressOf() );
+	if( FAILED( hr ) )
+	{
+		GG_THROW;
+	}
+
+	hr = m_device->CreatePixelShader( g_linesPS, sizeof( g_linesPS ), nullptr, pixelShader.GetAddressOf() );
+	if( FAILED( hr ) )
+	{
+		GG_THROW;
+	}
+
+	D3D11_INPUT_ELEMENT_DESC layout[] =
+	{
+		{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+		{ "COLOR", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 }
+	};
+	UINT numElements = ARRAYSIZE( layout );
+
+	hr = m_device->CreateInputLayout( layout, numElements, g_linesVS, sizeof( g_linesVS ), inputLayout.GetAddressOf() );
 	if( FAILED( hr ) )
 	{
 		GG_THROW;
@@ -128,6 +165,43 @@ GGMesh GGDevice::CreateMesh( const GGMeshData& _grid ) const
 	}
 
 	return GGMesh( _grid.indices.size(), vertexBuffer, indexBuffer );
+}
+
+GGMesh GGDevice::CraeteLinesMesh( const GGLinesData& _lines ) const
+{
+	// Vertex buffer
+	D3D11_BUFFER_DESC bd;
+	ZeroMemory( &bd, sizeof( bd ) );
+	bd.Usage = D3D11_USAGE_DEFAULT;
+	bd.ByteWidth = sizeof( GGLinesData::GGVertex ) * _lines.vertices.size();
+	bd.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+	bd.CPUAccessFlags = 0;
+
+	D3D11_SUBRESOURCE_DATA InitData;
+	ZeroMemory( &InitData, sizeof( InitData ) );
+	InitData.pSysMem = _lines.vertices.data();
+
+	ComPtr<ID3D11Buffer> vertexBuffer;
+	HRESULT hr = m_device->CreateBuffer( &bd, &InitData, vertexBuffer.GetAddressOf() );
+	if( FAILED( hr ) )
+	{
+		GG_THROW;
+	}
+
+	// Index buffer
+	bd.ByteWidth = sizeof( GGLinesData::GGIndex ) * _lines.indices.size();
+	bd.BindFlags = D3D11_BIND_INDEX_BUFFER;
+
+	InitData.pSysMem = _lines.indices.data();
+
+	ComPtr<ID3D11Buffer> indexBuffer;
+	hr = m_device->CreateBuffer( &bd, &InitData, indexBuffer.GetAddressOf() );
+	if( FAILED( hr ) )
+	{
+		GG_THROW;
+	}
+
+	return GGMesh( _lines.indices.size(), vertexBuffer, indexBuffer );
 }
 
 void GGDevice::UpdateCamera( GGCamera& _camera, const DirectX::XMFLOAT3& _position, const DirectX::XMFLOAT3& _rotation ) const

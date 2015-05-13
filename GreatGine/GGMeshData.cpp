@@ -2,9 +2,9 @@
 #include "GGMeshData.h"
 using namespace DirectX;
 
-GGMeshData GGCubeMeshData( float _diameter )
+GGMeshData GGCubeMeshData( float _dimension )
 {
-	float radius = _diameter / 2.0f;
+	float radius = _dimension / 2.0f;
 
 	GGMeshData output;
 	output.vertices.assign( {

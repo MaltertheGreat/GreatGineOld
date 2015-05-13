@@ -11,7 +11,7 @@
 class GGWorld
 {
 public:
-	static constexpr UINT DIAMETER = 8;
+	static constexpr UINT DIAMETER = 16;
 	typedef std::array<GGChunk, DIAMETER * DIAMETER> GGChunkArray;
 
 public:

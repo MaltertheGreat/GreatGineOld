@@ -5,6 +5,7 @@
 #include "GGShader.h"
 #include "GGMesh.h"
 #include "GGMeshData.h"
+#include "GGLinesData.h"
 #include "GGError.h"
 using Microsoft::WRL::ComPtr;
 using namespace DirectX;
@@ -95,6 +96,7 @@ GGRenderer::GGRenderer( GGDirectXDriver& _driver, int _syncInterval )
 		GG_THROW;
 	}
 
+	// Default rasterizer
 	m_deviceContext->RSSetState( m_rasterizerState[ FILL_TYPE_SOLID ].Get() );
 
 	D3D11_VIEWPORT vp;
@@ -106,7 +108,7 @@ GGRenderer::GGRenderer( GGDirectXDriver& _driver, int _syncInterval )
 	vp.TopLeftY = 0;
 	m_deviceContext->RSSetViewports( 1, &vp );
 
-	// For now lets assume all meshes are triangulated ;)
+	// Default topology
 	m_deviceContext->IASetPrimitiveTopology( D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST );
 
 	// World constant buffer
@@ -194,6 +196,23 @@ void GGRenderer::SetSyncInterval( int _syncInterval )
 	return;
 }
 
+void GGRenderer::SetRenderType( RENDER_TYPE _renderType )
+{
+	switch( _renderType )
+	{
+		case GGRenderer::RENDER_TYPE_MESH:
+			m_deviceContext->IASetPrimitiveTopology( D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST );
+			m_vertexSize = sizeof( GGMeshData::GGVertex );
+			break;
+		case GGRenderer::RENDER_TYPE_LINES:
+			m_deviceContext->IASetPrimitiveTopology( D3D11_PRIMITIVE_TOPOLOGY_LINELIST );
+			m_vertexSize = sizeof( GGLinesData::GGVertex );
+			break;
+	}
+
+	return;
+}
+
 void GGRenderer::SetFillType( FILL_TYPE _fillType )
 {
 	m_deviceContext->RSSetState( m_rasterizerState[ _fillType ].Get() );
@@ -218,9 +237,9 @@ void GGRenderer::SetShader( const GGShader& _shader )
 	return;
 }
 
-void GGRenderer::SetMesh( const GGMesh _mesh )
+void GGRenderer::SetMesh( const GGMesh& _mesh )
 {
-	UINT stride = sizeof( GGMeshData::GGVertex );
+	UINT stride = m_vertexSize;
 	UINT offset = 0;
 	m_deviceContext->IASetVertexBuffers( 0, 1, _mesh.GetVertexBuffer().GetAddressOf(), &stride, &offset );
 	m_deviceContext->IASetIndexBuffer( _mesh.GetIndexBuffer().Get(), DXGI_FORMAT_R32_UINT, offset );

@@ -65,7 +65,7 @@ void GGObjectModel::CreateVoxel( UINT x, UINT y, UINT z, const GGObject::GGVoxel
 	}
 
 	XMFLOAT3 center = { offset + (x*diameter), offset + (y*diameter), offset + (z*diameter) };
-	XMFLOAT3 color = { 1.0f, 0.0f, 0.0f };
+	XMFLOAT3 color = { 0.2314f, 0.8196f, 0.0f };
 
 	// Right
 	if( (x < (GGObject::DIAMETER - 1) && (voxels[ voxelIndex + (GGObject::DIAMETER * GGObject::DIAMETER) ].element == 0)) || (x == (GGObject::DIAMETER - 1)) )

@@ -4,13 +4,12 @@
 #include <DirectXMath.h>
 #include <wrl/client.h>
 
-struct GGMeshData
+struct GGLinesData
 {
 public:
 	struct GGVertex
 	{
 		DirectX::XMFLOAT3 position;
-		DirectX::XMFLOAT3 normal;
 		DirectX::XMFLOAT3 color;
 	};
 
@@ -21,4 +20,4 @@ public:
 	std::vector<GGIndex> indices;
 };
 
-GGMeshData GGCubeMeshData( float _dimension );
+GGLinesData GGCubeLines( float _dimension, const DirectX::XMFLOAT3& _color );

@@ -3,7 +3,7 @@
 # 'I' prefix for integer		e.g. Iint=4
 # 'H' prefix for hex integer	e.g. Hint=0x4
 # 'F' prefix for floats			e.g. Ffloat=4.444
-# Do not use spaces( exept for comments ;p )
+# Do not use spaces( except for comments ;p )
 
 Iwindow_width=1280
 Iwindow_height=720
@@ -24,3 +24,4 @@ Hkey_leftward=0x41
 Hkey_upward=0x20
 Hkey_downward=0x10
 Hkey_fill_type=0x70
+Hkey_render_chunks=0x71

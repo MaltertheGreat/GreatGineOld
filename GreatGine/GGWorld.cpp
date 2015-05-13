@@ -92,7 +92,7 @@ void GGWorld::GenerateChunk( GGChunk & _chunk )
 GGObject::GGVoxelArray GGWorld::CreateRandomVoxels()
 {
 	static default_random_engine gen;
-	static bernoulli_distribution solid( 0.1 );
+	static bernoulli_distribution solid( 0.01 );
 
 	GGObject::GGVoxelArray voxels;
 	for( auto& voxel : voxels )

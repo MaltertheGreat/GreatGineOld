@@ -6,10 +6,19 @@ class GGDirectXDriver;
 class GGCamera;
 class GGShader;
 class GGMesh;
+class GGLines;
 
 class GGRenderer
 {
 public:
+	enum RENDER_TYPE
+	{
+		RENDER_TYPE_MESH,
+		RENDER_TYPE_LINES,
+
+		RENDER_TYPE_COUNT
+	};
+
 	enum FILL_TYPE
 	{
 		FILL_TYPE_SOLID,
@@ -25,10 +34,12 @@ public:
 	void PresentScene();
 
 	void SetSyncInterval( int _syncInterval );
+	void SetRenderType( RENDER_TYPE _renderType );
 	void SetFillType( FILL_TYPE _fillType );
+
 	void SetCamera( const GGCamera& _camera );
 	void SetShader( const GGShader& _shader );
-	void SetMesh( const GGMesh _mesh );
+	void SetMesh( const GGMesh& _mesh );
 
 	void RenderIn2D();
 	void RenderMesh( const GGMesh _mesh, const DirectX::XMFLOAT4X4& _transform );
@@ -36,6 +47,7 @@ public:
 
 private:
 	int m_syncInterval;
+	UINT m_vertexSize;
 
 	Microsoft::WRL::ComPtr<ID3D11Device> m_device;
 	Microsoft::WRL::ComPtr<ID3D11DeviceContext> m_deviceContext;

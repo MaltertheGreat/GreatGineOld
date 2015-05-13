@@ -31,6 +31,12 @@
     <Filter Include="Source Files\Graphics">
       <UniqueIdentifier>{befcecd7-621c-4fc3-ab50-7759a0811eaa}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Input">
+      <UniqueIdentifier>{63af059c-3613-4e0d-a5d2-fb5e08ca78bc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Input">
+      <UniqueIdentifier>{db1c1bbe-811c-4981-a9b0-05fddff54da6}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="GreatGine.cpp">
@@ -46,9 +52,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="GGError.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="GGInputProcessor.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="GGConfig.cpp">
@@ -105,6 +108,12 @@
     <ClCompile Include="GGChunkModelSet.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="GGInputProcessor.cpp">
+      <Filter>Source Files\Input</Filter>
+    </ClCompile>
+    <ClCompile Include="GGLinesData.cpp">
+      <Filter>Source Files\Graphics</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GGApplication.h">
@@ -117,12 +126,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="GGError.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="GGInputProcessor.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="GGInputHandler.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="GGConfig.h">
@@ -185,12 +188,27 @@
     <ClInclude Include="GGChunkModelSet.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="GGInputHandler.h">
+      <Filter>Header Files\Input</Filter>
+    </ClInclude>
+    <ClInclude Include="GGInputProcessor.h">
+      <Filter>Header Files\Input</Filter>
+    </ClInclude>
+    <ClInclude Include="GGLinesData.h">
+      <Filter>Header Files\Graphics</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="basicVS.hlsl">
       <Filter>Shaders</Filter>
     </FxCompile>
     <FxCompile Include="basicPS.hlsl">
+      <Filter>Shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="linesVS.hlsl">
+      <Filter>Shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="linesPS.hlsl">
       <Filter>Shaders</Filter>
     </FxCompile>
   </ItemGroup>

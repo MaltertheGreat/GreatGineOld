@@ -3,6 +3,7 @@
 #include "GGWindow.h"
 #include "GGConfig.h"
 #include "GGMeshData.h"
+#include "GGLinesData.h"
 using namespace DirectX;
 using namespace std;
 
@@ -13,7 +14,9 @@ GGGraphics::GGGraphics( const GGWindow& _window, const GGConfig& _config )
 	m_device( m_driver ),
 	m_renderer( m_driver, _config.GetInt( "sync_interval" ) ),
 	m_camera( m_device.CreateCamera( XMConvertToRadians( _config.GetFloat( "fov" ) ), _config.GetInt( "resolutionX" ), _config.GetInt( "resolutionY" ) ) ),
-	m_basicShader( m_device.CreateShader() )
+	m_basicShader( m_device.CreateShader() ),
+	m_debugChunkMesh( m_device.CraeteLinesMesh( GGCubeLines( GGChunk::DIMENSION, { 1.0f, 0.749f, 0.0f } ) ) ),
+	m_debugChunkShader( m_device.CreateLinesShader() )
 {}
 
 void GGGraphics::Update( GGWorld& _world, float _frameTime )
@@ -48,9 +51,14 @@ void GGGraphics::HandleActionInput( GG_ACTION_INPUT _input, bool _down )
 {
 	if( _down )
 	{
-		if( _input == GG_ACTION_INPUT_FILL_TYPE )
+		switch( _input )
 		{
-			SwitchFillType();
+			case GG_ACTION_INPUT_FILL_TYPE:
+				SwitchFillType();
+				break;
+			case GG_ACTION_INPUT_RENDER_CHUNKS:
+				m_renderChunks = !m_renderChunks;
+				break;
 		}
 	}
 
@@ -73,21 +81,44 @@ void GGGraphics::SwitchFillType()
 		m_currentFillType = GGRenderer::FILL_TYPE_SOLID;
 	}
 
-	m_renderer.SetFillType( m_currentFillType );
-
 	return;
 }
 
 void GGGraphics::Render3D()
 {
+	m_renderer.SetRenderType( GGRenderer::RENDER_TYPE_MESH );
+	m_renderer.SetFillType( m_currentFillType );
 	m_renderer.SetCamera( m_camera );
 
 	m_renderer.SetShader( m_basicShader );
-
 	for( auto& modelSet : m_chunkModelSets )
 	{
-		// TODO: Chunk rendering here
 		modelSet.Render( m_renderer );
+	}
+
+	if( m_renderChunks )
+	{
+		m_renderer.SetRenderType( GGRenderer::RENDER_TYPE_LINES );
+		m_renderer.SetShader( m_debugChunkShader );
+
+		m_renderer.SetMesh( m_debugChunkMesh );
+		const float chunkOffset = -(GGWorld::DIAMETER / 2.0f * GGChunk::DIMENSION - GGChunk::DIMENSION * 0.5f);
+
+		for( UINT x = 0; x < GGWorld::DIAMETER; ++x )
+		{
+			for( UINT z = 0; z < GGWorld::DIAMETER; ++z )
+			{
+				float posX = chunkOffset + x * GGChunk::DIMENSION;
+				float posZ = chunkOffset + z * GGChunk::DIMENSION;
+
+				XMFLOAT4X4 transformation;
+
+				XMMATRIX matrix = XMMatrixTranslation( posX, 0.0f, posZ );
+				XMStoreFloat4x4( &transformation, matrix );
+
+				m_renderer.RenderMesh( m_debugChunkMesh, transformation );
+			}
+		}
 	}
 
 	return;
