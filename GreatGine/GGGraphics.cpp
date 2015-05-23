@@ -15,7 +15,7 @@ GGGraphics::GGGraphics( const GGWindow& _window, const GGConfig& _config )
 	m_renderer( m_driver, _config.GetInt( "sync_interval" ) ),
 	m_camera( m_device.CreateCamera( XMConvertToRadians( _config.GetFloat( "fov" ) ), _config.GetInt( "resolutionX" ), _config.GetInt( "resolutionY" ) ) ),
 	m_basicShader( m_device.CreateShader() ),
-	m_debugChunkMesh( m_device.CraeteLinesMesh( GGCubeLines( GGChunk::DIMENSION, { 1.0f, 0.749f, 0.0f } ) ) ),
+	m_debugChunkMesh( m_device.CraeteLinesMesh( VerticalLine() ) ),
 	m_debugChunkShader( m_device.CreateLinesShader() )
 {}
 
@@ -70,6 +70,23 @@ void GGGraphics::HandleRangeInput( int, int )
 	return;
 }
 
+GGLinesData GGGraphics::VerticalLine()
+{
+	GGLinesData output;
+	XMFLOAT3 color = { 1.0f, 0.749f, 0.0f };
+
+	output.vertices.assign( {
+		{ { 0.0f, -50.0f, 0.0f}, color },
+		{ { 0.0f, 50.0f, 0.0f }, color }
+	} );
+
+	output.indices.assign( {
+		0, 1
+	} );
+
+	return output;
+}
+
 void GGGraphics::SwitchFillType()
 {
 	if( m_currentFillType == GGRenderer::FILL_TYPE_SOLID )
@@ -102,7 +119,29 @@ void GGGraphics::Render3D()
 		m_renderer.SetShader( m_debugChunkShader );
 
 		m_renderer.SetMesh( m_debugChunkMesh );
-		const float chunkOffset = -(GGWorld::DIAMETER / 2.0f * GGChunk::DIMENSION - GGChunk::DIMENSION * 0.5f);
+
+		const float worldRadius = GGWorld::DIAMETER / 2.0f * GGChunk::DIMENSION;
+
+		float x = -worldRadius;
+		while( x <= worldRadius )
+		{
+			float z = -worldRadius;
+			while( z <= worldRadius )
+			{
+				XMFLOAT4X4 transformation;
+
+				XMMATRIX matrix = XMMatrixTranslation( x, 0.0f, z );
+				XMStoreFloat4x4( &transformation, matrix );
+
+				m_renderer.RenderMesh( m_debugChunkMesh, transformation );
+
+				z += GGChunk::DIMENSION;
+			}
+
+			x += GGChunk::DIMENSION;
+		}
+
+		/*const float chunkOffset = -(GGWorld::DIAMETER / 2.0f * GGChunk::DIMENSION - GGChunk::DIMENSION * 0.5f);
 
 		for( UINT x = 0; x < GGWorld::DIAMETER; ++x )
 		{
@@ -118,7 +157,7 @@ void GGGraphics::Render3D()
 
 				m_renderer.RenderMesh( m_debugChunkMesh, transformation );
 			}
-		}
+		}*/
 	}
 
 	return;

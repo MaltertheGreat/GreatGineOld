@@ -30,6 +30,7 @@ public:
 	virtual void HandleRangeInput( int _x, int _y ) override;
 
 private:
+	static GGLinesData VerticalLine();
 	void SwitchFillType();
 
 	void Render3D();

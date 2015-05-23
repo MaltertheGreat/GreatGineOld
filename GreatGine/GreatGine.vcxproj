@@ -426,6 +426,7 @@
     </ClCompile>
     <ClCompile Include="GGMeshData.cpp" />
     <ClCompile Include="GGObject.cpp" />
+    <ClCompile Include="GGPhysics.cpp" />
     <ClCompile Include="GGRenderer.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Use</PrecompiledHeader>
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">PCH.h</PrecompiledHeaderFile>
@@ -519,6 +520,7 @@
     <ClInclude Include="GGInputProcessor.h" />
     <ClInclude Include="GGMesh.h" />
     <ClInclude Include="GGObject.h" />
+    <ClInclude Include="GGPhysics.h" />
     <ClInclude Include="GGRenderer.h" />
     <ClInclude Include="GGShader.h" />
     <ClInclude Include="GGVoxel.h" />
