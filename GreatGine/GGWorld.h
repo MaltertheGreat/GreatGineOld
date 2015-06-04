@@ -25,9 +25,9 @@ public:
 
 private:
 	// TODO: Move these functions to some sort of world generator
-	static GGChunkArray GenerateChunks();
-	void GenerateChunk( GGChunk& _chunk );
-	GGObject::GGVoxelArray CreateRandomVoxels();
+	static GGChunkArray InitializeChunks();
+	static void GenerateChunk( GGChunk& _chunk );
+	static GGObject::GGVoxelArray CreateRandomVoxels();
 
 private:
 	GGFreeCamera m_freeCamera;

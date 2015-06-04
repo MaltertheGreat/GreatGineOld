@@ -9,7 +9,7 @@ array<XMFLOAT3, 1> test{ { { 0.0f, 0.0f, 0.0f } } };
 GGWorld::GGWorld( GGInputProcessor& _inputProcessor )
 	:
 	m_freeCamera( { 0.0f, 10.0f, -5.0f } ),
-	m_chunks( GenerateChunks() )
+	m_chunks( InitializeChunks() )
 {
 	_inputProcessor.RegisterHandler( &m_freeCamera );
 }
@@ -41,7 +41,7 @@ GGWorld::GGChunkArray& GGWorld::GetChunkArray()
 	return m_chunks;
 }
 
-GGWorld::GGChunkArray GGWorld::GenerateChunks()
+GGWorld::GGChunkArray GGWorld::InitializeChunks()
 {
 	GGChunkArray chunks;
 
@@ -65,11 +65,11 @@ GGWorld::GGChunkArray GGWorld::GenerateChunks()
 	return chunks;
 }
 
-void GGWorld::GenerateChunk( GGChunk & _chunk )
+void GGWorld::GenerateChunk( GGChunk& _chunk )
 {
 	float voxelDimension = GGChunk::DIMENSION / static_cast<float>(GGObject::DIAMETER);
 	XMFLOAT3 position = { 0.0f, 0.0f, 0.0f };
-	GGObject object( _chunk.GetNextObjectID(), move( CreateRandomVoxels() ), voxelDimension, position );
+	GGObject object( move( CreateRandomVoxels() ), voxelDimension, position );
 
 	_chunk.AddObject( move( object ) );
 
@@ -79,7 +79,7 @@ void GGWorld::GenerateChunk( GGChunk & _chunk )
 	{
 		voxelDimension /= 4.0f;
 		position = { 0.0f, GGChunk::DIMENSION / 2.0f, 0.0f };
-		GGObject object( _chunk.GetNextObjectID(), move( CreateRandomVoxels() ), voxelDimension, position );
+		GGObject object( move( CreateRandomVoxels() ), voxelDimension, position );
 
 		_chunk.AddObject( move( object ) );
 	}

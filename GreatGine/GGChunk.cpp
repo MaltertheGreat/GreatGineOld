@@ -12,15 +12,26 @@ GGChunk::GGChunk( DirectX::XMFLOAT3 _position )
 
 void GGChunk::Update()
 {
-	// Mark new objects as no-longer new
-	m_objects.splice( m_objects.end(), move( m_newObjects ) );
+	m_addedObjectIDs.clear();
+	m_modifiedObjectIDs.clear();
+	m_removedObjectIDs.clear();
 
 	return;
 }
 
-void GGChunk::AddObject( GGObject&& _object )
+GGChunk::GGObjectID GGChunk::AddObject( GGObject&& _object )
 {
-	m_newObjects.push_front( move( _object ) );
+	m_objects.insert( { m_newObjectID, move( _object ) } ).second;
+
+	m_addedObjectIDs.push_back( m_newObjectID );
+
+	return m_newObjectID++;
+}
+
+void GGChunk::ModifyObject( GGObjectID id, DirectX::XMFLOAT3& _position )
+{
+	m_objects.at( id ).SetPosition( _position );
+	m_modifiedObjectIDs.push_back( id );
 
 	return;
 }
@@ -30,11 +41,6 @@ void GGChunk::SetState( GGChunk::GG_CHUNK_STATE _state )
 	m_state = _state;
 
 	return;
-}
-
-UINT GGChunk::GetNextObjectID()
-{
-	return m_objectID++;
 }
 
 GGChunk::GG_CHUNK_STATE GGChunk::GetState() const
@@ -47,12 +53,17 @@ const DirectX::XMFLOAT3& GGChunk::GetPosition() const
 	return m_position;
 }
 
-const GGChunk::GGObjectList& GGChunk::GetObjects() const
+const GGChunk::GGObjects& GGChunk::GetObjects() const
 {
 	return m_objects;
 }
 
-const GGChunk::GGObjectList& GGChunk::GetNewObjects() const
+const GGChunk::GGObjectIDs& GGChunk::GetAddedObjectIDs() const
 {
-	return m_newObjects;
+	return m_addedObjectIDs;
+}
+
+const GGChunk::GGObjectIDs& GGChunk::GetModifiedObjectIDs() const
+{
+	return m_modifiedObjectIDs;
 }

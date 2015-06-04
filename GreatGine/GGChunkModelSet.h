@@ -1,6 +1,6 @@
 #pragma once
 
-#include <map>
+#include <unordered_map>
 
 #include "GGObjectModel.h"
 
@@ -12,7 +12,7 @@ class GGChunkModelSet
 {
 public:
 	typedef unsigned UINT;
-	typedef std::map< UINT, GGObjectModel> GGObjectModels;
+	typedef std::unordered_map< UINT, GGObjectModel> GGObjectModels;
 
 public:
 	void Update( const GGDevice& _device, const GGChunk& _chunk );

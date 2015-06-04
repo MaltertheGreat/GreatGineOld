@@ -18,6 +18,7 @@ class GGConfig;
 class GGGraphics : public GGInputHandler
 {
 	typedef std::array<GGChunkModelSet, GGWorld::DIAMETER * GGWorld::DIAMETER> GGChunkModelSets;
+
 public:
 	GGGraphics( const GGWindow& _window, const GGConfig& _config );
 

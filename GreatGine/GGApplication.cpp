@@ -8,6 +8,7 @@ GGApplication::GGApplication( HINSTANCE _hInstance, const GGConfig& _config )
 	m_window( m_title + L" v." + m_version, _hInstance, _config ),
 	m_input( m_window, _config ),
 	m_graphics( m_window, _config ),
+	m_game(),
 	m_world( m_input )
 {
 	m_input.RegisterHandler( this );
@@ -48,6 +49,7 @@ void GGApplication::Update()
 	float frameTime = m_timer.GetFrameTime();
 
 	m_world.Update( frameTime );
+	m_game.Update( m_world, frameTime );
 	m_graphics.Update( m_world, frameTime );
 
 	return;

@@ -5,6 +5,7 @@
 #include "GGInputProcessor.h"
 #include "GGFrameTimer.h"
 #include "GGGraphics.h"
+#include "GGGame.h"
 #include "GGWorld.h"
 
 class GGConfig;
@@ -32,9 +33,10 @@ private:
 private:
 	bool m_running = false;
 
-	GGWindow m_window;
+	GGWindow         m_window;
 	GGInputProcessor m_input;
-	GGFrameTimer m_timer;
-	GGGraphics m_graphics;
-	GGWorld m_world;
+	GGFrameTimer     m_timer;
+	GGGraphics       m_graphics;
+	GGGame           m_game;
+	GGWorld          m_world;
 };

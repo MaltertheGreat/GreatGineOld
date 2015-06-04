@@ -37,6 +37,9 @@
     <Filter Include="Source Files\Input">
       <UniqueIdentifier>{db1c1bbe-811c-4981-a9b0-05fddff54da6}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\GGGame">
+      <UniqueIdentifier>{91178a17-8978-444b-8b9b-4f6a55ffe19c}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="GreatGine.cpp">
@@ -115,6 +118,12 @@
       <Filter>Source Files\Graphics</Filter>
     </ClCompile>
     <ClCompile Include="GGPhysics.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GGGame.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GGPlayer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -202,6 +211,12 @@
     </ClInclude>
     <ClInclude Include="GGPhysics.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GGGame.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GGPlayer.h">
+      <Filter>Header Files\GGGame</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

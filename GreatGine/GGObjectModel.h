@@ -14,6 +14,8 @@ public:
 	GGObjectModel();
 	GGObjectModel( const GGDevice& _device, const GGObject& _object, const DirectX::XMFLOAT3& _position );
 
+	void Update( const GGObject& _object, const DirectX::XMFLOAT3& _position );
+
 	const GGMesh GetMesh() const;
 	const DirectX::XMFLOAT4X4& GetTransformation() const;
 

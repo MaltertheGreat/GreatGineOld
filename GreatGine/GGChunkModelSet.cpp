@@ -5,12 +5,19 @@
 
 void GGChunkModelSet::Update( const GGDevice& _device, const GGChunk& _chunk )
 {
-	auto& newObjects = _chunk.GetNewObjects();
+	auto& objects = _chunk.GetObjects();
 	auto position = _chunk.GetPosition();
 
-	for( auto& object : newObjects )
+	auto& newObjectIDs = _chunk.GetAddedObjectIDs();
+	for( auto& id : newObjectIDs )
 	{
-		m_models[ object.GetID() ] = GGObjectModel( _device, object, position );
+		m_models[ id ] = GGObjectModel( _device, objects.at( id ), position );
+	}
+
+	auto& modifiedObjectIDs = _chunk.GetModifiedObjectIDs();
+	for( auto& id : modifiedObjectIDs )
+	{
+		m_models.at( id ).Update( objects.at( id ), position );
 	}
 
 	return;

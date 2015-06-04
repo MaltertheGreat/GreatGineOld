@@ -22,6 +22,17 @@ GGObjectModel::GGObjectModel( const GGDevice& _device, const GGObject& _object, 
 	XMStoreFloat4x4( &m_transformation, trasformation );
 }
 
+void GGObjectModel::Update( const GGObject & _object, const DirectX::XMFLOAT3 & _position )
+{
+	XMVECTOR position = XMLoadFloat3( &_position );
+	position += XMLoadFloat3( &_object.GetPosition() );
+
+	float objectScale = _object.GetVoxelDimension() * GGObject::DIAMETER;
+	XMMATRIX transformation = XMMatrixScaling( objectScale, objectScale, objectScale );
+	transformation = XMMatrixMultiply( transformation, XMMatrixTranslationFromVector( position ) );
+	XMStoreFloat4x4( &m_transformation, transformation );
+}
+
 const GGMesh GGObjectModel::GetMesh() const
 {
 	return m_mesh;
