@@ -142,7 +142,8 @@
       <ObjectFileOutput />
     </FxCompile>
     <PostBuildEvent>
-      <Command>xcopy "$(ProjectDir)config.txt" "$(OutputPath)" /Y</Command>
+      <Command>
+      </Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Profile|Win32'">
@@ -164,7 +165,8 @@
       <ObjectFileOutput />
     </FxCompile>
     <PostBuildEvent>
-      <Command>xcopy "$(ProjectDir)config.txt" "$(OutputPath)" /Y</Command>
+      <Command>
+      </Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -186,7 +188,8 @@
       <ObjectFileOutput />
     </FxCompile>
     <PostBuildEvent>
-      <Command>xcopy "$(ProjectDir)config.txt" "$(OutputPath)" /Y</Command>
+      <Command>
+      </Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">
@@ -208,7 +211,8 @@
       <ObjectFileOutput />
     </FxCompile>
     <PostBuildEvent>
-      <Command>xcopy "$(ProjectDir)config.txt" "$(OutputPath)" /Y</Command>
+      <Command>
+      </Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -234,7 +238,8 @@
       <ObjectFileOutput />
     </FxCompile>
     <PostBuildEvent>
-      <Command>xcopy "$(ProjectDir)config.txt" "$(OutputPath)" /Y</Command>
+      <Command>
+      </Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -260,7 +265,8 @@
       <ObjectFileOutput />
     </FxCompile>
     <PostBuildEvent>
-      <Command>xcopy "$(ProjectDir)config.txt" "$(OutputPath)" /Y</Command>
+      <Command>
+      </Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -425,9 +431,6 @@
       <HeaderFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Shaders\LinesVS.h</HeaderFileOutput>
       <HeaderFileOutput Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">Shaders\LinesVS.h</HeaderFileOutput>
     </FxCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <Text Include="config.txt" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

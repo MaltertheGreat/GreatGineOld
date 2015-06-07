@@ -10,13 +10,16 @@ GGConfig::GGConfig()
 	m_configFileName( "config.txt" )
 {
 	ifstream configFile( m_configFileName );
-	string configLine;
-
+	if( !configFile.is_open() )
+	{
+		configFile.open( m_configFileName, ios::in | ios::out | ios::trunc );
+	}
 	if( !configFile.good() )
 	{
 		GG_THROW;
 	}
 
+	string configLine;
 	while( getline( configFile, configLine ) )
 	{
 		if( configLine[ 0 ] == '#' )	// comment

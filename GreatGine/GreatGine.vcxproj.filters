@@ -16,9 +16,6 @@
     <Filter Include="Shaders">
       <UniqueIdentifier>{fe0a2b3c-4de6-462f-aad4-e1fe01bffb2b}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Other">
-      <UniqueIdentifier>{5c6205f5-9ae5-46d2-b42e-73743f23ba58}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Header Files\World">
       <UniqueIdentifier>{06d4fe4f-3710-4b93-a1b5-9bd78f73a4a9}</UniqueIdentifier>
     </Filter>
@@ -232,10 +229,5 @@
     <FxCompile Include="linesPS.hlsl">
       <Filter>Shaders</Filter>
     </FxCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <Text Include="config.txt">
-      <Filter>Other</Filter>
-    </Text>
   </ItemGroup>
 </Project>

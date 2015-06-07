@@ -9,8 +9,8 @@ using namespace std;
 
 GGGraphics::GGGraphics( const GGWindow& _window, GGConfig& _config )
 	:
-	m_resolutionX( _config.GetInt( "resolutionX", 1280 ) ),
-	m_resolutionY( _config.GetInt( "resolutionY", 720 ) ),
+	m_resolutionX( _config.GetUint( "resolutionX", 1280 ) ),
+	m_resolutionY( _config.GetUint( "resolutionY", 720 ) ),
 	m_keyMap{ _config.GetUint( "key_fill_type", VK_F1 ), _config.GetUint( "key_render_chunks", VK_F2 ) },
 	m_currentFillType( GGRenderer::FILL_TYPE_SOLID ),
 	m_driver( _window, m_resolutionX, m_resolutionY ),
