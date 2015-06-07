@@ -3,10 +3,10 @@
 #include "GGConfig.h"
 using namespace std;
 
-GGWindow::GGWindow( std::wstring title, HINSTANCE _hInstance, const GGConfig& _config )
+GGWindow::GGWindow( std::wstring title, HINSTANCE _hInstance, GGConfig& _config )
 	:
-	m_width( _config.GetInt( "window_width" ) ),
-	m_height( _config.GetInt( "window_height" ) )
+	m_width( _config.GetUint( "window_width", 1280 ) ),
+	m_height( _config.GetUint( "window_height", 720 ) )
 {
 	WNDCLASSEX wcex = { 0 };
 
@@ -15,7 +15,7 @@ GGWindow::GGWindow( std::wstring title, HINSTANCE _hInstance, const GGConfig& _c
 	wcex.lpfnWndProc = &WndProc;
 	wcex.hInstance = _hInstance;
 	wcex.hCursor = LoadCursor( nullptr, IDC_ARROW );
-	wcex.hbrBackground = (HBRUSH) (COLOR_WINDOW + 1);
+	wcex.hbrBackground = (HBRUSH)(COLOR_WINDOW + 1);
 	wcex.lpszMenuName = nullptr;
 	wcex.lpszClassName = title.c_str();
 
@@ -55,17 +55,17 @@ LRESULT CALLBACK GGWindow::WndProc( HWND hWnd, UINT message, WPARAM wParam, LPAR
 {
 	switch( message )
 	{
-	case WM_DESTROY:
-		PostQuitMessage( 0 );
-		break;
-	case WM_ACTIVATE:
-		if( wParam )	// Window activated
-		{
-			ShowCursor( FALSE );
-		}
-		break;
-	default:
-		return DefWindowProc( hWnd, message, wParam, lParam );
+		case WM_DESTROY:
+			PostQuitMessage( 0 );
+			break;
+		case WM_ACTIVATE:
+			if( wParam )	// Window activated
+			{
+				ShowCursor( FALSE );
+			}
+			break;
+		default:
+			return DefWindowProc( hWnd, message, wParam, lParam );
 	}
 	return 0;
 }

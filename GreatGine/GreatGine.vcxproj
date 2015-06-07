@@ -269,6 +269,7 @@
     <ClCompile Include="GGChunk.cpp" />
     <ClCompile Include="GGChunkModelSet.cpp" />
     <ClCompile Include="GGGame.cpp" />
+    <ClCompile Include="GGInput.cpp" />
     <ClCompile Include="GGLinesData.cpp" />
     <ClCompile Include="GGObjectModel.cpp" />
     <ClCompile Include="GGConfig.cpp" />
@@ -280,7 +281,6 @@
     <ClCompile Include="GGFreeCamera.cpp" />
     <ClCompile Include="GGGraphics.cpp" />
     <ClCompile Include="GGDevice.cpp" />
-    <ClCompile Include="GGInputProcessor.cpp" />
     <ClCompile Include="GGMesh.cpp" />
     <ClCompile Include="GGMeshData.cpp" />
     <ClCompile Include="GGObject.cpp" />
@@ -306,6 +306,7 @@
     <ClInclude Include="GGChunk.h" />
     <ClInclude Include="GGChunkModelSet.h" />
     <ClInclude Include="GGGame.h" />
+    <ClInclude Include="GGInput.h" />
     <ClInclude Include="GGLinesData.h" />
     <ClInclude Include="GGObjectModel.h" />
     <ClInclude Include="GGConfig.h" />
@@ -319,7 +320,6 @@
     <ClInclude Include="GGDevice.h" />
     <ClInclude Include="GGMeshData.h" />
     <ClInclude Include="GGInputHandler.h" />
-    <ClInclude Include="GGInputProcessor.h" />
     <ClInclude Include="GGMesh.h" />
     <ClInclude Include="GGObject.h" />
     <ClInclude Include="GGPhysics.h" />

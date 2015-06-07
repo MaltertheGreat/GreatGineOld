@@ -1,27 +1,15 @@
-# Configuration file for GreatGine
-
-# 'I' prefix for integer		e.g. Iint=4
-# 'H' prefix for hex integer	e.g. Hint=0x4
-# 'F' prefix for floats			e.g. Ffloat=4.444
-# Do not use spaces( except for comments ;p )
-
-Iwindow_width=1280
-Iwindow_height=720
-
+Ukey_exit=27
+Uwindow_width=1280
+Uwindow_height=720
 IresolutionX=1280
 IresolutionY=720
-
+Ukey_fill_type=112
+Ukey_render_chunks=113
 Isync_interval=0
-
-#human vertical field of view ~= 107.2856052
-Ffov=80.0
-
-Hkey_exit=0x1B
-Hkey_forward=0x57
-Hkey_backward=0x53
-Hkey_rightward=0x44
-Hkey_leftward=0x41
-Hkey_upward=0x20
-Hkey_downward=0x10
-Hkey_fill_type=0x70
-Hkey_render_chunks=0x71
+Ffov=80.000000
+Ukey_backward=83
+Ukey_rightward=68
+Ukey_leftward=65
+Ukey_upward=32
+Ukey_downward=16
+Ukey_forward=87

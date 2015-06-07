@@ -1,12 +1,21 @@
 #include "PCH.h"
 #include "GGFreeCamera.h"
+#include "GGConfig.h"
 using namespace DirectX;
 
-GGFreeCamera::GGFreeCamera( const XMFLOAT3& _position )
+GGFreeCamera::GGFreeCamera( const XMFLOAT3& _position, GGConfig& _config )
 	:
-	m_position( _position ),
-	m_velocity( { 0.0f, 0.0f, 0.0f } ),
-	m_rotation( { 0.0f, 0.0f, 0.0f } )
+	m_keyMap{
+	_config.GetUint( "key_forward", 'W' ),
+	_config.GetUint( "key_backward", 'S' ),
+	_config.GetUint( "key_rightward", 'D' ),
+	_config.GetUint( "key_leftward", 'A' ),
+	_config.GetUint( "key_upward", VK_SPACE ),
+	_config.GetUint( "key_downward", VK_SHIFT ),
+},
+m_position( _position ),
+m_velocity( { 0.0f, 0.0f, 0.0f } ),
+m_rotation( { 0.0f, 0.0f, 0.0f } )
 {}
 
 void GGFreeCamera::Update( float _frameTime )
@@ -25,62 +34,62 @@ void GGFreeCamera::Update( float _frameTime )
 	return;
 }
 
-void GGFreeCamera::HandleActionInput( GG_ACTION_INPUT _input, bool _down )
+void GGFreeCamera::HandleKeyInput( WPARAM _keyCode, bool _down )
 {
 	if( _down )
 	{
-		if( _input == GG_ACTION_INPUT_MOVE_FORWARD )
+		if( _keyCode == m_keyMap[ GG_KEYMAP_FORWARD ] )
 		{
 			m_velocity.z = 5.0f;
 		}
-		else if( _input == GG_ACTION_INPUT_MOVE_BACKWARD )
+		else if( _keyCode == m_keyMap[ GG_KEYMAP_BACKWARD ] )
 		{
 			m_velocity.z = -5.0f;
 		}
 
-		if( _input == GG_ACTION_INPUT_MOVE_RIGHTWARD )
+		if( _keyCode == m_keyMap[ GG_KEYMAP_RIGHTWARD ] )
 		{
 			m_velocity.x = 5.0f;
 		}
-		else if( _input == GG_ACTION_INPUT_MOVE_LEFTWARD )
+		else if( _keyCode == m_keyMap[ GG_KEYMAP_LEFTWARD ] )
 		{
 			m_velocity.x = -5.0f;
 		}
 
-		if( _input == GG_ACTION_INPUT_MOVE_UPWARD )
+		if( _keyCode == m_keyMap[ GG_KEYMAP_UPWARD ] )
 		{
 			m_velocity.y = 5.0f;
 		}
-		else if( _input == GG_ACTION_INPUT_MOVE_DOWNWARD )
+		else if( _keyCode == m_keyMap[ GG_KEYMAP_DOWNWARD ] )
 		{
 			m_velocity.y = -5.0f;
 		}
 	}
 	else
 	{
-		if( _input == GG_ACTION_INPUT_MOVE_FORWARD )
+		if( _keyCode == m_keyMap[ GG_KEYMAP_FORWARD ] )
 		{
 			m_velocity.z = 0.0f;
 		}
-		else if( _input == GG_ACTION_INPUT_MOVE_BACKWARD )
+		else if( _keyCode == m_keyMap[ GG_KEYMAP_BACKWARD ] )
 		{
 			m_velocity.z = 0.0f;
 		}
 
-		if( _input == GG_ACTION_INPUT_MOVE_RIGHTWARD )
+		if( _keyCode == m_keyMap[ GG_KEYMAP_RIGHTWARD ] )
 		{
 			m_velocity.x = 0.0f;
 		}
-		else if( _input == GG_ACTION_INPUT_MOVE_LEFTWARD )
+		else if( _keyCode == m_keyMap[ GG_KEYMAP_LEFTWARD ] )
 		{
 			m_velocity.x = 0.0f;
 		}
 
-		if( _input == GG_ACTION_INPUT_MOVE_UPWARD )
+		if( _keyCode == m_keyMap[ GG_KEYMAP_UPWARD ] )
 		{
 			m_velocity.y = 0.0f;
 		}
-		else if( _input == GG_ACTION_INPUT_MOVE_DOWNWARD )
+		else if( _keyCode == m_keyMap[ GG_KEYMAP_DOWNWARD ] )
 		{
 			m_velocity.y = 0.0f;
 		}
@@ -89,7 +98,7 @@ void GGFreeCamera::HandleActionInput( GG_ACTION_INPUT _input, bool _down )
 	return;
 }
 
-void GGFreeCamera::HandleRangeInput( int _x, int _y )
+void GGFreeCamera::HandleMouseInput( int _x, int _y )
 {
 	m_rotation.x += _y * 0.005f;
 	if( m_rotation.x >= XMConvertToRadians( 89.9999f ) )

@@ -7,7 +7,7 @@ class GGConfig;
 class GGWindow
 {
 public:
-	GGWindow( std::wstring title, HINSTANCE _hInstance, const GGConfig& _config );
+	GGWindow( std::wstring title, HINSTANCE _hInstance, GGConfig& _config );
 
 public:
 	HWND GetHandle() const;

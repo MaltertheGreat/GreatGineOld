@@ -37,7 +37,8 @@ GGCamera GGDevice::CreateCamera( float _fovAngle, UINT _viewWidth, UINT _viewHei
 	}
 
 	XMFLOAT4X4 projectionMatrix;
-	XMMATRIX projection = XMMatrixPerspectiveFovLH( _fovAngle, _viewWidth / static_cast<float>(_viewHeight), 0.01f, 1000.0f );
+	float aspect = _viewWidth / static_cast<float>(_viewHeight);
+	XMMATRIX projection = XMMatrixPerspectiveFovLH( XMConvertToRadians( _fovAngle ), aspect, 0.01f, 1000.0f );
 	XMStoreFloat4x4( &projectionMatrix, XMMatrixTranspose( projection ) );
 
 	// Projection matrix constant buffer

@@ -17,18 +17,25 @@ class GGConfig;
 
 class GGGraphics : public GGInputHandler
 {
+	enum GG_KEYMAP
+	{
+		GG_KEYMAP_FILL_TYPE = 0,
+		GG_KEYMAP_RENDER_CHUNKS,
+
+		GG_KEYMAP_COUNT
+	};
 	typedef std::array<GGChunkModelSet, GGWorld::DIAMETER * GGWorld::DIAMETER> GGChunkModelSets;
 
 public:
-	GGGraphics( const GGWindow& _window, const GGConfig& _config );
+	GGGraphics( const GGWindow& _window, GGConfig& _config );
 
 public:
 	void Update( GGWorld& _world, float _frameTime );
 	void Render();
 
 public:
-	virtual void HandleActionInput( GG_ACTION_INPUT _input, bool _down ) override;
-	virtual void HandleRangeInput( int _x, int _y ) override;
+	virtual void HandleKeyInput( WPARAM _keyCode, bool _down ) override;
+	virtual void HandleMouseInput( int _x, int _y ) override;
 
 private:
 	static GGLinesData VerticalLine();
@@ -38,6 +45,9 @@ private:
 	void Render2D();
 
 private:
+	UINT m_resolutionX;
+	UINT m_resolutionY;
+	WPARAM m_keyMap[ GG_KEYMAP_COUNT ];
 	GGRenderer::FILL_TYPE m_currentFillType;
 	bool m_renderChunks;
 

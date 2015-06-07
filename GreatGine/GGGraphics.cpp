@@ -7,13 +7,16 @@
 using namespace DirectX;
 using namespace std;
 
-GGGraphics::GGGraphics( const GGWindow& _window, const GGConfig& _config )
+GGGraphics::GGGraphics( const GGWindow& _window, GGConfig& _config )
 	:
+	m_resolutionX( _config.GetInt( "resolutionX", 1280 ) ),
+	m_resolutionY( _config.GetInt( "resolutionY", 720 ) ),
+	m_keyMap{ _config.GetUint( "key_fill_type", VK_F1 ), _config.GetUint( "key_render_chunks", VK_F2 ) },
 	m_currentFillType( GGRenderer::FILL_TYPE_SOLID ),
-	m_driver( _window, _config.GetInt( "resolutionX" ), _config.GetInt( "resolutionY" ) ),
+	m_driver( _window, m_resolutionX, m_resolutionY ),
 	m_device( m_driver ),
-	m_renderer( m_driver, _config.GetInt( "sync_interval" ) ),
-	m_camera( m_device.CreateCamera( XMConvertToRadians( _config.GetFloat( "fov" ) ), _config.GetInt( "resolutionX" ), _config.GetInt( "resolutionY" ) ) ),
+	m_renderer( m_driver, _config.GetInt( "sync_interval", 0 ) ),
+	m_camera( m_device.CreateCamera( _config.GetFloat( "fov", 80.0f ), m_resolutionX, m_resolutionY ) ),
 	m_basicShader( m_device.CreateShader() ),
 	m_debugChunkMesh( m_device.CraeteLinesMesh( VerticalLine() ) ),
 	m_debugChunkShader( m_device.CreateLinesShader() )
@@ -47,25 +50,25 @@ void GGGraphics::Render()
 	return;
 }
 
-void GGGraphics::HandleActionInput( GG_ACTION_INPUT _input, bool _down )
+void GGGraphics::HandleKeyInput( WPARAM _keyCode, bool _down )
 {
+	WPARAM t = m_keyMap[ GG_KEYMAP_FILL_TYPE ];
 	if( _down )
 	{
-		switch( _input )
+		if( _keyCode == m_keyMap[ GG_KEYMAP_FILL_TYPE ] )
 		{
-			case GG_ACTION_INPUT_FILL_TYPE:
-				SwitchFillType();
-				break;
-			case GG_ACTION_INPUT_RENDER_CHUNKS:
-				m_renderChunks = !m_renderChunks;
-				break;
+			SwitchFillType();
+		}
+		else if( _keyCode == m_keyMap[ GG_KEYMAP_RENDER_CHUNKS ] )
+		{
+			m_renderChunks = !m_renderChunks;
 		}
 	}
 
 	return;
 }
 
-void GGGraphics::HandleRangeInput( int, int )
+void GGGraphics::HandleMouseInput( int, int )
 {
 	return;
 }

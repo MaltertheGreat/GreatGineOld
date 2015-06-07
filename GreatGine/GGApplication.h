@@ -2,7 +2,7 @@
 
 #include "GGInputHandler.h"
 #include "GGWindow.h"
-#include "GGInputProcessor.h"
+#include "GGInput.h"
 #include "GGFrameTimer.h"
 #include "GGGraphics.h"
 #include "GGGame.h"
@@ -13,7 +13,7 @@ class GGConfig;
 class GGApplication : public GGInputHandler
 {
 public:
-	GGApplication( HINSTANCE _hInstance, const GGConfig& _config );
+	GGApplication( HINSTANCE _hInstance, GGConfig& _config );
 
 public:
 	void Run();
@@ -23,8 +23,8 @@ private:
 	void Render();
 
 public:
-	virtual void HandleActionInput( GG_ACTION_INPUT _input, bool _down ) override;
-	virtual void HandleRangeInput( int _x, int _y ) override;
+	virtual void HandleKeyInput( WPARAM _keyCode, bool _down ) override;
+	virtual void HandleMouseInput( int _x, int _y ) override;
 
 private:
 	std::wstring m_title = L"GreatGine";
@@ -32,9 +32,10 @@ private:
 
 private:
 	bool m_running = false;
+	WPARAM m_exitKey;
 
 	GGWindow         m_window;
-	GGInputProcessor m_input;
+	GGInput          m_input;
 	GGFrameTimer     m_timer;
 	GGGraphics       m_graphics;
 	GGGame           m_game;

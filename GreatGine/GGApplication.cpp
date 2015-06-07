@@ -3,13 +3,14 @@
 #include "GGConfig.h"
 #include "GGError.h"
 
-GGApplication::GGApplication( HINSTANCE _hInstance, const GGConfig& _config )
+GGApplication::GGApplication( HINSTANCE _hInstance, GGConfig& _config )
 	:
+	m_exitKey( _config.GetUint( "key_exit", VK_ESCAPE ) ),
 	m_window( m_title + L" v." + m_version, _hInstance, _config ),
-	m_input( m_window, _config ),
+	m_input( m_window ),
 	m_graphics( m_window, _config ),
 	m_game(),
-	m_world( m_input )
+	m_world( m_input, _config )
 {
 	m_input.RegisterHandler( this );
 	m_input.RegisterHandler( &m_graphics );
@@ -28,10 +29,8 @@ void GGApplication::Run()
 			{
 				m_running = false;
 			}
-			else if( msg.message & GGInputProcessor::INPUT_MESSAGE )
-			{
-				m_input.ProcessInput( msg );
-			}
+
+			m_input.ProcessInput( msg );
 
 			DispatchMessage( &msg );
 		}
@@ -62,9 +61,9 @@ void GGApplication::Render()
 	return;
 }
 
-void GGApplication::HandleActionInput( GG_ACTION_INPUT _input, bool _down )
+void GGApplication::HandleKeyInput( WPARAM _keyCode, bool _down )
 {
-	if( _down && (_input == GG_ACTION_INPUT_EXIT) )
+	if( _down && (_keyCode == m_exitKey) )
 	{
 		m_running = false;
 	}
@@ -72,7 +71,7 @@ void GGApplication::HandleActionInput( GG_ACTION_INPUT _input, bool _down )
 	return;
 }
 
-void GGApplication::HandleRangeInput( int, int )
+void GGApplication::HandleMouseInput( int, int )
 {
 	return;
 }

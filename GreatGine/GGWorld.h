@@ -3,10 +3,12 @@
 #include <array>
 #include <memory>
 
-#include "GGInputProcessor.h"
 #include "GGIWorldViewer.h"
 #include "GGFreeCamera.h"
 #include "GGChunk.h"
+
+class GGInput;
+class GGConfig;
 
 class GGWorld
 {
@@ -15,7 +17,7 @@ public:
 	typedef std::array<GGChunk, DIAMETER * DIAMETER> GGChunkArray;
 
 public:
-	GGWorld( GGInputProcessor& _inputProcessor );
+	GGWorld( GGInput& _inputProcessor, GGConfig& _config );
 
 public:
 	void Update( float _frameTime );

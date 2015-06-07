@@ -1,14 +1,17 @@
 #include "PCH.h"
 #include "GGWorld.h"
+#include "GGInput.h"
+#include "GGConfig.h"
+
 #include <random>
 using namespace DirectX;
 using namespace std;
 
 array<XMFLOAT3, 1> test{ { { 0.0f, 0.0f, 0.0f } } };
 
-GGWorld::GGWorld( GGInputProcessor& _inputProcessor )
+GGWorld::GGWorld( GGInput& _inputProcessor, GGConfig& _config )
 	:
-	m_freeCamera( { 0.0f, 10.0f, -5.0f } ),
+	m_freeCamera( { 0.0f, 10.0f, -5.0f }, _config ),
 	m_chunks( InitializeChunks() )
 {
 	_inputProcessor.RegisterHandler( &m_freeCamera );
