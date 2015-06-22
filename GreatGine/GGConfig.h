@@ -16,7 +16,7 @@ public:
 private:
 	std::string m_configFileName;
 
-	std::map< std::string, int > m_ints;
-	std::map< std::string, UINT > m_uints;
+	std::map< std::string, int >   m_ints;
+	std::map< std::string, UINT >  m_uints;
 	std::map< std::string, float > m_floats;
 };

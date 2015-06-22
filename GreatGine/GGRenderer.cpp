@@ -268,7 +268,7 @@ void GGRenderer::RenderMesh( const GGMesh _mesh, const XMFLOAT4X4& _transform )
 void GGRenderer::RenderText( const std::wstring& _text, const XMFLOAT2& _pos )
 {
 	D2D1_RECT_F rectangle1 = D2D1::RectF( _pos.x, _pos.y, _pos.x + 512.0f, _pos.y + 18.0f );
-	m_renderTarget2D->DrawText( _text.c_str(), _text.length(), m_textFormat.Get(), rectangle1, m_solidBrush.Get() );
+	m_renderTarget2D->DrawText( _text.c_str(), static_cast<UINT32>(_text.length()), m_textFormat.Get(), rectangle1, m_solidBrush.Get() );
 
 	return;
 }

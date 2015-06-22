@@ -289,7 +289,6 @@
     <ClCompile Include="GGMesh.cpp" />
     <ClCompile Include="GGMeshData.cpp" />
     <ClCompile Include="GGObject.cpp" />
-    <ClCompile Include="GGPhysics.cpp" />
     <ClCompile Include="GGPlayer.cpp" />
     <ClCompile Include="GGRenderer.cpp" />
     <ClCompile Include="GGShader.cpp" />
@@ -326,14 +325,12 @@
     <ClInclude Include="GGInputHandler.h" />
     <ClInclude Include="GGMesh.h" />
     <ClInclude Include="GGObject.h" />
-    <ClInclude Include="GGPhysics.h" />
     <ClInclude Include="GGPlayer.h" />
     <ClInclude Include="GGRenderer.h" />
     <ClInclude Include="GGShader.h" />
     <ClInclude Include="GGVoxel.h" />
     <ClInclude Include="GGWindow.h" />
     <ClInclude Include="GGWorld.h" />
-    <ClInclude Include="GGIWorldViewer.h" />
     <ClInclude Include="PCH.h" />
   </ItemGroup>
   <ItemGroup>

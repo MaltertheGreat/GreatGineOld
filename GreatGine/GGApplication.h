@@ -28,10 +28,10 @@ public:
 
 private:
 	std::wstring m_title = L"GreatGine";
-	std::wstring m_version = L"0.0.1 DEV";
+	std::wstring m_version = L"0.0.2 DEV";
 
 private:
-	bool m_running = false;
+	bool   m_running;
 	WPARAM m_exitKey;
 
 	GGWindow         m_window;

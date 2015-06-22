@@ -15,11 +15,11 @@ public:
 	GGObject( GGVoxelArray&& _voxels, float _voxelDimension, const DirectX::XMFLOAT3& _position );
 
 public:
+	void SetPosition( const DirectX::XMFLOAT3& _pos );
+
 	const float GetVoxelDimension() const;
 	const DirectX::XMFLOAT3& GetPosition() const;
 	const GGVoxelArray& GetVoxels() const;
-
-	void SetPosition( const DirectX::XMFLOAT3& _pos );
 
 private:
 	float             m_voxelDimension;

@@ -43,7 +43,7 @@ GGConfig::GGConfig()
 			case 'I':	// integer
 				m_ints[ configName ] = stoi( configValue );
 				break;
-			case 'U':	// unsigned
+			case 'U':	// unsigned integer
 				m_uints[ configName ] = stoul( configValue );
 				break;
 			case 'F':	// float
@@ -57,7 +57,7 @@ GGConfig::GGConfig()
 
 int GGConfig::GetInt( string _configName, int _defaultValue )
 {
-	if( m_ints.count( _configName ) == 0 )
+	if( m_ints.count( _configName ) == 0 )	// Value not found, load default instead
 	{
 		ofstream configFile( m_configFileName, ios::app );
 		string configLine = "I" + _configName + "=" + to_string( _defaultValue );
@@ -71,7 +71,7 @@ int GGConfig::GetInt( string _configName, int _defaultValue )
 
 UINT GGConfig::GetUint( std::string _configName, UINT _defaultValue )
 {
-	if( m_uints.count( _configName ) == 0 )
+	if( m_uints.count( _configName ) == 0 )	// Value not found, load default instead
 	{
 		ofstream configFile( m_configFileName, ios::app );
 		string configLine = "U" + _configName + "=" + to_string( _defaultValue );
@@ -85,7 +85,7 @@ UINT GGConfig::GetUint( std::string _configName, UINT _defaultValue )
 
 float GGConfig::GetFloat( std::string _configName, float _defaultValue )
 {
-	if( m_floats.count( _configName ) == 0 )
+	if( m_floats.count( _configName ) == 0 )	// Value not found, load default instead
 	{
 		ofstream configFile( m_configFileName, ios::app );
 		string configLine = "F" + _configName + "=" + to_string( _defaultValue );

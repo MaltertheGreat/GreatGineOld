@@ -137,7 +137,7 @@ GGMesh GGDevice::CreateMesh( const GGMeshData& _grid ) const
 	D3D11_BUFFER_DESC bd;
 	ZeroMemory( &bd, sizeof( bd ) );
 	bd.Usage = D3D11_USAGE_DEFAULT;
-	bd.ByteWidth = sizeof( GGMeshData::GGVertex ) * _grid.vertices.size();
+	bd.ByteWidth = static_cast<UINT>(sizeof( GGMeshData::GGVertex ) * _grid.vertices.size());
 	bd.BindFlags = D3D11_BIND_VERTEX_BUFFER;
 	bd.CPUAccessFlags = 0;
 
@@ -153,7 +153,7 @@ GGMesh GGDevice::CreateMesh( const GGMeshData& _grid ) const
 	}
 
 	// Index buffer
-	bd.ByteWidth = sizeof( GGMeshData::GGIndex ) * _grid.indices.size();
+	bd.ByteWidth = static_cast<UINT>(sizeof( GGMeshData::GGIndex ) * _grid.indices.size());
 	bd.BindFlags = D3D11_BIND_INDEX_BUFFER;
 
 	InitData.pSysMem = _grid.indices.data();
@@ -165,7 +165,7 @@ GGMesh GGDevice::CreateMesh( const GGMeshData& _grid ) const
 		GG_THROW;
 	}
 
-	return GGMesh( _grid.indices.size(), vertexBuffer, indexBuffer );
+	return GGMesh( static_cast<UINT>(_grid.indices.size()), vertexBuffer, indexBuffer );
 }
 
 GGMesh GGDevice::CraeteLinesMesh( const GGLinesData& _lines ) const
@@ -174,7 +174,7 @@ GGMesh GGDevice::CraeteLinesMesh( const GGLinesData& _lines ) const
 	D3D11_BUFFER_DESC bd;
 	ZeroMemory( &bd, sizeof( bd ) );
 	bd.Usage = D3D11_USAGE_DEFAULT;
-	bd.ByteWidth = sizeof( GGLinesData::GGVertex ) * _lines.vertices.size();
+	bd.ByteWidth = static_cast<UINT>(sizeof( GGLinesData::GGVertex ) * _lines.vertices.size());
 	bd.BindFlags = D3D11_BIND_VERTEX_BUFFER;
 	bd.CPUAccessFlags = 0;
 
@@ -190,7 +190,7 @@ GGMesh GGDevice::CraeteLinesMesh( const GGLinesData& _lines ) const
 	}
 
 	// Index buffer
-	bd.ByteWidth = sizeof( GGLinesData::GGIndex ) * _lines.indices.size();
+	bd.ByteWidth = static_cast<UINT>(sizeof( GGLinesData::GGIndex ) * _lines.indices.size());
 	bd.BindFlags = D3D11_BIND_INDEX_BUFFER;
 
 	InitData.pSysMem = _lines.indices.data();
@@ -202,7 +202,7 @@ GGMesh GGDevice::CraeteLinesMesh( const GGLinesData& _lines ) const
 		GG_THROW;
 	}
 
-	return GGMesh( _lines.indices.size(), vertexBuffer, indexBuffer );
+	return GGMesh( static_cast<UINT>(_lines.indices.size()), vertexBuffer, indexBuffer );
 }
 
 void GGDevice::UpdateCamera( GGCamera& _camera, const DirectX::XMFLOAT3& _position, const DirectX::XMFLOAT3& _rotation ) const

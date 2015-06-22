@@ -35,10 +35,12 @@ public:
 	virtual void HandleMouseInput( int _x, int _y ) override;
 
 private:
+	bool m_isAlive;
+
 	WPARAM m_keyMap[ GG_KEYMAP_COUNT ];
+	GGChunk::GGObjectID m_headObjectID;
+
 	DirectX::XMFLOAT3 m_position;
 	DirectX::XMFLOAT3 m_velocity;
 	DirectX::XMFLOAT3 m_rotation;
-	bool m_isAlive = false;
-	GGChunk::GGObjectID m_headObjectID;
 };

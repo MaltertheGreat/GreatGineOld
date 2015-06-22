@@ -88,9 +88,9 @@ void GGWorld::GenerateChunk( GGChunk& _chunk )
 	{
 		voxelDimension /= 4.0f;
 		position = { 0.0f, GGChunk::DIMENSION / 2.0f, 0.0f };
-		GGObject object( move( CreateRandomVoxels() ), voxelDimension, position );
+		GGObject smallObject( move( CreateRandomVoxels() ), voxelDimension, position );
 
-		_chunk.AddObject( move( object ) );
+		_chunk.AddObject( move( smallObject ) );
 	}
 
 	_chunk.SetState( GGChunk::GG_CHUNK_STATE_GENERAETD );

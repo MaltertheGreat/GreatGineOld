@@ -17,6 +17,7 @@ class GGConfig;
 
 class GGGraphics : public GGInputHandler
 {
+private:
 	enum GG_KEYMAP
 	{
 		GG_KEYMAP_FILL_TYPE = 0,
@@ -24,6 +25,7 @@ class GGGraphics : public GGInputHandler
 
 		GG_KEYMAP_COUNT
 	};
+
 	typedef std::array<GGChunkModelSet, GGWorld::DIAMETER * GGWorld::DIAMETER> GGChunkModelSets;
 
 public:
@@ -45,11 +47,12 @@ private:
 	void Render2D();
 
 private:
-	UINT m_resolutionX;
-	UINT m_resolutionY;
-	WPARAM m_keyMap[ GG_KEYMAP_COUNT ];
+	UINT     m_resolutionX;
+	UINT     m_resolutionY;
+	WPARAM   m_keyMap[ GG_KEYMAP_COUNT ];
+
 	GGRenderer::FILL_TYPE m_currentFillType;
-	bool m_renderChunks;
+	bool                  m_renderChunks;
 
 	GGDirectXDriver  m_driver;
 	GGDevice         m_device;

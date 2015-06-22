@@ -7,6 +7,7 @@ using namespace DirectX;
 
 GGPlayer::GGPlayer( GGInput& _input, GGConfig& _config )
 	:
+	m_isAlive( false ),
 	m_keyMap{
 	_config.GetUint( "key_forward", 'W' ),
 	_config.GetUint( "key_backward", 'S' ),

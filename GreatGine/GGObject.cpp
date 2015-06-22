@@ -10,6 +10,11 @@ GGObject::GGObject( GGVoxelArray && _voxels, float _voxelDimension, const XMFLOA
 	m_voxels( move( _voxels ) )
 {}
 
+void GGObject::SetPosition( const DirectX::XMFLOAT3 & _pos )
+{
+	m_position = _pos;
+}
+
 const float GGObject::GetVoxelDimension() const
 {
 	return m_voxelDimension;
@@ -23,9 +28,4 @@ const XMFLOAT3& GGObject::GetPosition() const
 const GGObject::GGVoxelArray& GGObject::GetVoxels() const
 {
 	return m_voxels;
-}
-
-void GGObject::SetPosition( const DirectX::XMFLOAT3 & _pos )
-{
-	m_position = _pos;
 }

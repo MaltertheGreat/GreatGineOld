@@ -45,8 +45,8 @@ private:
 	GG_CHUNK_STATE    m_state = GG_CHUNK_STATE_UNGENERATED;
 	DirectX::XMFLOAT3 m_position; // Relative to center of loaded world
 
-	GGObjects m_objects;
-	GGObjectID m_newObjectID = 0;
+	GGObjects   m_objects;
+	GGObjectID  m_newObjectID = 0;
 	GGObjectIDs m_addedObjectIDs;
 	GGObjectIDs m_modifiedObjectIDs;
 	GGObjectIDs m_removedObjectIDs;

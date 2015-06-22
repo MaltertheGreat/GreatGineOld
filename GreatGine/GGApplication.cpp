@@ -5,7 +5,9 @@
 
 GGApplication::GGApplication( HINSTANCE _hInstance, GGConfig& _config )
 	:
+	m_running( false ),
 	m_exitKey( _config.GetUint( "key_exit", VK_ESCAPE ) ),
+
 	m_window( m_title + L" v." + m_version, _hInstance, _config ),
 	m_input( m_window ),
 	m_graphics( m_window, _config ),

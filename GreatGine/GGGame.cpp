@@ -1,6 +1,7 @@
 #include "PCH.h"
 #include "GGGame.h"
 #include "GGConfig.h"
+#include "GGWorld.h"
 
 GGGame::GGGame( GGInput& _input, GGConfig& _config )
 	:

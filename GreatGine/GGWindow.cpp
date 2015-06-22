@@ -22,7 +22,7 @@ GGWindow::GGWindow( std::wstring title, HINSTANCE _hInstance, GGConfig& _config 
 	RegisterClassEx( &wcex );
 
 	// Convert client size to window size
-	RECT windowRect = { 0, 0, m_width, m_height };
+	RECT windowRect = { 0, 0, static_cast<LONG>(m_width), static_cast<LONG>(m_height) };
 	DWORD windowStyle = WS_OVERLAPPEDWINDOW;
 	AdjustWindowRect( &windowRect, windowStyle, FALSE );
 	UINT windowWidth = windowRect.right - windowRect.left;

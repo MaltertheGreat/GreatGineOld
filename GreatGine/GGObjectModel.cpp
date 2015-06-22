@@ -81,7 +81,7 @@ void GGObjectModel::CreateVoxel( UINT x, UINT y, UINT z, const GGObject::GGVoxel
 	// Right
 	if( (x < (GGObject::DIAMETER - 1) && (voxels[ voxelIndex + (GGObject::DIAMETER * GGObject::DIAMETER) ].element == 0)) || (x == (GGObject::DIAMETER - 1)) )
 	{
-		UINT indexCount = _grid.vertices.size();
+		UINT indexCount = static_cast<UINT>(_grid.vertices.size());
 		_grid.vertices.push_back( { { center.x + radius, center.y - radius, center.z - radius }, { 1.0f, 0.0f, 0.0f }, color } );
 		_grid.vertices.push_back( { { center.x + radius, center.y + radius, center.z - radius }, { 1.0f, 0.0f, 0.0f }, color } );
 		_grid.vertices.push_back( { { center.x + radius, center.y + radius, center.z + radius }, { 1.0f, 0.0f, 0.0f }, color } );
@@ -99,7 +99,7 @@ void GGObjectModel::CreateVoxel( UINT x, UINT y, UINT z, const GGObject::GGVoxel
 	// Top
 	if( (y < (GGObject::DIAMETER - 1) && (voxels[ voxelIndex + (GGObject::DIAMETER) ].element == 0)) || (y == (GGObject::DIAMETER - 1)) )
 	{
-		UINT indexCount = _grid.vertices.size();
+		UINT indexCount = static_cast<UINT>(_grid.vertices.size());
 		_grid.vertices.push_back( { { center.x - radius, center.y + radius, center.z - radius }, { 0.0f, 1.0f, 0.0f }, color } );
 		_grid.vertices.push_back( { { center.x - radius, center.y + radius, center.z + radius }, { 0.0f, 1.0f, 0.0f }, color } );
 		_grid.vertices.push_back( { { center.x + radius, center.y + radius, center.z + radius }, { 0.0f, 1.0f, 0.0f }, color } );
@@ -117,7 +117,7 @@ void GGObjectModel::CreateVoxel( UINT x, UINT y, UINT z, const GGObject::GGVoxel
 	// Back
 	if( (z < (GGObject::DIAMETER - 1) && (voxels[ voxelIndex + 1 ].element == 0)) || (z == (GGObject::DIAMETER - 1)) )
 	{
-		UINT indexCount = _grid.vertices.size();
+		UINT indexCount = static_cast<UINT>(_grid.vertices.size());
 		_grid.vertices.push_back( { { center.x + radius, center.y - radius, center.z + radius }, { 0.0f, 0.0f, 1.0f }, color } );
 		_grid.vertices.push_back( { { center.x + radius, center.y + radius, center.z + radius }, { 0.0f, 0.0f, 1.0f }, color } );
 		_grid.vertices.push_back( { { center.x - radius, center.y + radius, center.z + radius }, { 0.0f, 0.0f, 1.0f }, color } );
@@ -135,7 +135,7 @@ void GGObjectModel::CreateVoxel( UINT x, UINT y, UINT z, const GGObject::GGVoxel
 	// Left
 	if( (x > 0 && (voxels[ voxelIndex - (GGObject::DIAMETER * GGObject::DIAMETER) ].element == 0)) || (x == 0) )
 	{
-		UINT indexCount = _grid.vertices.size();
+		UINT indexCount = static_cast<UINT>(_grid.vertices.size());
 		_grid.vertices.push_back( { { center.x - radius, center.y - radius, center.z + radius }, { -1.0f, 0.0f, 0.0f }, color } );
 		_grid.vertices.push_back( { { center.x - radius, center.y + radius, center.z + radius }, { -1.0f, 0.0f, 0.0f }, color } );
 		_grid.vertices.push_back( { { center.x - radius, center.y + radius, center.z - radius }, { -1.0f, 0.0f, 0.0f }, color } );
@@ -153,7 +153,7 @@ void GGObjectModel::CreateVoxel( UINT x, UINT y, UINT z, const GGObject::GGVoxel
 	// Bottom
 	if( (y > 0 && (voxels[ voxelIndex - GGObject::DIAMETER ].element == 0)) || (y == 0) )
 	{
-		UINT indexCount = _grid.vertices.size();
+		UINT indexCount = static_cast<UINT>(_grid.vertices.size());
 		_grid.vertices.push_back( { { center.x - radius, center.y - radius, center.z + radius }, { 0.0f, -1.0f, 0.0f }, color } );
 		_grid.vertices.push_back( { { center.x - radius, center.y - radius, center.z - radius }, { 0.0f, -1.0f, 0.0f }, color } );
 		_grid.vertices.push_back( { { center.x + radius, center.y - radius, center.z - radius }, { 0.0f, -1.0f, 0.0f }, color } );
@@ -171,7 +171,7 @@ void GGObjectModel::CreateVoxel( UINT x, UINT y, UINT z, const GGObject::GGVoxel
 	// Front
 	if( (z > 0 && (voxels[ voxelIndex - 1 ].element == 0)) || (z == 0) )
 	{
-		UINT indexCount = _grid.vertices.size();
+		UINT indexCount = static_cast<UINT>(_grid.vertices.size());
 		_grid.vertices.push_back( { { center.x - radius, center.y - radius, center.z - radius }, { 0.0f, 0.0f, -1.0f }, color } );
 		_grid.vertices.push_back( { { center.x - radius, center.y + radius, center.z - radius }, { 0.0f, 0.0f, -1.0f }, color } );
 		_grid.vertices.push_back( { { center.x + radius, center.y + radius, center.z - radius }, { 0.0f, 0.0f, -1.0f }, color } );

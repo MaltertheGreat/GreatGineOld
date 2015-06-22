@@ -105,9 +105,6 @@
     <ClCompile Include="GGLinesData.cpp">
       <Filter>Source Files\Graphics</Filter>
     </ClCompile>
-    <ClCompile Include="GGPhysics.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="GGGame.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -152,9 +149,6 @@
     <ClInclude Include="GGVoxel.h">
       <Filter>Header Files\World</Filter>
     </ClInclude>
-    <ClInclude Include="GGIWorldViewer.h">
-      <Filter>Header Files\World</Filter>
-    </ClInclude>
     <ClInclude Include="GGCamera.h">
       <Filter>Header Files\Graphics</Filter>
     </ClInclude>
@@ -196,9 +190,6 @@
     </ClInclude>
     <ClInclude Include="GGLinesData.h">
       <Filter>Header Files\Graphics</Filter>
-    </ClInclude>
-    <ClInclude Include="GGPhysics.h">
-      <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="GGGame.h">
       <Filter>Header Files</Filter>
