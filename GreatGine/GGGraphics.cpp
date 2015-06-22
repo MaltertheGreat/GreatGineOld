@@ -24,8 +24,7 @@ GGGraphics::GGGraphics( const GGWindow& _window, GGConfig& _config )
 
 void GGGraphics::Update( GGWorld& _world, float _frameTime )
 {
-	const GGIWorldViewer* worldViewer = _world.GetActiveWorldViewer();
-	m_device.UpdateCamera( m_camera, worldViewer->GetPosition(), worldViewer->GetRotation() );
+	m_device.UpdateCamera( m_camera, _world.GetCameraPosition(), _world.GetCameraRotation() );
 
 	auto& chunks = _world.GetChunkArray();
 	for( UINT i = 0; i < (GGWorld::DIAMETER * GGWorld::DIAMETER); ++i )
@@ -33,7 +32,7 @@ void GGGraphics::Update( GGWorld& _world, float _frameTime )
 		m_chunkModelSets[ i ].Update( m_device, chunks[ i ] );
 	}
 
-	m_debugInfo.Update( _frameTime, worldViewer->GetPosition(), worldViewer->GetRotation() );
+	m_debugInfo.Update( _frameTime, _world.GetCameraPosition(), _world.GetCameraRotation() );
 
 	return;
 }
@@ -52,7 +51,6 @@ void GGGraphics::Render()
 
 void GGGraphics::HandleKeyInput( WPARAM _keyCode, bool _down )
 {
-	WPARAM t = m_keyMap[ GG_KEYMAP_FILL_TYPE ];
 	if( _down )
 	{
 		if( _keyCode == m_keyMap[ GG_KEYMAP_FILL_TYPE ] )

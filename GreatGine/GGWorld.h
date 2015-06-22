@@ -3,12 +3,7 @@
 #include <array>
 #include <memory>
 
-#include "GGIWorldViewer.h"
-#include "GGFreeCamera.h"
 #include "GGChunk.h"
-
-class GGInput;
-class GGConfig;
 
 class GGWorld
 {
@@ -17,13 +12,16 @@ public:
 	typedef std::array<GGChunk, DIAMETER * DIAMETER> GGChunkArray;
 
 public:
-	GGWorld( GGInput& _inputProcessor, GGConfig& _config );
+	GGWorld();
 
 public:
-	void Update( float _frameTime );
+	void Update();
 
-	const GGIWorldViewer* GetActiveWorldViewer() const;
+	void SetCamera( const DirectX::XMFLOAT3& _position, const DirectX::XMFLOAT3& _rotation );
+
 	GGChunkArray& GetChunkArray();
+	const DirectX::XMFLOAT3& GetCameraPosition() const;
+	const DirectX::XMFLOAT3& GetCameraRotation() const;
 
 private:
 	// TODO: Move these functions to some sort of world generator
@@ -32,7 +30,7 @@ private:
 	static GGObject::GGVoxelArray CreateRandomVoxels();
 
 private:
-	GGFreeCamera m_freeCamera;
-
 	GGChunkArray m_chunks;
+	DirectX::XMFLOAT3 m_cameraPosition;
+	DirectX::XMFLOAT3 m_cameraRotation;
 };

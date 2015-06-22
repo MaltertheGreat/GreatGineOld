@@ -1,7 +1,5 @@
 #include "PCH.h"
 #include "GGWorld.h"
-#include "GGInput.h"
-#include "GGConfig.h"
 
 #include <random>
 using namespace DirectX;
@@ -9,18 +7,13 @@ using namespace std;
 
 array<XMFLOAT3, 1> test{ { { 0.0f, 0.0f, 0.0f } } };
 
-GGWorld::GGWorld( GGInput& _inputProcessor, GGConfig& _config )
+GGWorld::GGWorld()
 	:
-	m_freeCamera( { 0.0f, 10.0f, -5.0f }, _config ),
 	m_chunks( InitializeChunks() )
-{
-	_inputProcessor.RegisterHandler( &m_freeCamera );
-}
+{}
 
-void GGWorld::Update( float _frameTime )
+void GGWorld::Update()
 {
-	m_freeCamera.Update( _frameTime );
-
 	for( auto& chunk : m_chunks )
 	{
 		chunk.Update();
@@ -34,14 +27,27 @@ void GGWorld::Update( float _frameTime )
 	return;
 }
 
-const GGIWorldViewer* GGWorld::GetActiveWorldViewer() const
+void GGWorld::SetCamera( const DirectX::XMFLOAT3& _position, const DirectX::XMFLOAT3& _rotation )
 {
-	return dynamic_cast<const GGIWorldViewer*>(&m_freeCamera);
+	m_cameraPosition = _position;
+	m_cameraRotation = _rotation;
+
+	return;
 }
 
 GGWorld::GGChunkArray& GGWorld::GetChunkArray()
 {
 	return m_chunks;
+}
+
+const DirectX::XMFLOAT3 & GGWorld::GetCameraPosition() const
+{
+	return m_cameraPosition;
+}
+
+const DirectX::XMFLOAT3 & GGWorld::GetCameraRotation() const
+{
+	return m_cameraRotation;
 }
 
 GGWorld::GGChunkArray GGWorld::InitializeChunks()

@@ -13,3 +13,5 @@ Ukey_rightward=68
 Ukey_leftward=65
 Ukey_upward=32
 Ukey_downward=16
+UresolutionX=1280
+UresolutionY=720

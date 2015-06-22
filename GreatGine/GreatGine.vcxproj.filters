@@ -84,9 +84,6 @@
     <ClCompile Include="GGFPSCounter.cpp">
       <Filter>Source Files\Graphics</Filter>
     </ClCompile>
-    <ClCompile Include="GGFreeCamera.cpp">
-      <Filter>Source Files\World</Filter>
-    </ClCompile>
     <ClCompile Include="GGMesh.cpp">
       <Filter>Source Files\Graphics</Filter>
     </ClCompile>
@@ -105,9 +102,6 @@
     <ClCompile Include="GGObjectModel.cpp">
       <Filter>Source Files\Graphics</Filter>
     </ClCompile>
-    <ClCompile Include="GGChunkModelSet.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="GGLinesData.cpp">
       <Filter>Source Files\Graphics</Filter>
     </ClCompile>
@@ -122,6 +116,9 @@
     </ClCompile>
     <ClCompile Include="GGInput.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GGChunkModelSet.cpp">
+      <Filter>Source Files\Graphics</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -156,9 +153,6 @@
       <Filter>Header Files\World</Filter>
     </ClInclude>
     <ClInclude Include="GGIWorldViewer.h">
-      <Filter>Header Files\World</Filter>
-    </ClInclude>
-    <ClInclude Include="GGFreeCamera.h">
       <Filter>Header Files\World</Filter>
     </ClInclude>
     <ClInclude Include="GGCamera.h">

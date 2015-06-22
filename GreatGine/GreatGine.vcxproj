@@ -284,7 +284,6 @@
     <ClCompile Include="GGError.cpp" />
     <ClCompile Include="GGFPSCounter.cpp" />
     <ClCompile Include="GGFrameTimer.cpp" />
-    <ClCompile Include="GGFreeCamera.cpp" />
     <ClCompile Include="GGGraphics.cpp" />
     <ClCompile Include="GGDevice.cpp" />
     <ClCompile Include="GGMesh.cpp" />
@@ -321,7 +320,6 @@
     <ClInclude Include="GGError.h" />
     <ClInclude Include="GGFPSCounter.h" />
     <ClInclude Include="GGFrameTimer.h" />
-    <ClInclude Include="GGFreeCamera.h" />
     <ClInclude Include="GGGraphics.h" />
     <ClInclude Include="GGDevice.h" />
     <ClInclude Include="GGMeshData.h" />
