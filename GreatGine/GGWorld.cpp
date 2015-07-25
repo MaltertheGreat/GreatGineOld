@@ -35,6 +35,13 @@ void GGWorld::SetCamera( const DirectX::XMFLOAT3& _position, const DirectX::XMFL
 	return;
 }
 
+GGChunk& GGWorld::GetChunk( UINT _x, UINT _z )
+{
+	UINT index = _x * DIAMETER + _z;
+
+	return m_chunks[ index ];
+}
+
 GGWorld::GGChunkArray& GGWorld::GetChunkArray()
 {
 	return m_chunks;
@@ -101,7 +108,8 @@ void GGWorld::GenerateChunk( GGChunk& _chunk )
 GGObject::GGVoxelArray GGWorld::CreateRandomVoxels()
 {
 	static default_random_engine gen;
-	static bernoulli_distribution solid( 0.025 );
+	//static bernoulli_distribution solid( 0.025 );
+	static bernoulli_distribution solid( 1.0 );
 
 	GGObject::GGVoxelArray voxels;
 	for( auto& voxel : voxels )

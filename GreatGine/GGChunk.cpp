@@ -28,10 +28,26 @@ GGChunk::GGObjectID GGChunk::AddObject( GGObject&& _object )
 	return m_newObjectID++;
 }
 
-void GGChunk::ModifyObject( GGObjectID id, DirectX::XMFLOAT3& _position )
+void GGChunk::ModifyObject( GGObjectID id, const DirectX::XMFLOAT3& _position )
 {
 	m_objects.at( id ).SetPosition( _position );
 	m_modifiedObjectIDs.push_back( id );
+
+	return;
+}
+
+void GGChunk::ReplaceObject( GGObjectID id, GGObject && _newObject )
+{
+	m_objects.at( id ) = move( _newObject );
+	m_addedObjectIDs.push_back( id );
+
+	return;
+}
+
+void GGChunk::RemoveObject( GGObjectID id )
+{
+	m_objects.erase( id );
+	m_removedObjectIDs.push_back( id );
 
 	return;
 }
@@ -66,4 +82,9 @@ const GGChunk::GGObjectIDs& GGChunk::GetAddedObjectIDs() const
 const GGChunk::GGObjectIDs& GGChunk::GetModifiedObjectIDs() const
 {
 	return m_modifiedObjectIDs;
+}
+
+const GGChunk::GGObjectIDs& GGChunk::GetRemovedObjectIDs() const
+{
+	return m_removedObjectIDs;
 }

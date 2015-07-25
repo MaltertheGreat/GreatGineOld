@@ -77,6 +77,48 @@ void GGInput::ProcessRawInput( LPARAM _lParam )
 		assert( (mouse.usFlags & MOUSE_MOVE_RELATIVE) == 0 );	// For simplicity temporarily assume relative mouse movement
 
 		SendMouseInput( mouse.lLastX, mouse.lLastY );
+
+		if( mouse.usButtonFlags & RI_MOUSE_BUTTON_1_DOWN )
+		{
+			SendKeyInput( VK_LBUTTON, true );
+		}
+		if( mouse.usButtonFlags & RI_MOUSE_BUTTON_2_DOWN )
+		{
+			SendKeyInput( VK_RBUTTON, true );
+		}
+		if( mouse.usButtonFlags & RI_MOUSE_BUTTON_3_DOWN )
+		{
+			SendKeyInput( VK_MBUTTON, true );
+		}
+		if( mouse.usButtonFlags & RI_MOUSE_BUTTON_4_DOWN )
+		{
+			SendKeyInput( VK_XBUTTON1, true );
+		}
+		if( mouse.usButtonFlags & RI_MOUSE_BUTTON_5_DOWN )
+		{
+			SendKeyInput( VK_XBUTTON2, true );
+		}
+
+		if( mouse.usButtonFlags & RI_MOUSE_BUTTON_1_UP )
+		{
+			SendKeyInput( VK_LBUTTON, false );
+		}
+		if( mouse.usButtonFlags & RI_MOUSE_BUTTON_2_UP )
+		{
+			SendKeyInput( VK_RBUTTON, false );
+		}
+		if( mouse.usButtonFlags & RI_MOUSE_BUTTON_3_UP )
+		{
+			SendKeyInput( VK_MBUTTON, false );
+		}
+		if( mouse.usButtonFlags & RI_MOUSE_BUTTON_4_UP )
+		{
+			SendKeyInput( VK_XBUTTON1, false );
+		}
+		if( mouse.usButtonFlags & RI_MOUSE_BUTTON_5_UP )
+		{
+			SendKeyInput( VK_XBUTTON2, false );
+		}
 	}
 
 	return;

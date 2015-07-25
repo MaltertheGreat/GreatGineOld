@@ -19,6 +19,7 @@ public:
 
 	void SetCamera( const DirectX::XMFLOAT3& _position, const DirectX::XMFLOAT3& _rotation );
 
+	GGChunk& GetChunk( UINT _x, UINT _z );
 	GGChunkArray& GetChunkArray();
 	const DirectX::XMFLOAT3& GetCameraPosition() const;
 	const DirectX::XMFLOAT3& GetCameraRotation() const;

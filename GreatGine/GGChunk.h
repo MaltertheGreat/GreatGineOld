@@ -30,7 +30,9 @@ public:
 	void Update();
 
 	GGObjectID AddObject( GGObject&& _object );
-	void ModifyObject( GGObjectID id, DirectX::XMFLOAT3& _position );
+	void ModifyObject( GGObjectID id, const DirectX::XMFLOAT3& _position );
+	void ReplaceObject( GGObjectID id, GGObject&& _newObject );
+	void RemoveObject( GGObjectID id );
 
 	void SetState( GG_CHUNK_STATE _state );
 
@@ -40,6 +42,7 @@ public:
 	const GGObjects& GetObjects() const;
 	const GGObjectIDs& GetAddedObjectIDs() const;
 	const GGObjectIDs& GetModifiedObjectIDs() const;
+	const GGObjectIDs& GetRemovedObjectIDs() const;
 
 private:
 	GG_CHUNK_STATE    m_state = GG_CHUNK_STATE_UNGENERATED;

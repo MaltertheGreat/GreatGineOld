@@ -20,6 +20,12 @@ void GGChunkModelSet::Update( const GGDevice& _device, const GGChunk& _chunk )
 		m_models.at( id ).Update( objects.at( id ), position );
 	}
 
+	auto& removedObjectIDs = _chunk.GetRemovedObjectIDs();
+	for( auto& id : removedObjectIDs )
+	{
+		m_models.erase( id );
+	}
+
 	return;
 }
 

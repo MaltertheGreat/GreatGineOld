@@ -27,7 +27,7 @@ public:
 public:
 	void Update( GGWorld& _world, float _timeDelta );
 
-	const DirectX::XMFLOAT3& GetPosition() const;
+	const DirectX::XMFLOAT3 GetPosition() const;
 	const DirectX::XMFLOAT3& GetRotation() const;
 
 public:
@@ -35,10 +35,18 @@ public:
 	virtual void HandleMouseInput( int _x, int _y ) override;
 
 private:
+	static GGObject PlayerObject( const DirectX::XMFLOAT3& _pos );
+	void UpdatePosition( GGWorld& _world, float _timeDelta );
+	void InteractWithWorld( GGWorld& _world, float _timeDelta );
+
+private:
 	bool m_isAlive;
 
 	WPARAM m_keyMap[ GG_KEYMAP_COUNT ];
 	GGChunk::GGObjectID m_headObjectID;
+
+	UINT m_chunkX;
+	UINT m_chunkZ;
 
 	DirectX::XMFLOAT3 m_position;
 	DirectX::XMFLOAT3 m_velocity;
