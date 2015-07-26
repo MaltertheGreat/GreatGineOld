@@ -265,24 +265,27 @@ void GGPlayer::UpdatePosition( GGWorld & _world, float _timeDelta )
 	return;
 }
 
-int sgn( float f )
+float sgn( float f )
 {
 	if( f > 0.0f )
 	{
-		return 1;
+		return 1.0f;
 	}
 	else if( f < 0.0f )
 	{
-		return -1;
+		return -1.0f;
 	}
 	else
 	{
-		return 0;
+		return 0.0f;
 	}
 }
 
 void GGPlayer::InteractWithWorld( GGWorld & _world, float _timeDelta )
 {
+	float voxelDiameter = 1.0f;
+	float voxelRadius = voxelDiameter / 2.0f;
+
 	XMVECTOR ray = XMVector3Rotate( XMVectorSet( 0.0f, 0.0f, 1.0f, 1.0f ), XMQuaternionRotationRollPitchYaw( m_rotation.x, m_rotation.y, m_rotation.z ) );
 	float rayX = XMVectorGetX( ray );
 	float rayY = XMVectorGetY( ray );
@@ -309,100 +312,175 @@ void GGPlayer::InteractWithWorld( GGWorld & _world, float _timeDelta )
 			UINT y = static_cast<UINT>(XMVectorGetY( relativePos ) + objectRadius);
 			UINT z = static_cast<UINT>(XMVectorGetZ( relativePos ) + objectRadius);
 
-			float voxelDiameter = 1.0f;
-			// Ray origin inside voxel
-			float voxelX = fmod( XMVectorGetX( relativePos ), voxelDiameter );
-			float voxelY = fmod( XMVectorGetY( relativePos ), voxelDiameter );
-			float voxelZ = fmod( XMVectorGetZ( relativePos ), voxelDiameter );
+			// Ray origin inside voxel <-0.5 ~ 0.5>
+			float voxelX = sgn( XMVectorGetX( relativePos ) ) *(abs( fmod( XMVectorGetX( relativePos ), voxelDiameter )) - voxelRadius);
+			float voxelY = sgn( XMVectorGetY( relativePos ) ) *(abs( fmod( XMVectorGetY( relativePos ), voxelDiameter )) - voxelRadius);
+			float voxelZ = sgn( XMVectorGetZ( relativePos ) ) *(abs( fmod( XMVectorGetZ( relativePos ), voxelDiameter )) - voxelRadius);
 
-			// Length of the ray to hit voxel boundary
-			float lengthX;
-			if( rayX > 0 )
-			{
-				lengthX = (voxelDiameter - voxelX) / rayX;
-			}
-			else if( rayX < 0 )
-			{
-				lengthX = (0.0f - voxelX) / rayX;
-			}
-			else
-			{
-				lengthX = INFINITY;
-			}
-			float lengthY;
-			if( rayY > 0 )
-			{
-				lengthY = (voxelDiameter - voxelY) / rayY;
-			}
-			else if( rayY < 0 )
-			{
-				lengthY = (0.0f - voxelY) / rayY;
-			}
-			else
-			{
-				lengthY = INFINITY;
-			}
-			float lengthZ;
-			if( rayZ > 0 )
-			{
-				lengthZ = (voxelDiameter - voxelZ) / rayZ;
-			}
-			else if( rayZ < 0 )
-			{
-				lengthZ = (0.0f - voxelZ) / rayZ;
-			}
-			else
-			{
-				lengthZ = INFINITY;
-			}
 
-			if( lengthX < lengthY )
+			float maxRayLenght = 5.0f;
+			float totalRayLength = 0.0f;
+			while( true )
 			{
-				if( lengthX < lengthZ )
+				// Length of the ray to hit voxel boundary
+				float lengthX;
+				if( rayX > 0 )
 				{
-					x += sgn( rayX );
-					if( x > GGObject::DIAMETER * GGObject::DIAMETER * GGObject::DIAMETER )
+					lengthX = (voxelRadius - voxelX) / rayX;
+				}
+				else if( rayX < 0 )
+				{
+					lengthX = -(voxelRadius + voxelX) / rayX;
+				}
+				else
+				{
+					lengthX = INFINITY;
+				}
+				float lengthY;
+				if( rayY > 0 )
+				{
+					lengthY = (voxelRadius - voxelY) / rayY;
+				}
+				else if( rayY < 0 )
+				{
+					lengthY = -(voxelRadius + voxelY) / rayY;
+				}
+				else
+				{
+					lengthY = INFINITY;
+				}
+				float lengthZ;
+				if( rayZ > 0 )
+				{
+					lengthZ = (voxelRadius - voxelZ) / rayZ;
+				}
+				else if( rayZ < 0 )
+				{
+					lengthZ = -(voxelRadius + voxelZ) / rayZ;
+				}
+				else
+				{
+					lengthZ = INFINITY;
+				}
+
+				if( lengthX < lengthY )
+				{
+					if( lengthX < lengthZ )
 					{
-						continue;
+						if( !signbit( rayX ) )
+						{
+							++x;
+							voxelX = -voxelRadius;
+						}
+						else
+						{
+							if( x > 0 )
+							{
+								--x;
+								voxelX = voxelRadius;
+							}
+							else
+							{
+								break;
+							}
+						}
+
+						voxelY += rayY * lengthX;
+						voxelZ += rayZ * lengthX;
+						totalRayLength += lengthX;
 					}
 				}
-			}
-			
-			if( lengthY < lengthX )
-			{
-				if( lengthY < lengthZ )
+
+				if( lengthY < lengthX )
 				{
-					y += sgn( rayY );
-					if( y > GGObject::DIAMETER * GGObject::DIAMETER * GGObject::DIAMETER )
+					if( lengthY < lengthZ )
 					{
-						continue;
+						if( !signbit( rayY ) )
+						{
+							++y;
+							voxelY = -voxelRadius;
+						}
+						else
+						{
+							if( y > 0 )
+							{
+								--y;
+								voxelY = voxelRadius;
+							}
+							else
+							{
+								break;
+							}
+						}
+
+						voxelX += rayX * lengthY;
+						voxelZ += rayZ * lengthY;
+						totalRayLength += lengthY;
 					}
 				}
-			}
 
-			if( lengthZ < lengthX )
-			{
-				if( lengthZ < lengthY )
+				if( lengthZ < lengthX )
 				{
-					z += sgn( rayZ );
-					if( z > GGObject::DIAMETER * GGObject::DIAMETER * GGObject::DIAMETER )
+					if( lengthZ < lengthY )
 					{
-						continue;
+						if( !signbit( rayZ ) )
+						{
+							++z;
+							voxelZ = -voxelRadius;
+						}
+						else
+						{
+							if( z > 0 )
+							{
+								--z;
+								voxelZ = voxelRadius;
+							}
+							else
+							{
+								break;
+							}
+						}
+
+						voxelX += rayX * lengthZ;
+						voxelY += + rayY * lengthZ;
+						totalRayLength += lengthZ;
 					}
 				}
-			}
 
+				if( x >= GGObject::DIAMETER )
+				{
+					break;
+				}
+				if( y >= GGObject::DIAMETER )
+				{
+					break;
+				}
+				if( z >= GGObject::DIAMETER )
+				{
+					break;
+				}
+				if( totalRayLength > maxRayLenght )
+				{
+					break;
+				}
+				if( totalRayLength == 0.0f )
+				{
+					break;
+				}
 
-			UINT voxelIndex = x * GGObject::DIAMETER * GGObject::DIAMETER + y * GGObject::DIAMETER + z;
-			auto& voxels = object.GetVoxels();
-			if( voxels.at( voxelIndex ).element != 0 )
-			{
-				GGObject::GGVoxelArray newVoxels = voxels;
-				newVoxels.at( voxelIndex ).element = 0;
+				UINT voxelIndex = x * GGObject::DIAMETER * GGObject::DIAMETER + y * GGObject::DIAMETER + z;
+				auto& voxels = object.GetVoxels();
+				if( voxels.at( voxelIndex ).element != 0 )
+				{
+					GGObject::GGVoxelArray newVoxels = voxels;
+					newVoxels.at( voxelIndex ).element = 0;
 
-				GGObject newObject = GGObject( move( newVoxels ), object.GetVoxelDimension(), object.GetPosition() );
+					GGObject newObject = GGObject( move( newVoxels ), object.GetVoxelDimension(), object.GetPosition() );
 
-				_world.GetChunk( m_chunkX, m_chunkZ ).ReplaceObject( objectID, move( newObject ) );
+					_world.GetChunk( m_chunkX, m_chunkZ ).ReplaceObject( objectID, move( newObject ) );
+
+					break;
+				}
 			}
 		}
 	}

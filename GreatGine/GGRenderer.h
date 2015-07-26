@@ -48,6 +48,8 @@ public:
 private:
 	int m_syncInterval;
 	UINT m_vertexSize;
+	UINT m_resX;
+	UINT m_resY;
 
 	Microsoft::WRL::ComPtr<ID3D11Device> m_device;
 	Microsoft::WRL::ComPtr<ID3D11DeviceContext> m_deviceContext;

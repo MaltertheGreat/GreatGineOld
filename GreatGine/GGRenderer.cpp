@@ -16,6 +16,8 @@ const UINT PROJECTION_BUFFER_SLOT = 2;
 
 GGRenderer::GGRenderer( GGDirectXDriver& _driver, int _syncInterval )
 	:
+	m_resX( _driver.GetResX() ),
+	m_resY( _driver.GetResY() ),
 	m_device( _driver.GetDevice() ),
 	m_deviceContext( _driver.GetDeviceContext() ),
 	m_swapChain( _driver.GetSwapChain() ),
@@ -39,8 +41,8 @@ GGRenderer::GGRenderer( GGDirectXDriver& _driver, int _syncInterval )
 	// Depth stencil
 	D3D11_TEXTURE2D_DESC descDepth;
 	ZeroMemory( &descDepth, sizeof( descDepth ) );
-	descDepth.Width = _driver.GetResX();
-	descDepth.Height = _driver.GetResY();
+	descDepth.Width = m_resX;
+	descDepth.Height = m_resY;
 	descDepth.MipLevels = 1;
 	descDepth.ArraySize = 1;
 	descDepth.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
@@ -179,9 +181,10 @@ void GGRenderer::ClearScene()
 
 void GGRenderer::PresentScene()
 {
+	m_renderTarget2D->EndDraw();
 	m_renderTarget2D->BeginDraw();
-	D2D1_RECT_F rectangle1 = D2D1::RectF( 0.0f, 0.0f, 256.0f, 32.0f );
-	m_renderTarget2D->DrawRectangle( rectangle1, m_solidBrush.Get() );
+	D2D1_RECT_F rectangle1 = D2D1::RectF( (m_resX / 2.0f) - 1.0f, (m_resY / 2.0f) - 1.0f, (m_resX / 2.0f) + 1.0f, (m_resY / 2.0f) + 1.0f );
+	m_renderTarget2D->FillRectangle( rectangle1, m_solidBrush.Get() );
 	m_renderTarget2D->EndDraw();
 
 	m_swapChain->Present( m_syncInterval, 0 );
