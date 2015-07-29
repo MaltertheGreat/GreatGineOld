@@ -117,6 +117,9 @@
     <ClCompile Include="GGChunkModelSet.cpp">
       <Filter>Source Files\Graphics</Filter>
     </ClCompile>
+    <ClCompile Include="GGGUI.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GGApplication.h">
@@ -198,6 +201,9 @@
       <Filter>Header Files\Game</Filter>
     </ClInclude>
     <ClInclude Include="GGInput.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GGGUI.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

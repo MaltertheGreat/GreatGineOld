@@ -5,6 +5,7 @@
 #include "GGCamera.h"
 #include "GGShader.h"
 #include "GGMesh.h"
+#include "GGMeshData.h"
 
 class GGDirectXDriver;
 struct GGMeshData;
@@ -23,6 +24,11 @@ public:
 	GGMesh CraeteLinesMesh( const GGLinesData& _lines ) const;
 
 	void UpdateCamera( GGCamera& _camera, const DirectX::XMFLOAT3& _position, const DirectX::XMFLOAT3& _rotation ) const;
+
+private:
+	Microsoft::WRL::ComPtr<ID3D11Buffer> CreateVertexBuffer( UINT _size, const void* _data ) const;
+	Microsoft::WRL::ComPtr<ID3D11Buffer> CreateIndexBuffer( UINT _size, const void* _data ) const;
+	Microsoft::WRL::ComPtr<ID3D11Buffer> CreateConstantBuffer( UINT _size, const void* _data ) const;
 
 private:
 	Microsoft::WRL::ComPtr<ID3D11Device> m_device;

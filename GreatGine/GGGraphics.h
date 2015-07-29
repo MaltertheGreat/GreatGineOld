@@ -1,6 +1,7 @@
 #pragma once
 
 #include <array>
+#include <bitset>
 
 #include "GGInputHandler.h"
 #include "GGDirectXDriver.h"
@@ -24,6 +25,14 @@ private:
 		GG_KEYMAP_RENDER_CHUNKS,
 
 		GG_KEYMAP_COUNT
+	};
+	enum GG_RENDER_FLAGS
+	{
+		GG_RENDER_FLAGS_DEBUG = 0,
+		GG_RENDER_FLAGS_WORLD,
+		GG_RENDER_FLAGS_GUI,
+
+		GG_RENDER_FLAGS_COUNT
 	};
 
 	typedef std::array<GGChunkModelSet, GGWorld::DIAMETER * GGWorld::DIAMETER> GGChunkModelSets;
@@ -52,7 +61,7 @@ private:
 	WPARAM   m_keyMap[ GG_KEYMAP_COUNT ];
 
 	GGRenderer::FILL_TYPE m_currentFillType;
-	bool                  m_renderChunks;
+	std::bitset<GG_RENDER_FLAGS_COUNT> m_renderFlags;
 
 	GGDirectXDriver  m_driver;
 	GGDevice         m_device;

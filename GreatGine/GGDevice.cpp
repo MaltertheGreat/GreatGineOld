@@ -1,7 +1,6 @@
 #include "PCH.h"
 #include "GGDevice.h"
 #include "GGDirectXDriver.h"
-#include "GGMeshData.h"
 #include "GGLinesData.h"
 #include "GGError.h"
 #include "Shaders\BasicVS.h"
@@ -11,6 +10,7 @@
 
 using Microsoft::WRL::ComPtr;
 using namespace DirectX;
+using namespace std;
 
 GGDevice::GGDevice( GGDirectXDriver& _driver )
 	:
@@ -21,43 +21,15 @@ GGDevice::GGDevice( GGDirectXDriver& _driver )
 
 GGCamera GGDevice::CreateCamera( float _fovAngle, UINT _viewWidth, UINT _viewHeight ) const
 {
-	// View matrix constant buffer
-	D3D11_BUFFER_DESC bd;
-	ZeroMemory( &bd, sizeof( bd ) );
-	bd.Usage = D3D11_USAGE_DEFAULT;
-	bd.ByteWidth = sizeof( XMFLOAT4X4 );
-	bd.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
-	bd.CPUAccessFlags = 0;
-
-	ComPtr<ID3D11Buffer> viewBuffer;
-	HRESULT hr = m_device->CreateBuffer( &bd, nullptr, viewBuffer.GetAddressOf() );
-	if( FAILED( hr ) )
-	{
-		GG_THROW;
-	}
+	ComPtr<ID3D11Buffer> viewBuffer = CreateConstantBuffer( sizeof( XMFLOAT4X4 ), nullptr );
 
 	XMFLOAT4X4 projectionMatrix;
 	float aspect = _viewWidth / static_cast<float>(_viewHeight);
 	XMMATRIX projection = XMMatrixPerspectiveFovLH( XMConvertToRadians( _fovAngle ), aspect, 0.01f, 1000.0f );
 	XMStoreFloat4x4( &projectionMatrix, XMMatrixTranspose( projection ) );
 
-	// Projection matrix constant buffer
-	ZeroMemory( &bd, sizeof( bd ) );
-	bd.Usage = D3D11_USAGE_DEFAULT;
-	bd.ByteWidth = sizeof( XMFLOAT4X4 );
-	bd.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
-	bd.CPUAccessFlags = 0;
-
-	D3D11_SUBRESOURCE_DATA InitData;
-	ZeroMemory( &InitData, sizeof( InitData ) );
-	InitData.pSysMem = projectionMatrix.m;
-
-	ComPtr<ID3D11Buffer> projectionBuffer;
-	hr = m_device->CreateBuffer( &bd, &InitData, projectionBuffer.GetAddressOf() );
-	if( FAILED( hr ) )
-	{
-		GG_THROW;
-	}
+	ComPtr<ID3D11Buffer> projectionBuffer = CreateConstantBuffer( sizeof( XMFLOAT4X4 ), projectionMatrix.m );
+	
 
 	return GGCamera( viewBuffer, projectionBuffer );
 }
@@ -133,74 +105,18 @@ GGShader GGDevice::CreateLinesShader() const
 
 GGMesh GGDevice::CreateMesh( const GGMeshData& _grid ) const
 {
-	// Vertex buffer
-	D3D11_BUFFER_DESC bd;
-	ZeroMemory( &bd, sizeof( bd ) );
-	bd.Usage = D3D11_USAGE_DEFAULT;
-	bd.ByteWidth = static_cast<UINT>(sizeof( GGMeshData::GGVertex ) * _grid.vertices.size());
-	bd.BindFlags = D3D11_BIND_VERTEX_BUFFER;
-	bd.CPUAccessFlags = 0;
+	ComPtr<ID3D11Buffer> vertexBuffer = CreateVertexBuffer( sizeof( GGMeshData::GGVertex ) * _grid.vertices.size(), _grid.vertices.data() );
+	ComPtr<ID3D11Buffer> indexBuffer = CreateIndexBuffer( sizeof( GGMeshData::GGIndex ) * _grid.indices.size(), _grid.indices.data() );
 
-	D3D11_SUBRESOURCE_DATA InitData;
-	ZeroMemory( &InitData, sizeof( InitData ) );
-	InitData.pSysMem = _grid.vertices.data();
-
-	ComPtr<ID3D11Buffer> vertexBuffer;
-	HRESULT hr = m_device->CreateBuffer( &bd, &InitData, vertexBuffer.GetAddressOf() );
-	if( FAILED( hr ) )
-	{
-		GG_THROW;
-	}
-
-	// Index buffer
-	bd.ByteWidth = static_cast<UINT>(sizeof( GGMeshData::GGIndex ) * _grid.indices.size());
-	bd.BindFlags = D3D11_BIND_INDEX_BUFFER;
-
-	InitData.pSysMem = _grid.indices.data();
-
-	ComPtr<ID3D11Buffer> indexBuffer;
-	hr = m_device->CreateBuffer( &bd, &InitData, indexBuffer.GetAddressOf() );
-	if( FAILED( hr ) )
-	{
-		GG_THROW;
-	}
 
 	return GGMesh( static_cast<UINT>(_grid.indices.size()), vertexBuffer, indexBuffer );
 }
 
 GGMesh GGDevice::CraeteLinesMesh( const GGLinesData& _lines ) const
 {
-	// Vertex buffer
-	D3D11_BUFFER_DESC bd;
-	ZeroMemory( &bd, sizeof( bd ) );
-	bd.Usage = D3D11_USAGE_DEFAULT;
-	bd.ByteWidth = static_cast<UINT>(sizeof( GGLinesData::GGVertex ) * _lines.vertices.size());
-	bd.BindFlags = D3D11_BIND_VERTEX_BUFFER;
-	bd.CPUAccessFlags = 0;
+	ComPtr<ID3D11Buffer> vertexBuffer = CreateVertexBuffer( sizeof( GGLinesData::GGVertex ) * _lines.vertices.size(), _lines.vertices.data() );
+	ComPtr<ID3D11Buffer> indexBuffer = CreateIndexBuffer( sizeof( GGLinesData::GGIndex ) * _lines.indices.size(), _lines.indices.data() );
 
-	D3D11_SUBRESOURCE_DATA InitData;
-	ZeroMemory( &InitData, sizeof( InitData ) );
-	InitData.pSysMem = _lines.vertices.data();
-
-	ComPtr<ID3D11Buffer> vertexBuffer;
-	HRESULT hr = m_device->CreateBuffer( &bd, &InitData, vertexBuffer.GetAddressOf() );
-	if( FAILED( hr ) )
-	{
-		GG_THROW;
-	}
-
-	// Index buffer
-	bd.ByteWidth = static_cast<UINT>(sizeof( GGLinesData::GGIndex ) * _lines.indices.size());
-	bd.BindFlags = D3D11_BIND_INDEX_BUFFER;
-
-	InitData.pSysMem = _lines.indices.data();
-
-	ComPtr<ID3D11Buffer> indexBuffer;
-	hr = m_device->CreateBuffer( &bd, &InitData, indexBuffer.GetAddressOf() );
-	if( FAILED( hr ) )
-	{
-		GG_THROW;
-	}
 
 	return GGMesh( static_cast<UINT>(_lines.indices.size()), vertexBuffer, indexBuffer );
 }
@@ -220,4 +136,109 @@ void GGDevice::UpdateCamera( GGCamera& _camera, const DirectX::XMFLOAT3& _positi
 	m_deviceContext->UpdateSubresource( _camera.GetViewBuffer().Get(), 0, nullptr, viewMatrix.m, 0, 0 );
 
 	return;
+}
+
+ComPtr<ID3D11Buffer> GGDevice::CreateVertexBuffer( UINT _size, const void* _data ) const
+{
+	D3D11_BUFFER_DESC bd;
+	ZeroMemory( &bd, sizeof( bd ) );
+	bd.Usage = D3D11_USAGE_DEFAULT;
+	bd.ByteWidth = _size;
+	bd.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+	bd.CPUAccessFlags = 0;
+
+	ComPtr<ID3D11Buffer> vertexBuffer;
+
+	if( _data )
+	{
+		D3D11_SUBRESOURCE_DATA initData;
+		ZeroMemory( &initData, sizeof( initData ) );
+		initData.pSysMem = _data;
+
+		HRESULT hr = m_device->CreateBuffer( &bd, &initData, vertexBuffer.GetAddressOf() );
+		if( FAILED( hr ) )
+		{
+			GG_THROW;
+		}
+	}
+	else
+	{
+		HRESULT hr = m_device->CreateBuffer( &bd, nullptr, vertexBuffer.GetAddressOf() );
+		if( FAILED( hr ) )
+		{
+			GG_THROW;
+		}
+	}
+
+	return vertexBuffer;
+}
+
+ComPtr<ID3D11Buffer> GGDevice::CreateIndexBuffer( UINT _size, const void* _data ) const
+{
+	D3D11_BUFFER_DESC bd;
+	ZeroMemory( &bd, sizeof( bd ) );
+	bd.Usage = D3D11_USAGE_DEFAULT;
+	bd.ByteWidth = _size;
+	bd.BindFlags = D3D11_BIND_INDEX_BUFFER;
+	bd.CPUAccessFlags = 0;
+
+	ComPtr<ID3D11Buffer> indexBuffer;
+
+	if( _data )
+	{
+		D3D11_SUBRESOURCE_DATA initData;
+		ZeroMemory( &initData, sizeof( initData ) );
+		initData.pSysMem = _data;
+
+		HRESULT hr = m_device->CreateBuffer( &bd, &initData, indexBuffer.GetAddressOf() );
+		if( FAILED( hr ) )
+		{
+			GG_THROW;
+		}
+	}
+	else
+	{
+		HRESULT hr = m_device->CreateBuffer( &bd, nullptr, indexBuffer.GetAddressOf() );
+		if( FAILED( hr ) )
+		{
+			GG_THROW;
+		}
+	}
+
+	return indexBuffer;
+}
+
+Microsoft::WRL::ComPtr<ID3D11Buffer> GGDevice::CreateConstantBuffer( UINT _size, const void* _data ) const
+{
+	D3D11_BUFFER_DESC bd;
+	ZeroMemory( &bd, sizeof( bd ) );
+	bd.Usage = D3D11_USAGE_DEFAULT;
+	bd.ByteWidth = _size;
+	bd.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+	bd.CPUAccessFlags = 0;
+
+	ComPtr<ID3D11Buffer> constantBuffer;
+
+	if( _data )
+	{
+		D3D11_SUBRESOURCE_DATA initData;
+		ZeroMemory( &initData, sizeof( initData ) );
+		initData.pSysMem = _data;
+
+		HRESULT hr = m_device->CreateBuffer( &bd, &initData, constantBuffer.GetAddressOf() );
+		if( FAILED( hr ) )
+		{
+			GG_THROW;
+		}
+	}
+	else
+	{
+		HRESULT hr = m_device->CreateBuffer( &bd, nullptr, constantBuffer.GetAddressOf() );
+		if( FAILED( hr ) )
+		{
+			GG_THROW;
+		}
+	}
+
+	return constantBuffer;
 }

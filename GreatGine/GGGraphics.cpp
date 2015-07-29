@@ -11,6 +11,7 @@ GGGraphics::GGGraphics( const GGWindow& _window, GGConfig& _config )
 	:
 	m_resolutionX( _config.GetUint( "resolutionX", 1280 ) ),
 	m_resolutionY( _config.GetUint( "resolutionY", 720 ) ),
+	m_renderFlags( 0b110 ),
 
 	m_keyMap{ _config.GetUint( "key_fill_type", VK_F1 ), _config.GetUint( "key_render_chunks", VK_F2 ) },
 	m_currentFillType( GGRenderer::FILL_TYPE_SOLID ),
@@ -26,7 +27,7 @@ GGGraphics::GGGraphics( const GGWindow& _window, GGConfig& _config )
 
 void GGGraphics::Update( GGWorld& _world, float _frameTime )
 {
-	m_device.UpdateCamera( m_camera, _world.GetCameraPosition(), _world.GetCameraRotation() );
+	m_device.UpdateCamera( m_camera, _world.GetViewPointPosition(), _world.GetViewPointRotation() );
 
 	auto& chunks = _world.GetChunkArray();
 	for( UINT i = 0; i < (GGWorld::DIAMETER * GGWorld::DIAMETER); ++i )
@@ -34,7 +35,7 @@ void GGGraphics::Update( GGWorld& _world, float _frameTime )
 		m_chunkModelSets[ i ].Update( m_device, chunks[ i ] );
 	}
 
-	m_debugInfo.Update( _frameTime, _world.GetCameraPosition(), _world.GetCameraRotation() );
+	m_debugInfo.Update( _frameTime, _world.GetViewPointPosition(), _world.GetViewPointRotation() );
 
 	return;
 }
@@ -61,7 +62,7 @@ void GGGraphics::HandleKeyInput( WPARAM _keyCode, bool _down )
 		}
 		else if( _keyCode == m_keyMap[ GG_KEYMAP_RENDER_CHUNKS ] )
 		{
-			m_renderChunks = !m_renderChunks;
+			m_renderFlags[GG_RENDER_FLAGS_DEBUG].flip();
 		}
 	}
 
@@ -110,13 +111,16 @@ void GGGraphics::Render3D()
 	m_renderer.SetFillType( m_currentFillType );
 	m_renderer.SetCamera( m_camera );
 
-	m_renderer.SetShader( m_basicShader );
-	for( auto& modelSet : m_chunkModelSets )
+	if( m_renderFlags[ GG_RENDER_FLAGS_WORLD ] )
 	{
-		modelSet.Render( m_renderer );
+		m_renderer.SetShader( m_basicShader );
+		for( auto& modelSet : m_chunkModelSets )
+		{
+			modelSet.Render( m_renderer );
+		}
 	}
 
-	if( m_renderChunks )
+	if( m_renderFlags[ GG_RENDER_FLAGS_DEBUG ] )
 	{
 		m_renderer.SetRenderType( GGRenderer::RENDER_TYPE_LINES );
 		m_renderer.SetShader( m_debugChunkShader );
@@ -143,24 +147,6 @@ void GGGraphics::Render3D()
 
 			x += GGChunk::DIMENSION;
 		}
-
-		/*const float chunkOffset = -(GGWorld::DIAMETER / 2.0f * GGChunk::DIMENSION - GGChunk::DIMENSION * 0.5f);
-
-		for( UINT x = 0; x < GGWorld::DIAMETER; ++x )
-		{
-			for( UINT z = 0; z < GGWorld::DIAMETER; ++z )
-			{
-				float posX = chunkOffset + x * GGChunk::DIMENSION;
-				float posZ = chunkOffset + z * GGChunk::DIMENSION;
-
-				XMFLOAT4X4 transformation;
-
-				XMMATRIX matrix = XMMatrixTranslation( posX, 0.0f, posZ );
-				XMStoreFloat4x4( &transformation, matrix );
-
-				m_renderer.RenderMesh( m_debugChunkMesh, transformation );
-			}
-		}*/
 	}
 
 	return;
@@ -170,10 +156,13 @@ void GGGraphics::Render2D()
 {
 	m_renderer.RenderIn2D();
 
-	for( int i = 0; i < GGDebugInfo::LINE_COUNT; ++i )
+	if( m_renderFlags[ GG_RENDER_FLAGS_GUI ] )
 	{
-		float textY = i * 19.0f;
-		m_renderer.RenderText( m_debugInfo.GetLine( i ), { 0.0f, textY } );
+		for( int i = 0; i < GGDebugInfo::LINE_COUNT; ++i )
+		{
+			float textY = i * 19.0f;
+			m_renderer.RenderText( m_debugInfo.GetLine( i ), { 0.0f, textY } );
+		}
 	}
 
 	return;
