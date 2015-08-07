@@ -16,19 +16,17 @@ GGGraphics::GGGraphics( const GGWindow& _window, GGConfig& _config )
 	m_keyMap{ _config.GetUint( "key_fill_type", VK_F1 ), _config.GetUint( "key_render_chunks", VK_F2 ) },
 	m_currentFillType( GGRenderer::FILL_TYPE_SOLID ),
 
-	m_driver( _window, m_resolutionX, m_resolutionY ),
-	m_device( m_driver ),
-	m_renderer( m_driver, _config.GetInt( "sync_interval", 0 ) ),
-	m_camera( m_device.CreateCamera( _config.GetFloat( "fov", 80.0f ), m_resolutionX, m_resolutionY ) ),
+	m_device( _window, m_resolutionX, m_resolutionY ),
+	m_renderer( m_device.GetDriver(), _config.GetInt( "sync_interval", 0 ) ),
 	m_basicShader( m_device.CreateShader() ),
-	m_debugChunkMesh( m_device.CraeteLinesMesh( VerticalLine() ) ),
+	m_debugChunkMesh( m_device.CraeteLinesMesh( GGLinesData::VerticalLine( 50.0f, { 1.0f, 0.749f, 0.0f } ) ) ),
 	m_debugChunkShader( m_device.CreateLinesShader() )
-{}
+{
+	m_renderer.SetCamera( _config.GetFloat( "fov", 80.0f ), m_resolutionX, m_resolutionY );
+}
 
 void GGGraphics::Update( GGWorld& _world, float _frameTime )
 {
-	m_device.UpdateCamera( m_camera, _world.GetViewPointPosition(), _world.GetViewPointRotation() );
-
 	auto& chunks = _world.GetChunkArray();
 	for( UINT i = 0; i < (GGWorld::DIAMETER * GGWorld::DIAMETER); ++i )
 	{
@@ -36,6 +34,7 @@ void GGGraphics::Update( GGWorld& _world, float _frameTime )
 	}
 
 	m_debugInfo.Update( _frameTime, _world.GetViewPointPosition(), _world.GetViewPointRotation() );
+	m_renderer.UpdateCamera( _world.GetViewPointPosition(), _world.GetViewPointRotation() );
 
 	return;
 }
@@ -74,23 +73,6 @@ void GGGraphics::HandleMouseInput( int, int )
 	return;
 }
 
-GGLinesData GGGraphics::VerticalLine()
-{
-	GGLinesData output;
-	XMFLOAT3 color = { 1.0f, 0.749f, 0.0f };
-
-	output.vertices.assign( {
-		{ { 0.0f, -50.0f, 0.0f}, color },
-		{ { 0.0f, 50.0f, 0.0f }, color }
-	} );
-
-	output.indices.assign( {
-		0, 1
-	} );
-
-	return output;
-}
-
 void GGGraphics::SwitchFillType()
 {
 	if( m_currentFillType == GGRenderer::FILL_TYPE_SOLID )
@@ -109,7 +91,6 @@ void GGGraphics::Render3D()
 {
 	m_renderer.SetRenderType( GGRenderer::RENDER_TYPE_MESH );
 	m_renderer.SetFillType( m_currentFillType );
-	m_renderer.SetCamera( m_camera );
 
 	if( m_renderFlags[ GG_RENDER_FLAGS_WORLD ] )
 	{

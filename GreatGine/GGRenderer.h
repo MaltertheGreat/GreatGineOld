@@ -2,8 +2,7 @@
 
 #include "PCH.h"
 
-class GGDirectXDriver;
-class GGCamera;
+struct GGDirectXDriver;
 class GGShader;
 class GGMesh;
 class GGLines;
@@ -27,7 +26,7 @@ public:
 		FILL_TYPE_COUNT
 	};
 public:
-	GGRenderer( GGDirectXDriver& _driver, int _syncInterval = 0 );
+	GGRenderer( GGDirectXDriver _driver, int _syncInterval = 0 );
 
 public:
 	void ClearScene();
@@ -36,30 +35,52 @@ public:
 	void SetSyncInterval( int _syncInterval );
 	void SetRenderType( RENDER_TYPE _renderType );
 	void SetFillType( FILL_TYPE _fillType );
+	void SetCamera( float _fovAngle, UINT _viewWidth, UINT _viewHeight );
+	void UpdateCamera( const DirectX::XMFLOAT3& _position, const DirectX::XMFLOAT3& _rotation );
 
-	void SetCamera( const GGCamera& _camera );
 	void SetShader( const GGShader& _shader );
 	void SetMesh( const GGMesh& _mesh );
 
 	void RenderIn2D();
-	void RenderMesh( const GGMesh _mesh, const DirectX::XMFLOAT4X4& _transform );
+	void RenderMesh( const GGMesh _mesh, DirectX::XMFLOAT4X4 _transform );
 	void RenderText( const std::wstring& _text, const DirectX::XMFLOAT2& _pos );
+
+private:
+	struct GGConstantBufferPerCamera
+	{
+		constexpr static UINT SLOT_NUMBER = 0;
+
+		DirectX::XMFLOAT4X4 projectionMatrix;
+	};
+	struct GGConstantBufferPerFrame
+	{
+		constexpr static UINT SLOT_NUMBER = 1;
+
+		DirectX::XMFLOAT4X4 viewMatrix;
+		DirectX::XMFLOAT4 cameraPos;
+	};
+	struct GGConstantBufferPerMesh
+	{
+		constexpr static UINT SLOT_NUMBER = 2;
+
+		DirectX::XMFLOAT4X4 worldMatrix;
+	};
+
+	void UpdateConstantBuffer( UINT _slot, const void* _data );
 
 private:
 	int m_syncInterval;
 	UINT m_vertexSize;
-	UINT m_resX;
-	UINT m_resY;
 
 	Microsoft::WRL::ComPtr<ID3D11Device> m_device;
 	Microsoft::WRL::ComPtr<ID3D11DeviceContext> m_deviceContext;
 	Microsoft::WRL::ComPtr<IDXGISwapChain> m_swapChain;
 	Microsoft::WRL::ComPtr<ID2D1Factory> m_factory2d;
+
 	Microsoft::WRL::ComPtr<ID3D11RenderTargetView> m_renderTargetView;
 	Microsoft::WRL::ComPtr<ID3D11RasterizerState> m_rasterizerState[ FILL_TYPE_COUNT ];
-	Microsoft::WRL::ComPtr<ID3D11Texture2D> m_depthStencil;
 	Microsoft::WRL::ComPtr<ID3D11DepthStencilView> m_depthStencilView;
-	Microsoft::WRL::ComPtr<ID3D11Buffer> m_worldBuffer;
+
 	Microsoft::WRL::ComPtr<ID2D1RenderTarget> m_renderTarget2D;
 	Microsoft::WRL::ComPtr<ID2D1SolidColorBrush> m_solidBrush;
 	Microsoft::WRL::ComPtr<IDWriteFactory> m_writeFactory;

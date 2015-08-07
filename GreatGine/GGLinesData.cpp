@@ -2,7 +2,7 @@
 #include "GGLinesData.h"
 using namespace DirectX;
 
-GGLinesData GGCubeLines( float _dimension, const DirectX::XMFLOAT3& _color )
+GGLinesData GGLinesData::GGCubeLines( float _dimension, const DirectX::XMFLOAT3& _color )
 {
 	float radius = _dimension / 2.0f;
 
@@ -33,6 +33,22 @@ GGLinesData GGCubeLines( float _dimension, const DirectX::XMFLOAT3& _color )
 		1, 5,
 		2, 6,
 		3, 7
+	} );
+
+	return output;
+}
+
+GGLinesData GGLinesData::VerticalLine( float _radius, const DirectX::XMFLOAT3& _color )
+{
+	GGLinesData output;
+
+	output.vertices.assign( {
+		{ { 0.0f, -_radius, 0.0f }, _color },
+		{ { 0.0f, _radius, 0.0f }, _color }
+	} );
+
+	output.indices.assign( {
+		0, 1
 	} );
 
 	return output;

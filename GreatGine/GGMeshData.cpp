@@ -2,7 +2,7 @@
 #include "GGMeshData.h"
 using namespace DirectX;
 
-GGMeshData GGCubeMeshData( float _dimension )
+GGMeshData GGMeshData::GGCubeMeshData( float _dimension )
 {
 	float radius = _dimension / 2.0f;
 

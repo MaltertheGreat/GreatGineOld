@@ -4,10 +4,8 @@
 #include <bitset>
 
 #include "GGInputHandler.h"
-#include "GGDirectXDriver.h"
 #include "GGDevice.h"
 #include "GGRenderer.h"
-#include "GGCamera.h"
 #include "GGChunkModelSet.h"
 #include "GGShader.h"
 #include "GGDebugInfo.h"
@@ -49,7 +47,6 @@ public:
 	virtual void HandleMouseInput( int _x, int _y ) override;
 
 private:
-	static GGLinesData VerticalLine();
 	void SwitchFillType();
 
 	void Render3D();
@@ -63,10 +60,8 @@ private:
 	GGRenderer::FILL_TYPE m_currentFillType;
 	std::bitset<GG_RENDER_FLAGS_COUNT> m_renderFlags;
 
-	GGDirectXDriver  m_driver;
 	GGDevice         m_device;
 	GGRenderer       m_renderer;
-	GGCamera         m_camera;
 	GGChunkModelSets m_chunkModelSets;
 	GGShader         m_basicShader;
 	GGDebugInfo      m_debugInfo;

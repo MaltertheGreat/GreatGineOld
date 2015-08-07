@@ -2,28 +2,27 @@
 
 #include "PCH.h"
 
-#include "GGCamera.h"
+#include "GGDirectXDriver.h"
 #include "GGShader.h"
 #include "GGMesh.h"
 #include "GGMeshData.h"
 
-class GGDirectXDriver;
+class GGWindow;
 struct GGMeshData;
 struct GGLinesData;
 
 class GGDevice
 {
 public:
-	GGDevice( GGDirectXDriver& _driver );
+	GGDevice( const GGWindow& _window, UINT _resX, UINT _resY );
 
 public:
-	GGCamera CreateCamera( float _fovAngle, UINT _viewWidth, UINT _viewHeight ) const;
+	GGDirectXDriver GetDriver();
+
 	GGShader CreateShader() const;
 	GGShader CreateLinesShader() const;
 	GGMesh CreateMesh( const GGMeshData& _grid ) const;
 	GGMesh CraeteLinesMesh( const GGLinesData& _lines ) const;
-
-	void UpdateCamera( GGCamera& _camera, const DirectX::XMFLOAT3& _position, const DirectX::XMFLOAT3& _rotation ) const;
 
 private:
 	Microsoft::WRL::ComPtr<ID3D11Buffer> CreateVertexBuffer( UINT _size, const void* _data ) const;
@@ -31,7 +30,11 @@ private:
 	Microsoft::WRL::ComPtr<ID3D11Buffer> CreateConstantBuffer( UINT _size, const void* _data ) const;
 
 private:
+	UINT m_resX;
+	UINT m_resY;
+
 	Microsoft::WRL::ComPtr<ID3D11Device> m_device;
 	Microsoft::WRL::ComPtr<ID3D11DeviceContext> m_deviceContext;
 	Microsoft::WRL::ComPtr<IDXGISwapChain> m_swapChain;
+	Microsoft::WRL::ComPtr<ID2D1Factory> m_factory2d;
 };

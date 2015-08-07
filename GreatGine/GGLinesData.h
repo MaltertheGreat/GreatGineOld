@@ -18,6 +18,8 @@ public:
 public:
 	std::vector<GGVertex> vertices;
 	std::vector<GGIndex> indices;
-};
 
-GGLinesData GGCubeLines( float _dimension, const DirectX::XMFLOAT3& _color );
+public:
+	static GGLinesData GGCubeLines( float _dimension, const DirectX::XMFLOAT3& _color );
+	static GGLinesData VerticalLine( float _radius, const DirectX::XMFLOAT3& _color );
+};

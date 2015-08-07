@@ -1,6 +1,6 @@
 #include "PCH.h"
 #include "GGDevice.h"
-#include "GGDirectXDriver.h"
+#include "GGWindow.h"
 #include "GGLinesData.h"
 #include "GGError.h"
 #include "Shaders\BasicVS.h"
@@ -12,26 +12,52 @@ using Microsoft::WRL::ComPtr;
 using namespace DirectX;
 using namespace std;
 
-GGDevice::GGDevice( GGDirectXDriver& _driver )
+GGDevice::GGDevice( const GGWindow& _window, UINT _resX, UINT _resY )
 	:
-	m_device( _driver.GetDevice() ),
-	m_deviceContext( _driver.GetDeviceContext() ),
-	m_swapChain( _driver.GetSwapChain() )
-{}
-
-GGCamera GGDevice::CreateCamera( float _fovAngle, UINT _viewWidth, UINT _viewHeight ) const
+	m_resX( _resX ),
+	m_resY( _resY )
 {
-	ComPtr<ID3D11Buffer> viewBuffer = CreateConstantBuffer( sizeof( XMFLOAT4X4 ), nullptr );
+	UINT createDeviceFlags = D3D11_CREATE_DEVICE_BGRA_SUPPORT;
+#ifdef _DEBUG
+	createDeviceFlags |= D3D11_CREATE_DEVICE_DEBUG;
+#endif
 
-	XMFLOAT4X4 projectionMatrix;
-	float aspect = _viewWidth / static_cast<float>(_viewHeight);
-	XMMATRIX projection = XMMatrixPerspectiveFovLH( XMConvertToRadians( _fovAngle ), aspect, 0.01f, 1000.0f );
-	XMStoreFloat4x4( &projectionMatrix, XMMatrixTranspose( projection ) );
+	D3D_FEATURE_LEVEL featureLevels[] =
+	{
+		D3D_FEATURE_LEVEL_11_0
+	};
+	UINT numFeatureLevels = ARRAYSIZE( featureLevels );
 
-	ComPtr<ID3D11Buffer> projectionBuffer = CreateConstantBuffer( sizeof( XMFLOAT4X4 ), projectionMatrix.m );
-	
+	DXGI_SWAP_CHAIN_DESC sd;
+	ZeroMemory( &sd, sizeof( sd ) );
+	sd.BufferCount = 1;
+	sd.BufferDesc.Width = _resX;
+	sd.BufferDesc.Height = _resY;
+	sd.BufferDesc.Format = DXGI_FORMAT_B8G8R8A8_UNORM;
+	sd.BufferDesc.RefreshRate.Numerator = 60;
+	sd.BufferDesc.RefreshRate.Denominator = 1;
+	sd.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
+	sd.OutputWindow = _window.GetHandle();
+	sd.SampleDesc.Count = 1;
+	sd.SampleDesc.Quality = 0;
+	sd.Windowed = TRUE;
 
-	return GGCamera( viewBuffer, projectionBuffer );
+	HRESULT hr = D3D11CreateDeviceAndSwapChain( nullptr, D3D_DRIVER_TYPE_HARDWARE, nullptr, createDeviceFlags, featureLevels, numFeatureLevels, D3D11_SDK_VERSION, &sd, m_swapChain.GetAddressOf(), m_device.GetAddressOf(), nullptr, m_deviceContext.GetAddressOf() );
+	if( FAILED( hr ) )
+	{
+		GG_THROW;
+	}
+
+	hr = D2D1CreateFactory( D2D1_FACTORY_TYPE_SINGLE_THREADED, static_cast<ID2D1Factory**>(m_factory2d.GetAddressOf()) );
+	if( FAILED( hr ) )
+	{
+		GG_THROW;
+	}
+}
+
+GGDirectXDriver GGDevice::GetDriver()
+{
+	return GGDirectXDriver{ m_resX, m_resY, m_device, m_deviceContext, m_swapChain, m_factory2d };
 }
 
 GGShader GGDevice::CreateShader() const
@@ -121,22 +147,6 @@ GGMesh GGDevice::CraeteLinesMesh( const GGLinesData& _lines ) const
 	return GGMesh( static_cast<UINT>(_lines.indices.size()), vertexBuffer, indexBuffer );
 }
 
-void GGDevice::UpdateCamera( GGCamera& _camera, const DirectX::XMFLOAT3& _position, const DirectX::XMFLOAT3& _rotation ) const
-{
-	XMVECTOR position = XMLoadFloat3( &_position );
-	XMVECTOR rotation = XMLoadFloat3( &_rotation );
-	rotation = XMQuaternionRotationRollPitchYawFromVector( rotation );	// Convert rotation vector to quaternion
-	XMVECTOR lookDir = XMVector3Rotate( XMVectorSet( 0.0f, 0.0f, 1.0f, 0.0f ), rotation );
-	XMVECTOR upDir = XMVectorSet( 0.0f, 1.0f, 0.0f, 0.0f );
-
-	XMFLOAT4X4 viewMatrix;
-	XMMATRIX view = XMMatrixLookToLH( position, lookDir, upDir );
-	XMStoreFloat4x4( &viewMatrix, XMMatrixTranspose( view ) );
-
-	m_deviceContext->UpdateSubresource( _camera.GetViewBuffer().Get(), 0, nullptr, viewMatrix.m, 0, 0 );
-
-	return;
-}
 
 ComPtr<ID3D11Buffer> GGDevice::CreateVertexBuffer( UINT _size, const void* _data ) const
 {
@@ -208,7 +218,7 @@ ComPtr<ID3D11Buffer> GGDevice::CreateIndexBuffer( UINT _size, const void* _data 
 	return indexBuffer;
 }
 
-Microsoft::WRL::ComPtr<ID3D11Buffer> GGDevice::CreateConstantBuffer( UINT _size, const void* _data ) const
+ComPtr<ID3D11Buffer> GGDevice::CreateConstantBuffer( UINT _size, const void* _data ) const
 {
 	D3D11_BUFFER_DESC bd;
 	ZeroMemory( &bd, sizeof( bd ) );
