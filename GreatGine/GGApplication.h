@@ -27,8 +27,8 @@ public:
 	virtual void HandleMouseInput( int _x, int _y ) override;
 
 private:
-	std::wstring m_title = L"GreatGine";
-	std::wstring m_version = L"0.0.2 DEV";
+	std::wstring m_title;
+	std::wstring m_version;
 
 private:
 	bool   m_running;

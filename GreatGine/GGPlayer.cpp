@@ -70,73 +70,49 @@ const XMFLOAT3& GGPlayer::GetRotation() const
 
 void GGPlayer::HandleKeyInput( WPARAM _keyCode, bool _down )
 {
+	float velocity;
+	bool digging;
 	if( _down )
 	{
-		if( _keyCode == m_keyMap[ GG_KEYMAP_FORWARD ] )
-		{
-			m_velocity.z = 5.0f;
-		}
-		else if( _keyCode == m_keyMap[ GG_KEYMAP_BACKWARD ] )
-		{
-			m_velocity.z = -5.0f;
-		}
-
-		if( _keyCode == m_keyMap[ GG_KEYMAP_RIGHTWARD ] )
-		{
-			m_velocity.x = 5.0f;
-		}
-		else if( _keyCode == m_keyMap[ GG_KEYMAP_LEFTWARD ] )
-		{
-			m_velocity.x = -5.0f;
-		}
-
-		if( _keyCode == m_keyMap[ GG_KEYMAP_UPWARD ] )
-		{
-			m_velocity.y = 5.0f;
-		}
-		else if( _keyCode == m_keyMap[ GG_KEYMAP_DOWNWARD ] )
-		{
-			m_velocity.y = -5.0f;
-		}
-
-		if( _keyCode == m_keyMap[ GG_KEYMAP_DIG ] )
-		{
-			m_digging = true;
-		}
+		velocity = 5.0f;
+		digging = true;
 	}
 	else
 	{
-		if( _keyCode == m_keyMap[ GG_KEYMAP_FORWARD ] )
-		{
-			m_velocity.z = 0.0f;
-		}
-		else if( _keyCode == m_keyMap[ GG_KEYMAP_BACKWARD ] )
-		{
-			m_velocity.z = 0.0f;
-		}
+		velocity = 0.0f;
+		digging = false;
+	}
 
-		if( _keyCode == m_keyMap[ GG_KEYMAP_RIGHTWARD ] )
-		{
-			m_velocity.x = 0.0f;
-		}
-		else if( _keyCode == m_keyMap[ GG_KEYMAP_LEFTWARD ] )
-		{
-			m_velocity.x = 0.0f;
-		}
+	if( _keyCode == m_keyMap[ GG_KEYMAP_FORWARD ] )
+	{
+		m_velocity.z = velocity;
+	}
+	else if( _keyCode == m_keyMap[ GG_KEYMAP_BACKWARD ] )
+	{
+		m_velocity.z = -velocity;
+	}
 
-		if( _keyCode == m_keyMap[ GG_KEYMAP_UPWARD ] )
-		{
-			m_velocity.y = 0.0f;
-		}
-		else if( _keyCode == m_keyMap[ GG_KEYMAP_DOWNWARD ] )
-		{
-			m_velocity.y = 0.0f;
-		}
+	if( _keyCode == m_keyMap[ GG_KEYMAP_RIGHTWARD ] )
+	{
+		m_velocity.x = velocity;
+	}
+	else if( _keyCode == m_keyMap[ GG_KEYMAP_LEFTWARD ] )
+	{
+		m_velocity.x = -velocity;
+	}
 
-		if( _keyCode == m_keyMap[ GG_KEYMAP_DIG ] )
-		{
-			m_digging = false;
-		}
+	if( _keyCode == m_keyMap[ GG_KEYMAP_UPWARD ] )
+	{
+		m_velocity.y = velocity;
+	}
+	else if( _keyCode == m_keyMap[ GG_KEYMAP_DOWNWARD ] )
+	{
+		m_velocity.y = -velocity;
+	}
+
+	if( _keyCode == m_keyMap[ GG_KEYMAP_DIG ] )
+	{
+		m_digging = digging;
 	}
 
 	return;
@@ -156,11 +132,11 @@ void GGPlayer::HandleMouseInput( int _x, int _y )
 	}
 
 	m_rotation.y += _x * 0.005f;
-	if( m_rotation.y > XMConvertToRadians( 360.0f ) )
+	if( m_rotation.y >= XMConvertToRadians( 360.0f ) )
 	{
 		m_rotation.y -= XMConvertToRadians( 360.0f );
 	}
-	else if( m_rotation.y < 0 )
+	else if( m_rotation.y <= 0 )
 	{
 		m_rotation.y += XMConvertToRadians( 360.0f );
 	}
