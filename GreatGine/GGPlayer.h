@@ -18,6 +18,7 @@ private:
 		GG_KEYMAP_UPWARD,
 		GG_KEYMAP_DOWNWARD,
 		GG_KEYMAP_DIG,
+		GG_KEYMAP_PLACE,
 
 		GG_KEYMAP_COUNT
 	};
@@ -43,7 +44,9 @@ private:
 private:
 	bool m_isAlive;
 	bool m_digging;
+	bool m_placing;
 	float m_diggingCooldown;
+	float m_placingCooldown;
 
 	WPARAM m_keyMap[ GG_KEYMAP_COUNT ];
 	GGChunk::GGObjectID m_headObjectID;

@@ -14,3 +14,4 @@ Ukey_leftward=65
 Ukey_upward=32
 Ukey_downward=16
 Ukey_dig=1
+Ukey_place=2

@@ -11,12 +11,15 @@ public:
 	static constexpr UINT DIAMETER = 4;
 	typedef std::array<GGChunk, DIAMETER * DIAMETER> GGChunkArray;
 
-	struct GGVoxelObjectChunk
+	struct GGVoxelDescription
 	{
 		UINT chunkX;
 		UINT chunkZ;
 		GGChunk::GGObjectID objectID;
-		UINT voxelIndex;
+		UINT voxelX;
+		UINT voxelY;
+		UINT voxelZ;
+		GGVoxel::GG_VOXEL_FACE face;
 	};
 
 public:
@@ -34,7 +37,7 @@ public:
 	const DirectX::XMFLOAT3& GetViewPointPosition() const;
 	const DirectX::XMFLOAT3& GetViewPointRotation() const;
 
-	std::unique_ptr<GGVoxelObjectChunk> GetVoxelFromRay( const DirectX::XMFLOAT3& _originPositin, UINT _originChunkX, UINT _originChunkZ, const DirectX::XMFLOAT3& _rotation, float _length, GGChunk::GGObjectID* _excludedObject = nullptr );
+	std::unique_ptr<GGVoxelDescription> GetVoxelFromRay( const DirectX::XMFLOAT3& _originPositin, UINT _originChunkX, UINT _originChunkZ, const DirectX::XMFLOAT3& _rotation, float _length, GGChunk::GGObjectID* _excludedObject = nullptr );
 
 private:
 	// TODO: Move these functions to some sort of world generator
