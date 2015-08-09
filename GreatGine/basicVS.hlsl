@@ -1,16 +1,17 @@
-cbuffer WorldBuffer : register(b0)
+cbuffer ProjectionBuffer : register(b0)
 {
-	matrix worldMatrix;
+	matrix projectionMatrix;
 }
 
 cbuffer ViewBuffer : register(b1)
 {
 	matrix viewMatrix;
+	float4 cameraPosition;
 }
 
-cbuffer ProjectionBuffer : register(b2)
+cbuffer WorldBuffer : register(b2)
 {
-	matrix projectionMatrix;
+	matrix worldMatrix;
 }
 
 struct PixelInputType
@@ -18,6 +19,8 @@ struct PixelInputType
 	float4 position : SV_POSITION;
 	float3 normal : NORMAL;
 	float4 color : COLOR;
+	float3 worldPosition : TEXCOORD0;
+	float3 cameraPosition : TEXCOORD1;
 };
 
 PixelInputType main( float4 _position : POSITION, float3 _normal : NORMAL, float4 _color : COLOR )
@@ -32,6 +35,11 @@ PixelInputType main( float4 _position : POSITION, float3 _normal : NORMAL, float
 	output.normal = normalize( output.normal );
 
 	output.color = _color;
+
+	output.worldPosition = mul( _position, worldMatrix ).xyz;
+
+	// TODO: This is stupid, but it works ;p
+	output.cameraPosition = cameraPosition.xyz;
 
 	return output;
 }

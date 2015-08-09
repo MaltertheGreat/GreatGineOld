@@ -1,8 +1,8 @@
 Ukey_exit=27
 Uwindow_width=1280
 Uwindow_height=720
-IresolutionX=1280
-IresolutionY=720
+UresolutionX=1280
+UresolutionY=720
 Ukey_fill_type=112
 Ukey_render_chunks=113
 Isync_interval=0
@@ -13,5 +13,4 @@ Ukey_rightward=68
 Ukey_leftward=65
 Ukey_upward=32
 Ukey_downward=16
-UresolutionX=1280
-UresolutionY=720
+Ukey_dig=1

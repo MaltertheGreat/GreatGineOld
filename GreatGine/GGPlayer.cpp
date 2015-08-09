@@ -10,13 +10,15 @@ using namespace DirectX;
 GGPlayer::GGPlayer( GGInput& _input, GGConfig& _config )
 	:
 	m_isAlive( false ),
+	m_digging( false ),
 	m_keyMap{
 	_config.GetUint( "key_forward", 'W' ),
 	_config.GetUint( "key_backward", 'S' ),
 	_config.GetUint( "key_rightward", 'D' ),
 	_config.GetUint( "key_leftward", 'A' ),
 	_config.GetUint( "key_upward", VK_SPACE ),
-	_config.GetUint( "key_downward", VK_SHIFT ) }
+	_config.GetUint( "key_downward", VK_SHIFT ),
+	_config.GetUint( "key_dig", VK_LBUTTON ) }
 {
 	_input.RegisterHandler( this );
 }
@@ -96,6 +98,11 @@ void GGPlayer::HandleKeyInput( WPARAM _keyCode, bool _down )
 		{
 			m_velocity.y = -5.0f;
 		}
+
+		if( _keyCode == m_keyMap[ GG_KEYMAP_DIG ] )
+		{
+			m_digging = true;
+		}
 	}
 	else
 	{
@@ -124,6 +131,11 @@ void GGPlayer::HandleKeyInput( WPARAM _keyCode, bool _down )
 		else if( _keyCode == m_keyMap[ GG_KEYMAP_DOWNWARD ] )
 		{
 			m_velocity.y = 0.0f;
+		}
+
+		if( _keyCode == m_keyMap[ GG_KEYMAP_DIG ] )
+		{
+			m_digging = false;
 		}
 	}
 
@@ -269,19 +281,39 @@ void GGPlayer::UpdatePosition( GGWorld & _world, float _timeDelta )
 
 void GGPlayer::InteractWithWorld( GGWorld & _world, float _timeDelta )
 {
-	auto voxelObjectChunk = _world.GetVoxelFromRay( m_position, m_chunkX, m_chunkZ, m_rotation, 5.0f, &m_headObjectID );
-
-	if( voxelObjectChunk )
+	const float diggingCooldown = 0.1f;
+	if( m_diggingCooldown > _timeDelta )
 	{
-		auto& chunk = _world.GetChunk( voxelObjectChunk->chunkX, voxelObjectChunk->chunkZ );
-		auto& object = chunk.GetObjects().at( voxelObjectChunk->objectID );
+		m_diggingCooldown -= _timeDelta;
+	}
+	else
+	{
+		m_diggingCooldown = 0.0f;
+	}
 
-		GGObject::GGVoxelArray newVoxels = object.GetVoxels();
-		newVoxels.at( voxelObjectChunk->voxelIndex ).element = 0;
+	if( !m_digging )
+	{
+		return;
+	}
 
-		GGObject newObject = GGObject( move( newVoxels ), object.GetVoxelDimension(), object.GetPosition() );
+	if( m_diggingCooldown == 0.0f )
+	{
+		auto voxelObjectChunk = _world.GetVoxelFromRay( m_position, m_chunkX, m_chunkZ, m_rotation, 5.0f, &m_headObjectID );
 
-		_world.GetChunk( m_chunkX, m_chunkZ ).ReplaceObject( voxelObjectChunk->objectID, move( newObject ) );
+		if( voxelObjectChunk )
+		{
+			auto& chunk = _world.GetChunk( voxelObjectChunk->chunkX, voxelObjectChunk->chunkZ );
+			auto& object = chunk.GetObjects().at( voxelObjectChunk->objectID );
+
+			GGObject::GGVoxelArray newVoxels = object.GetVoxels();
+			newVoxels.at( voxelObjectChunk->voxelIndex ).element = 0;
+
+			GGObject newObject = GGObject( move( newVoxels ), object.GetVoxelDimension(), object.GetPosition() );
+
+			_world.GetChunk( m_chunkX, m_chunkZ ).ReplaceObject( voxelObjectChunk->objectID, move( newObject ) );
+
+			m_diggingCooldown = diggingCooldown;
+		}
 	}
 
 	return;

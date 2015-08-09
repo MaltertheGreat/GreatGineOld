@@ -69,13 +69,7 @@
     <ClCompile Include="GGChunk.cpp">
       <Filter>Source Files\World</Filter>
     </ClCompile>
-    <ClCompile Include="GGCamera.cpp">
-      <Filter>Source Files\Graphics</Filter>
-    </ClCompile>
     <ClCompile Include="GGDebugInfo.cpp">
-      <Filter>Source Files\Graphics</Filter>
-    </ClCompile>
-    <ClCompile Include="GGDirectXDriver.cpp">
       <Filter>Source Files\Graphics</Filter>
     </ClCompile>
     <ClCompile Include="GGDevice.cpp">
@@ -151,9 +145,6 @@
     </ClInclude>
     <ClInclude Include="GGVoxel.h">
       <Filter>Header Files\World</Filter>
-    </ClInclude>
-    <ClInclude Include="GGCamera.h">
-      <Filter>Header Files\Graphics</Filter>
     </ClInclude>
     <ClInclude Include="GGDevice.h">
       <Filter>Header Files\Graphics</Filter>

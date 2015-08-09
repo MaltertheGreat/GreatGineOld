@@ -19,6 +19,7 @@ public:
 public:
 	std::vector<GGVertex> vertices;
 	std::vector<GGIndex> indices;
-};
 
-GGMeshData GGCubeMeshData( float _dimension );
+public:
+	static GGMeshData GGCubeMeshData( float _dimension );
+};

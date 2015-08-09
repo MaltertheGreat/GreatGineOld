@@ -1,16 +1,17 @@
 cbuffer WorldBuffer : register(b0)
 {
-	matrix worldMatrix;
+	matrix projectionMatrix;
 }
 
 cbuffer ViewBuffer : register(b1)
 {
 	matrix viewMatrix;
+	float4 cameraPosition;
 }
 
 cbuffer ProjectionBuffer : register(b2)
 {
-	matrix projectionMatrix;
+	matrix worldMatrix;
 }
 
 struct PixelInputType
