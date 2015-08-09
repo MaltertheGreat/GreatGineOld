@@ -33,7 +33,7 @@ GGDevice::GGDevice( const GGWindow& _window, UINT _resX, UINT _resY )
 	sd.BufferCount = 1;
 	sd.BufferDesc.Width = _resX;
 	sd.BufferDesc.Height = _resY;
-	sd.BufferDesc.Format = DXGI_FORMAT_B8G8R8A8_UNORM;
+	sd.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
 	sd.BufferDesc.RefreshRate.Numerator = 60;
 	sd.BufferDesc.RefreshRate.Denominator = 1;
 	sd.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;

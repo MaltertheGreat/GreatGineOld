@@ -38,7 +38,7 @@ PixelInputType main( float4 _position : POSITION, float3 _normal : NORMAL, float
 
 	output.worldPosition = mul( _position, worldMatrix ).xyz;
 
-	// TODO: This is stupid, but it works;p
+	// TODO: This is stupid, but it works ;p
 	output.cameraPosition = cameraPosition.xyz;
 
 	return output;

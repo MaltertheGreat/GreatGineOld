@@ -21,5 +21,5 @@ float4 main( PixelInputType _input ) : SV_TARGET
 	float3 reflection = normalize( 2 * _input.normal * dot( _input.normal, lightDirection ) - lightDirection );
 	float specular = pow( max( 0, dot( reflection, viewDirection ) ), 4.0f ) / 4.0f;
 
-	return mul( _input.color, light ) + specular;
+	return saturate( mul( _input.color, light ) + specular );
 }
