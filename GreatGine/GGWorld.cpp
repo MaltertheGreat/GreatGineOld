@@ -86,7 +86,7 @@ float sgn( float f )
 	}
 }
 
-std::unique_ptr<GGWorld::GGVoxelObjectChunk> GGWorld::GetVoxelFromRay( const DirectX::XMFLOAT3& _originPositin, UINT _originChunkX, UINT _originChunkZ, const DirectX::XMFLOAT3& _rotation, float _length, GGChunk::GGObjectID* _excludedObject )
+std::unique_ptr<GGWorld::GGVoxelDescription> GGWorld::GetVoxelFromRay( const DirectX::XMFLOAT3& _originPositin, UINT _originChunkX, UINT _originChunkZ, const DirectX::XMFLOAT3& _rotation, float _length, GGChunk::GGObjectID* _excludedObject )
 {
 	float voxelDiameter = 1.0f;
 	float voxelRadius = voxelDiameter / 2.0f;
@@ -95,6 +95,8 @@ std::unique_ptr<GGWorld::GGVoxelObjectChunk> GGWorld::GetVoxelFromRay( const Dir
 	float rayX = XMVectorGetX( ray );
 	float rayY = XMVectorGetY( ray );
 	float rayZ = XMVectorGetZ( ray );
+
+	GGVoxel::GG_VOXEL_FACE face;
 
 	auto& objects = GetChunk( _originChunkX, _originChunkZ ).GetObjects();
 	for( auto iterator : objects )
@@ -176,6 +178,7 @@ std::unique_ptr<GGWorld::GGVoxelObjectChunk> GGWorld::GetVoxelFromRay( const Dir
 						if( !signbit( rayX ) )
 						{
 							++x;
+							face = GGVoxel::GG_VOXEL_FACE_WEST;
 							voxelX = -voxelRadius;
 						}
 						else
@@ -183,6 +186,7 @@ std::unique_ptr<GGWorld::GGVoxelObjectChunk> GGWorld::GetVoxelFromRay( const Dir
 							if( x > 0 )
 							{
 								--x;
+								face = GGVoxel::GG_VOXEL_FACE_EAST;
 								voxelX = voxelRadius;
 							}
 							else
@@ -204,6 +208,7 @@ std::unique_ptr<GGWorld::GGVoxelObjectChunk> GGWorld::GetVoxelFromRay( const Dir
 						if( !signbit( rayY ) )
 						{
 							++y;
+							face = GGVoxel::GG_VOXEL_FACE_BOTTOM;
 							voxelY = -voxelRadius;
 						}
 						else
@@ -211,6 +216,7 @@ std::unique_ptr<GGWorld::GGVoxelObjectChunk> GGWorld::GetVoxelFromRay( const Dir
 							if( y > 0 )
 							{
 								--y;
+								face = GGVoxel::GG_VOXEL_FACE_TOP;
 								voxelY = voxelRadius;
 							}
 							else
@@ -232,6 +238,7 @@ std::unique_ptr<GGWorld::GGVoxelObjectChunk> GGWorld::GetVoxelFromRay( const Dir
 						if( !signbit( rayZ ) )
 						{
 							++z;
+							face = GGVoxel::GG_VOXEL_FACE_SOUTH;
 							voxelZ = -voxelRadius;
 						}
 						else
@@ -239,6 +246,7 @@ std::unique_ptr<GGWorld::GGVoxelObjectChunk> GGWorld::GetVoxelFromRay( const Dir
 							if( z > 0 )
 							{
 								--z;
+								face = GGVoxel::GG_VOXEL_FACE_NORTH;
 								voxelZ = voxelRadius;
 							}
 							else
@@ -278,7 +286,7 @@ std::unique_ptr<GGWorld::GGVoxelObjectChunk> GGWorld::GetVoxelFromRay( const Dir
 				auto& voxels = object.GetVoxels();
 				if( voxels.at( voxelIndex ).element != 0 )
 				{
-					return std::unique_ptr<GGVoxelObjectChunk>(new GGVoxelObjectChunk{ _originChunkX, _originChunkZ, objectID, voxelIndex });
+					return std::unique_ptr<GGVoxelDescription>(new GGVoxelDescription{ _originChunkX, _originChunkZ, objectID, x, y, z, face });
 					//return std::make_unique<GGVoxelObjectChunk>( _originChunkX, _originChunkZ, objectID, voxelIndex );
 				}
 			}
@@ -339,8 +347,8 @@ void GGWorld::GenerateChunk( GGChunk& _chunk )
 GGObject::GGVoxelArray GGWorld::CreateRandomVoxels()
 {
 	static default_random_engine gen;
-	//static bernoulli_distribution solid( 0.025 );
-	static bernoulli_distribution solid( 1.0 );
+	static bernoulli_distribution solid( 0.025 );
+	//static bernoulli_distribution solid( 1.0 );
 
 	GGObject::GGVoxelArray voxels;
 	for( auto& voxel : voxels )

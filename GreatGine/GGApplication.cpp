@@ -6,7 +6,7 @@
 GGApplication::GGApplication( HINSTANCE _hInstance, GGConfig& _config )
 	:
 	m_title( L"GreatGine" ),
-	m_version( L"0.1.0 DEV"),
+	m_version( L"0.1.1 DEV"),
 	m_running( false ),
 	m_exitKey( _config.GetUint( "key_exit", VK_ESCAPE ) ),
 
