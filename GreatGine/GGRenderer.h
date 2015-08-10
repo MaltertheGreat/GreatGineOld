@@ -41,9 +41,13 @@ public:
 	void SetShader( const GGShader& _shader );
 	void SetMesh( const GGMesh& _mesh );
 
-	void RenderIn2D();
 	void RenderMesh( const GGMesh _mesh, DirectX::XMFLOAT4X4 _transform );
-	void RenderText( const std::wstring& _text, const DirectX::XMFLOAT2& _pos );
+
+	void Begin2DRendering();
+	void End2DRendering();
+	void RenderText( const std::wstring& _text, const DirectX::XMFLOAT2& _pos, const D2D1::ColorF& _color = D2D1::ColorF::LightSlateGray );
+	void RenderRectangle( const DirectX::XMFLOAT2& _pos, const DirectX::XMFLOAT2& _size, const D2D1::ColorF& _color = D2D1::ColorF::LightSlateGray );
+	void RenderEllipse( const DirectX::XMFLOAT2& _pos, float _radiusX, float _radiusY, const D2D1::ColorF& _color = D2D1::ColorF::LightSlateGray );
 
 private:
 	struct GGConstantBufferPerCamera
@@ -82,7 +86,7 @@ private:
 	Microsoft::WRL::ComPtr<ID3D11DepthStencilView> m_depthStencilView;
 
 	Microsoft::WRL::ComPtr<ID2D1RenderTarget> m_renderTarget2D;
-	Microsoft::WRL::ComPtr<ID2D1SolidColorBrush> m_solidBrush;
 	Microsoft::WRL::ComPtr<IDWriteFactory> m_writeFactory;
 	Microsoft::WRL::ComPtr<IDWriteTextFormat> m_textFormat;
+	Microsoft::WRL::ComPtr<ID2D1SolidColorBrush> m_solidBrush;
 };

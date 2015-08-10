@@ -86,17 +86,15 @@ float sgn( float f )
 	}
 }
 
-std::unique_ptr<GGWorld::GGVoxelDescription> GGWorld::GetVoxelFromRay( const DirectX::XMFLOAT3& _originPositin, UINT _originChunkX, UINT _originChunkZ, const DirectX::XMFLOAT3& _rotation, float _length, GGChunk::GGObjectID* _excludedObject )
+unique_ptr<GGWorld::GGVoxelDescription> GGWorld::GetVoxelFromRay( UINT _originChunkX, UINT _originChunkZ, const DirectX::XMFLOAT3 & _originPositin, const DirectX::XMFLOAT3 & _rotation, float _length, GGChunk::GGObjectID * _excludedObject )
 {
-	float voxelDiameter = 1.0f;
-	float voxelRadius = voxelDiameter / 2.0f;
+	const float voxelDiameter = 1.0f;
+	const float voxelRadius = voxelDiameter / 2.0f;
 
 	XMVECTOR ray = XMVector3Rotate( XMVectorSet( 0.0f, 0.0f, 1.0f, 1.0f ), XMQuaternionRotationRollPitchYaw( _rotation.x, _rotation.y, _rotation.z ) );
 	float rayX = XMVectorGetX( ray );
 	float rayY = XMVectorGetY( ray );
 	float rayZ = XMVectorGetZ( ray );
-
-	GGVoxel::GG_VOXEL_FACE face;
 
 	auto& objects = GetChunk( _originChunkX, _originChunkZ ).GetObjects();
 	for( auto iterator : objects )
@@ -170,6 +168,8 @@ std::unique_ptr<GGWorld::GGVoxelDescription> GGWorld::GetVoxelFromRay( const Dir
 				{
 					lengthZ = INFINITY;
 				}
+
+				GGVoxel::GG_VOXEL_FACE face;
 
 				if( lengthX < lengthY )
 				{
@@ -360,4 +360,9 @@ GGObject::GGVoxelArray GGWorld::CreateRandomVoxels()
 	}
 
 	return voxels;
+}
+
+unique_ptr<GGWorld::GGVoxelDescription> GGWorld::GetVoxelFromRayInObject( const DirectX::XMFLOAT3 & _originPositin, const DirectX::XMFLOAT3 & _rotation, float _length )
+{
+	return unique_ptr<GGVoxelDescription>();
 }

@@ -293,7 +293,7 @@ void GGPlayer::InteractWithWorld( GGWorld & _world, float _timeDelta )
 
 	if( m_diggingCooldown == 0.0f || m_placingCooldown == 0.0f )
 	{
-		auto voxelObjectChunk = _world.GetVoxelFromRay( m_position, m_chunkX, m_chunkZ, m_rotation, 5.0f, &m_headObjectID );
+		auto voxelObjectChunk = _world.GetVoxelFromRay( m_chunkX, m_chunkZ, m_position, m_rotation, 5.0f, &m_headObjectID );
 
 		if( voxelObjectChunk )
 		{

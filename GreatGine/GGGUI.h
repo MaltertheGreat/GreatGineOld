@@ -14,6 +14,7 @@ public:
 
 private:
 	bool m_renderable;
+
 	UINT m_width;
 	UINT m_height;
 };

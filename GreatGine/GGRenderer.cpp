@@ -181,12 +181,6 @@ GGRenderer::GGRenderer( GGDirectXDriver _driver, int _syncInterval )
 
 		m_renderTarget2D->SetTransform( D2D1::Matrix3x2F::Identity() );
 
-		hr = m_renderTarget2D->CreateSolidColorBrush( D2D1::ColorF( D2D1::ColorF::LightSlateGray ), m_solidBrush.GetAddressOf() );
-		if( FAILED( hr ) )
-		{
-			GG_THROW;
-		}
-
 		hr = DWriteCreateFactory( DWRITE_FACTORY_TYPE_SHARED, __uuidof(IDWriteFactory), reinterpret_cast<IUnknown**>(m_writeFactory.GetAddressOf()) );
 		if( FAILED( hr ) )
 		{
@@ -194,6 +188,12 @@ GGRenderer::GGRenderer( GGDirectXDriver _driver, int _syncInterval )
 		}
 
 		hr = m_writeFactory->CreateTextFormat( L"Candara", NULL, DWRITE_FONT_WEIGHT_REGULAR, DWRITE_FONT_STYLE_NORMAL, DWRITE_FONT_STRETCH_NORMAL, 18.0f, L"en-us", m_textFormat.GetAddressOf() );
+		if( FAILED( hr ) )
+		{
+			GG_THROW;
+		}
+
+		hr = m_renderTarget2D->CreateSolidColorBrush( D2D1::ColorF( D2D1::ColorF::LightSlateGray ), m_solidBrush.GetAddressOf() );
 		if( FAILED( hr ) )
 		{
 			GG_THROW;
@@ -212,12 +212,6 @@ void GGRenderer::ClearScene()
 
 void GGRenderer::PresentScene()
 {
-	m_renderTarget2D->EndDraw();
-	//m_renderTarget2D->BeginDraw();
-	//D2D1_RECT_F rectangle1 = D2D1::RectF( (m_resX / 2.0f) - 1.0f, (m_resY / 2.0f) - 1.0f, (m_resX / 2.0f) + 1.0f, (m_resY / 2.0f) + 1.0f );
-	//m_renderTarget2D->FillRectangle( rectangle1, m_solidBrush.Get() );
-	//m_renderTarget2D->EndDraw();
-
 	m_swapChain->Present( m_syncInterval, 0 );
 
 	return;
@@ -304,13 +298,6 @@ void GGRenderer::SetMesh( const GGMesh& _mesh )
 	return;
 }
 
-void GGRenderer::RenderIn2D()
-{
-	m_renderTarget2D->BeginDraw();
-
-	return;
-}
-
 void GGRenderer::RenderMesh( const GGMesh _mesh, XMFLOAT4X4 _transform )
 {
 	XMStoreFloat4x4( &_transform, XMMatrixTranspose( XMLoadFloat4x4( &_transform ) ) );
@@ -322,10 +309,46 @@ void GGRenderer::RenderMesh( const GGMesh _mesh, XMFLOAT4X4 _transform )
 	return;
 }
 
-void GGRenderer::RenderText( const std::wstring& _text, const XMFLOAT2& _pos )
+void GGRenderer::Begin2DRendering()
 {
-	D2D1_RECT_F rectangle1 = D2D1::RectF( _pos.x, _pos.y, _pos.x + 512.0f, _pos.y + 18.0f );
-	m_renderTarget2D->DrawText( _text.c_str(), static_cast<UINT32>(_text.length()), m_textFormat.Get(), rectangle1, m_solidBrush.Get() );
+	m_renderTarget2D->BeginDraw();
+
+	return;
+}
+
+void GGRenderer::End2DRendering()
+{
+	m_renderTarget2D->EndDraw();
+
+	return;
+}
+
+void GGRenderer::RenderText( const std::wstring& _text, const XMFLOAT2& _pos, const D2D1::ColorF& _color )
+{
+	m_solidBrush->SetColor( _color );
+
+	D2D1_RECT_F rectangle = D2D1::RectF( _pos.x, _pos.y, _pos.x + 512.0f, _pos.y + 18.0f );
+	m_renderTarget2D->DrawText( _text.c_str(), static_cast<UINT32>(_text.length()), m_textFormat.Get(), rectangle, m_solidBrush.Get() );
+
+	return;
+}
+
+void GGRenderer::RenderRectangle( const DirectX::XMFLOAT2& _pos, const DirectX::XMFLOAT2& _size, const D2D1::ColorF& _color )
+{
+	m_solidBrush->SetColor( _color );
+
+	D2D1_RECT_F rectangle = D2D1::RectF( _pos.x, _pos.y, _pos.x + _size.x, _pos.y + _size.y );
+	m_renderTarget2D->FillRectangle( rectangle, m_solidBrush.Get() );
+
+	return;
+}
+
+void GGRenderer::RenderEllipse( const DirectX::XMFLOAT2& _pos, float _radiusX, float _radiusY, const D2D1::ColorF& _color )
+{
+	m_solidBrush->SetColor( _color );
+
+	D2D1_ELLIPSE  ellipse = { { _pos.x, _pos.y }, _radiusX, _radiusY };
+	m_renderTarget2D->FillEllipse( ellipse, m_solidBrush.Get() );
 
 	return;
 }

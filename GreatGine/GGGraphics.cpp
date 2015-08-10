@@ -51,6 +51,16 @@ void GGGraphics::Render()
 	return;
 }
 
+UINT GGGraphics::GetResolutionX() const
+{
+	return m_resolutionX;
+}
+
+UINT GGGraphics::GetResolutionY() const
+{
+	return m_resolutionY;
+}
+
 void GGGraphics::HandleKeyInput( WPARAM _keyCode, bool _down )
 {
 	if( _down )
@@ -135,7 +145,7 @@ void GGGraphics::Render3D()
 
 void GGGraphics::Render2D()
 {
-	m_renderer.RenderIn2D();
+	m_renderer.Begin2DRendering();
 
 	if( m_renderFlags[ GG_RENDER_FLAGS_GUI ] )
 	{
@@ -145,6 +155,12 @@ void GGGraphics::Render2D()
 			m_renderer.RenderText( m_debugInfo.GetLine( i ), { 0.0f, textY } );
 		}
 	}
+
+	XMFLOAT2 cursorPos = { (m_resolutionX / 2.0f) - 2.0f, (m_resolutionY / 2.0f) - 2.0f };
+
+	m_renderer.RenderEllipse( cursorPos, 1.5f, 1.5f, { 0.5f, 0.5f, 0.5f, 0.5f } );
+
+	m_renderer.End2DRendering();
 
 	return;
 }
