@@ -42,6 +42,9 @@ public:
 	void Update( GGWorld& _world, float _frameTime );
 	void Render();
 
+	UINT GetResolutionX() const;
+	UINT GetResolutionY() const;
+
 public:
 	virtual void HandleKeyInput( WPARAM _keyCode, bool _down ) override;
 	virtual void HandleMouseInput( int _x, int _y ) override;

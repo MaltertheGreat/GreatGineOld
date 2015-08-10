@@ -7,6 +7,7 @@
 #include "GGGraphics.h"
 #include "GGGame.h"
 #include "GGWorld.h"
+#include "GGGUI.h"
 
 class GGConfig;
 
@@ -40,4 +41,5 @@ private:
 	GGGraphics       m_graphics;
 	GGGame           m_game;
 	GGWorld          m_world;
+	GGGUI            m_gui;
 };
