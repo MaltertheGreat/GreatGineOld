@@ -2,6 +2,7 @@
 
 #include <array>
 #include <memory>
+#include <tuple>
 
 #include "GGChunk.h"
 
@@ -37,7 +38,7 @@ public:
 	const DirectX::XMFLOAT3& GetViewPointPosition() const;
 	const DirectX::XMFLOAT3& GetViewPointRotation() const;
 
-	std::unique_ptr<GGVoxelDescription> GetVoxelFromRay( UINT _originChunkX, UINT _originChunkZ, const DirectX::XMFLOAT3& _originPositin, const DirectX::XMFLOAT3& _rotation, float _length, GGChunk::GGObjectID* _excludedObject = nullptr );
+	std::unique_ptr<GGVoxelDescription> GetVoxelFromRay( UINT _originChunkX, UINT _originChunkZ, const DirectX::XMFLOAT3& _originPosition, const DirectX::XMFLOAT3& _rotation, float _length, GGChunk::GGObjectID* _excludedObject = nullptr );
 
 private:
 	// TODO: Move these functions to some sort of world generator
@@ -45,7 +46,7 @@ private:
 	static void GenerateChunk( GGChunk& _chunk );
 	static GGObject::GGVoxelArray CreateRandomVoxels();
 
-	std::unique_ptr<GGVoxelDescription> GetVoxelFromRayInObject( const DirectX::XMFLOAT3& _originPositin, const DirectX::XMFLOAT3& _rotation, float _length );
+	std::tuple<std::unique_ptr<GGVoxelDescription>, float> GetVoxelFromRayInObject( const DirectX::XMFLOAT3& _originPos, const DirectX::XMFLOAT3& _ray, float _length, const GGObject& _object );
 
 private:
 	bool m_renderable;
