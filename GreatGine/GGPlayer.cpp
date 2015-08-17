@@ -313,7 +313,7 @@ void GGPlayer::InteractWithWorld( GGWorld & _world, float _timeDelta )
 
 				GGObject newObject = GGObject( move( newVoxels ), object.GetVoxelDimension(), object.GetPosition() );
 
-				_world.GetChunk( m_chunkX, m_chunkZ ).ReplaceObject( voxelObjectChunk->objectID, move( newObject ) );
+				_world.GetChunk( voxelObjectChunk->chunkX, voxelObjectChunk->chunkZ ).ReplaceObject( voxelObjectChunk->objectID, move( newObject ) );
 
 				m_diggingCooldown = cooldown;
 			}
@@ -409,7 +409,7 @@ void GGPlayer::InteractWithWorld( GGWorld & _world, float _timeDelta )
 
 				GGObject newObject = GGObject( move( newVoxels ), object.GetVoxelDimension(), object.GetPosition() );
 
-				_world.GetChunk( m_chunkX, m_chunkZ ).ReplaceObject( voxelObjectChunk->objectID, move( newObject ) );
+				_world.GetChunk( voxelObjectChunk->chunkX, voxelObjectChunk->chunkZ ).ReplaceObject( voxelObjectChunk->objectID, move( newObject ) );
 
 				m_placingCooldown = cooldown;
 			}

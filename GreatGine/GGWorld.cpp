@@ -86,7 +86,7 @@ float sgn( float f )
 	}
 }
 
-unique_ptr<GGWorld::GGVoxelDescription> GGWorld::GetVoxelFromRay( UINT _originChunkX, UINT _originChunkZ, const DirectX::XMFLOAT3& _originPosition, const DirectX::XMFLOAT3& _rotation, float _length, GGChunk::GGObjectID* _excludedObject )
+unique_ptr<GGWorld::GGVoxelDescription> GGWorld::GetVoxelFromRay( UINT _originChunkX, UINT _originChunkZ, const XMFLOAT3& _originPosition, const XMFLOAT3& _rotation, float _length, GGChunk::GGObjectID* _excludedObject )
 {
 	XMFLOAT3 ray;
 	XMStoreFloat3( &ray, XMVector3Rotate( XMVectorSet( 0.0f, 0.0f, 1.0f, 1.0f ), XMQuaternionRotationRollPitchYaw( _rotation.x, _rotation.y, _rotation.z ) ) );
@@ -94,33 +94,115 @@ unique_ptr<GGWorld::GGVoxelDescription> GGWorld::GetVoxelFromRay( UINT _originCh
 	float minRayLength = INFINITY;
 	unique_ptr<GGVoxelDescription> closestVoxelDesc = unique_ptr<GGVoxelDescription>(nullptr);
 
-	auto& objects = GetChunk( _originChunkX, _originChunkZ ).GetObjects();
-	for( auto iterator : objects )
+	vector<tuple<GGChunk&, UINT, UINT, XMFLOAT3 >> chunksToCheck;
+	chunksToCheck.push_back( tuple<GGChunk&, UINT, UINT, XMFLOAT3 >( GetChunk( _originChunkX, _originChunkZ ), _originChunkX, _originChunkZ, _originPosition ) );
+	if( _originChunkX > 0 )
 	{
-		GGChunk::GGObjectID objectID = iterator.first;
-		if( _excludedObject )
+		UINT chunkX = _originChunkX - 1;
+		UINT chunkZ = _originChunkZ;
+		XMFLOAT3 pos = _originPosition;
+		pos.x += GGChunk::DIMENSION;
+
+		chunksToCheck.emplace_back( tuple<GGChunk&, UINT, UINT, XMFLOAT3 >( GetChunk( chunkX, chunkZ ), chunkX, chunkZ, pos ) );
+	}
+	if( _originChunkZ > 0 )
+	{
+		UINT chunkX = _originChunkX;
+		UINT chunkZ = _originChunkZ - 1;
+		XMFLOAT3 pos = _originPosition;
+		pos.z += GGChunk::DIMENSION;
+
+		chunksToCheck.emplace_back( tuple<GGChunk&, UINT, UINT, XMFLOAT3 >( GetChunk( chunkX, chunkZ ), chunkX, chunkZ, pos ) );
+	}
+	if( _originChunkX > 0 && _originChunkZ > 0 )
+	{
+		UINT chunkX = _originChunkX - 1;
+		UINT chunkZ = _originChunkZ - 1;
+		XMFLOAT3 pos = _originPosition;
+		pos.x += GGChunk::DIMENSION;
+		pos.z += GGChunk::DIMENSION;
+
+		chunksToCheck.emplace_back( tuple<GGChunk&, UINT, UINT, XMFLOAT3 >( GetChunk( chunkX, chunkZ ), chunkX, chunkZ, pos ) );
+	}
+	if( _originChunkX > 0 && _originChunkZ < DIAMETER - 1 )
+	{
+		UINT chunkX = _originChunkX - 1;
+		UINT chunkZ = _originChunkZ + 1;
+		XMFLOAT3 pos = _originPosition;
+		pos.x += GGChunk::DIMENSION;
+		pos.z -= GGChunk::DIMENSION;
+
+		chunksToCheck.emplace_back( tuple<GGChunk&, UINT, UINT, XMFLOAT3 >( GetChunk( chunkX, chunkZ ), chunkX, chunkZ, pos ) );
+	}
+
+	if( _originChunkX < DIAMETER - 1 )
+	{
+		UINT chunkX = _originChunkX + 1;
+		UINT chunkZ = _originChunkZ;
+		XMFLOAT3 pos = _originPosition;
+		pos.x -= GGChunk::DIMENSION;
+
+		chunksToCheck.emplace_back( tuple<GGChunk&, UINT, UINT, XMFLOAT3 >( GetChunk( chunkX, chunkZ ), chunkX, chunkZ, pos ) );
+	}
+	if( _originChunkZ < DIAMETER - 1 )
+	{
+		UINT chunkX = _originChunkX;
+		UINT chunkZ = _originChunkZ + 1;
+		XMFLOAT3 pos = _originPosition;
+		pos.z -= GGChunk::DIMENSION;
+
+		chunksToCheck.emplace_back( tuple<GGChunk&, UINT, UINT, XMFLOAT3 >( GetChunk( chunkX, chunkZ ), chunkX, chunkZ, pos ) );
+	}
+	if( _originChunkX < DIAMETER - 1 && _originChunkZ < DIAMETER - 1 )
+	{
+		UINT chunkX = _originChunkX + 1;
+		UINT chunkZ = _originChunkZ + 1;
+		XMFLOAT3 pos = _originPosition;
+		pos.x -= GGChunk::DIMENSION;
+		pos.z -= GGChunk::DIMENSION;
+
+		chunksToCheck.emplace_back( tuple<GGChunk&, UINT, UINT, XMFLOAT3 >( GetChunk( chunkX, chunkZ ), chunkX, chunkZ, pos ) );
+	}
+	if( _originChunkX < DIAMETER - 1 && _originChunkZ > 0 )
+	{
+		UINT chunkX = _originChunkX + 1;
+		UINT chunkZ = _originChunkZ - 1;
+		XMFLOAT3 pos = _originPosition;
+		pos.x -= GGChunk::DIMENSION;
+		pos.z += GGChunk::DIMENSION;
+
+		chunksToCheck.emplace_back( tuple<GGChunk&, UINT, UINT, XMFLOAT3 >( GetChunk( chunkX, chunkZ ), chunkX, chunkZ, pos ) );
+	}
+
+	for( auto& chunkIterator : chunksToCheck )
+	{
+		auto& objects = get<0>( chunkIterator).GetObjects();
+		for( auto iterator : objects )
 		{
-			if( objectID == *_excludedObject )
+			GGChunk::GGObjectID objectID = iterator.first;
+			if( _excludedObject )
 			{
-				continue;
+				if( objectID == *_excludedObject )
+				{
+					continue;
+				}
 			}
-		}
-		auto& object = iterator.second;
+			auto& object = iterator.second;
 
+			auto tuple = GetVoxelFromRayInObject( get<3>( chunkIterator ), ray, _length, object );
 
-		auto tuple = GetVoxelFromRayInObject( _originPosition, ray, _length, object );
+			float rayLength = get<1>( tuple );
+			unique_ptr<GGVoxelDescription>& voxelDesc = get<0>( tuple );
 
-		float rayLength = get<1>( tuple );
-		unique_ptr<GGVoxelDescription>& voxelDesc = get<0>( tuple );
+			if( rayLength < minRayLength )
+			{
+				minRayLength = rayLength;
+				closestVoxelDesc = move( voxelDesc );
 
-		if( rayLength < minRayLength )
-		{
-			minRayLength = rayLength;
-			closestVoxelDesc = move( voxelDesc );
-
-			closestVoxelDesc->chunkX = _originChunkX;
-			closestVoxelDesc->chunkZ = _originChunkZ;
-			closestVoxelDesc->objectID = objectID;
+				closestVoxelDesc->chunkX = get<1>( chunkIterator );
+				closestVoxelDesc->chunkZ = get<2>( chunkIterator );
+				closestVoxelDesc->objectID = objectID;
+			}
 		}
 	}
 
@@ -193,7 +275,7 @@ GGObject::GGVoxelArray GGWorld::CreateRandomVoxels()
 	return voxels;
 }
 
-tuple<unique_ptr<GGWorld::GGVoxelDescription>, float> GGWorld::GetVoxelFromRayInObject( const DirectX::XMFLOAT3& _originPos, const DirectX::XMFLOAT3& _ray, float _length, const GGObject& _object )
+tuple<unique_ptr<GGWorld::GGVoxelDescription>, float> GGWorld::GetVoxelFromRayInObject( const XMFLOAT3& _originPos, const XMFLOAT3& _ray, float _length, const GGObject& _object )
 {
 	const float voxelDimension = _object.GetVoxelDimension();
 	const float voxelRadius = voxelDimension / 2.0f;
@@ -333,10 +415,11 @@ tuple<unique_ptr<GGWorld::GGVoxelDescription>, float> GGWorld::GetVoxelFromRayIn
 		{
 			break;
 		}
-		//if( totalRayLength == 0.0f )
+		if( totalRayLength == 0.0f )
 		{
-			//break;
+			break;
 		}
+
 		const UINT objectRadius = GGObject::DIAMETER / 2;
 		if( x >= static_cast<int>(objectRadius) || x < -static_cast<int>(objectRadius) )
 		{
