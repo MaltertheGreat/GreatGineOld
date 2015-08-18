@@ -12,7 +12,7 @@ class GGObjectModel
 {
 public:
 	GGObjectModel();
-	GGObjectModel( const GGDevice& _device, const GGObject& _object, const DirectX::XMFLOAT3& _position );
+	GGObjectModel( const GGDevice& _device, const GGObject& _object, const DirectX::XMFLOAT3& _position, const DirectX::XMFLOAT3& _color );
 
 	void Update( const GGObject& _object, const DirectX::XMFLOAT3& _position );
 
@@ -20,8 +20,8 @@ public:
 	const DirectX::XMFLOAT4X4& GetTransformation() const;
 
 private:
-	GGMeshData CreateObjectGrid( const GGObject& _object );
-	void CreateVoxel( UINT x, UINT y, UINT z, const GGObject::GGVoxelArray& voxels, GGMeshData& _grid );
+	GGMeshData CreateObjectGrid( const GGObject& _object, const DirectX::XMFLOAT3& _color );
+	void CreateVoxel( UINT x, UINT y, UINT z, const GGObject::GGVoxelArray& voxels, GGMeshData& _grid, const DirectX::XMFLOAT3& _color );
 
 private:
 	GGMesh m_mesh;

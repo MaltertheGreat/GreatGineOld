@@ -21,6 +21,18 @@ void GGChunk::Update()
 
 GGChunk::GGObjectID GGChunk::AddObject( GGObject&& _object )
 {
+	bool empty = true;
+	auto voxels = _object.GetVoxels();
+	for( auto& voxel : voxels )
+	{
+		if( voxel.element )
+		{
+			empty = false;
+			break;
+		}
+	}
+	assert( !empty );
+
 	m_objects.insert( { m_newObjectID, move( _object ) } ).second;
 
 	m_addedObjectIDs.push_back( m_newObjectID );
@@ -36,10 +48,29 @@ void GGChunk::ModifyObject( GGObjectID id, const DirectX::XMFLOAT3& _position )
 	return;
 }
 
-void GGChunk::ReplaceObject( GGObjectID id, GGObject && _newObject )
+void GGChunk::ReplaceObject( GGObjectID id, GGObject&& _newObject )
 {
-	m_objects.at( id ) = move( _newObject );
-	m_addedObjectIDs.push_back( id );
+	bool empty = true;
+	auto voxels = _newObject.GetVoxels();
+	for( auto& voxel : voxels )
+	{
+		if( voxel.element )
+		{
+			empty = false;
+			break;
+		}
+	}
+
+	if( empty )
+	{
+		RemoveObject( id );
+	}
+	else
+	{
+		_newObject.SetColor( m_objects.at( id ).GetColor() );
+		m_objects.at( id ) = move( _newObject );
+		m_addedObjectIDs.push_back( id );
+	}
 
 	return;
 }

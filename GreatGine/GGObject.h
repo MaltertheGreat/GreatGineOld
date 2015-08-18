@@ -16,13 +16,16 @@ public:
 
 public:
 	void SetPosition( const DirectX::XMFLOAT3& _pos );
+	void SetColor( const DirectX::XMFLOAT3& _color );
 
 	const float GetVoxelDimension() const;
 	const DirectX::XMFLOAT3& GetPosition() const;
+	const DirectX::XMFLOAT3& GetColor() const;
 	const GGVoxelArray& GetVoxels() const;
 
 private:
 	float             m_voxelDimension;
 	DirectX::XMFLOAT3 m_position;	// Relative to center of chunk
+	DirectX::XMFLOAT3 m_color;
 	GGVoxelArray      m_voxels;
 };
