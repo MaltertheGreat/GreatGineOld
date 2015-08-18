@@ -11,7 +11,7 @@ void GGChunkModelSet::Update( const GGDevice& _device, const GGChunk& _chunk )
 	auto& newObjectIDs = _chunk.GetAddedObjectIDs();
 	for( auto& id : newObjectIDs )
 	{
-		m_models[ id ] = GGObjectModel( _device, objects.at( id ), position );
+		m_models[ id ] = GGObjectModel( _device, objects.at( id ), position, objects.at( id ).GetColor() );
 	}
 
 	auto& modifiedObjectIDs = _chunk.GetModifiedObjectIDs();

@@ -343,9 +343,9 @@ tuple<unique_ptr<GGWorld::GGVoxelDescription>, float> GGWorld::GetVoxelFromRayIn
 		GGVoxel::GG_VOXEL_FACE face;
 
 		// Choose the shortest of lengths
-		if( lengthX < lengthY )
+		if( lengthX <= lengthY )
 		{
-			if( lengthX < lengthZ )
+			if( lengthX <= lengthZ )
 			{
 				if( !signbit( _ray.x ) )
 				{
@@ -368,7 +368,7 @@ tuple<unique_ptr<GGWorld::GGVoxelDescription>, float> GGWorld::GetVoxelFromRayIn
 
 		if( lengthY < lengthX )
 		{
-			if( lengthY < lengthZ )
+			if( lengthY <= lengthZ )
 			{
 				if( !signbit( _ray.y ) )
 				{

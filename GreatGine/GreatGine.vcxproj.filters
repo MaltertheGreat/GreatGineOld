@@ -176,9 +176,6 @@
     <ClInclude Include="GGObjectModel.h">
       <Filter>Header Files\Graphics</Filter>
     </ClInclude>
-    <ClInclude Include="GGChunkModelSet.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="GGInputHandler.h">
       <Filter>Header Files\Input</Filter>
     </ClInclude>
@@ -196,6 +193,9 @@
     </ClInclude>
     <ClInclude Include="GGGUI.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GGChunkModelSet.h">
+      <Filter>Header Files\Graphics</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

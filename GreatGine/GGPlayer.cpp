@@ -302,6 +302,7 @@ void GGPlayer::InteractWithWorld( GGWorld & _world, float _timeDelta )
 			UINT x = voxelObjectChunk->voxelX;
 			UINT y = voxelObjectChunk->voxelY;
 			UINT z = voxelObjectChunk->voxelZ;
+			GGVoxel::GG_VOXEL_FACE face = voxelObjectChunk->face;
 
 
 			if( m_digging && m_diggingCooldown == 0.0f )
@@ -320,7 +321,7 @@ void GGPlayer::InteractWithWorld( GGWorld & _world, float _timeDelta )
 
 			if( m_placing && m_placingCooldown == 0.0 )
 			{
-				switch( voxelObjectChunk->face )
+				switch( face )
 				{
 					case GGVoxel::GG_VOXEL_FACE_TOP:
 					{
@@ -332,6 +333,21 @@ void GGPlayer::InteractWithWorld( GGWorld & _world, float _timeDelta )
 						}
 						else
 						{
+							y = 0;
+
+							GGObject::GGVoxelArray newVoxels;
+							UINT voxelIndex = x * GGObject::DIAMETER * GGObject::DIAMETER + y * GGObject::DIAMETER + z;
+							newVoxels.at( voxelIndex ).element = 1;
+
+							XMFLOAT3 newPos = object.GetPosition();
+							newPos.y += GGObject::DIAMETER * object.GetVoxelDimension();
+
+							GGObject newObject = GGObject( move( newVoxels ), object.GetVoxelDimension(), newPos );
+
+							_world.GetChunk( voxelObjectChunk->chunkX, voxelObjectChunk->chunkZ ).AddObject( move( newObject ) );
+
+							m_placingCooldown = cooldown;
+
 							return;
 						}
 					}
@@ -345,6 +361,21 @@ void GGPlayer::InteractWithWorld( GGWorld & _world, float _timeDelta )
 						}
 						else
 						{
+							y = GGObject::DIAMETER - 1;
+
+							GGObject::GGVoxelArray newVoxels;
+							UINT voxelIndex = x * GGObject::DIAMETER * GGObject::DIAMETER + y * GGObject::DIAMETER + z;
+							newVoxels.at( voxelIndex ).element = 1;
+
+							XMFLOAT3 newPos = object.GetPosition();
+							newPos.y -= GGObject::DIAMETER * object.GetVoxelDimension();
+
+							GGObject newObject = GGObject( move( newVoxels ), object.GetVoxelDimension(), newPos );
+
+							_world.GetChunk( voxelObjectChunk->chunkX, voxelObjectChunk->chunkZ ).AddObject( move( newObject ) );
+
+							m_placingCooldown = cooldown;
+
 							return;
 						}
 					}
@@ -358,6 +389,21 @@ void GGPlayer::InteractWithWorld( GGWorld & _world, float _timeDelta )
 						}
 						else
 						{
+							z = 0;
+
+							GGObject::GGVoxelArray newVoxels;
+							UINT voxelIndex = x * GGObject::DIAMETER * GGObject::DIAMETER + y * GGObject::DIAMETER + z;
+							newVoxels.at( voxelIndex ).element = 1;
+
+							XMFLOAT3 newPos = object.GetPosition();
+							newPos.z += GGObject::DIAMETER * object.GetVoxelDimension();
+
+							GGObject newObject = GGObject( move( newVoxels ), object.GetVoxelDimension(), newPos );
+
+							_world.GetChunk( voxelObjectChunk->chunkX, voxelObjectChunk->chunkZ ).AddObject( move( newObject ) );
+
+							m_placingCooldown = cooldown;
+
 							return;
 						}
 					}
@@ -371,6 +417,21 @@ void GGPlayer::InteractWithWorld( GGWorld & _world, float _timeDelta )
 						}
 						else
 						{
+							z = GGObject::DIAMETER - 1;
+
+							GGObject::GGVoxelArray newVoxels;
+							UINT voxelIndex = x * GGObject::DIAMETER * GGObject::DIAMETER + y * GGObject::DIAMETER + z;
+							newVoxels.at( voxelIndex ).element = 1;
+
+							XMFLOAT3 newPos = object.GetPosition();
+							newPos.z -= GGObject::DIAMETER * object.GetVoxelDimension();
+
+							GGObject newObject = GGObject( move( newVoxels ), object.GetVoxelDimension(), newPos );
+
+							_world.GetChunk( voxelObjectChunk->chunkX, voxelObjectChunk->chunkZ ).AddObject( move( newObject ) );
+
+							m_placingCooldown = cooldown;
+
 							return;
 						}
 					}
@@ -384,6 +445,21 @@ void GGPlayer::InteractWithWorld( GGWorld & _world, float _timeDelta )
 						}
 						else
 						{
+							x = 0;
+
+							GGObject::GGVoxelArray newVoxels;
+							UINT voxelIndex = x * GGObject::DIAMETER * GGObject::DIAMETER + y * GGObject::DIAMETER + z;
+							newVoxels.at( voxelIndex ).element = 1;
+
+							XMFLOAT3 newPos = object.GetPosition();
+							newPos.x += GGObject::DIAMETER * object.GetVoxelDimension();
+
+							GGObject newObject = GGObject( move( newVoxels ), object.GetVoxelDimension(), newPos );
+
+							_world.GetChunk( voxelObjectChunk->chunkX, voxelObjectChunk->chunkZ ).AddObject( move( newObject ) );
+
+							m_placingCooldown = cooldown;
+
 							return;
 						}
 					}
@@ -397,6 +473,21 @@ void GGPlayer::InteractWithWorld( GGWorld & _world, float _timeDelta )
 						}
 						else
 						{
+							x = GGObject::DIAMETER - 1;
+
+							GGObject::GGVoxelArray newVoxels;
+							UINT voxelIndex = x * GGObject::DIAMETER * GGObject::DIAMETER + y * GGObject::DIAMETER + z;
+							newVoxels.at( voxelIndex ).element = 1;
+
+							XMFLOAT3 newPos = object.GetPosition();
+							newPos.x -= GGObject::DIAMETER * object.GetVoxelDimension();
+
+							GGObject newObject = GGObject( move( newVoxels ), object.GetVoxelDimension(), newPos );
+
+							_world.GetChunk( voxelObjectChunk->chunkX, voxelObjectChunk->chunkZ ).AddObject( move( newObject ) );
+
+							m_placingCooldown = cooldown;
+
 							return;
 						}
 					}
