@@ -347,7 +347,7 @@ void GGRenderer::RenderEllipse( const DirectX::XMFLOAT2& _pos, float _radiusX, f
 {
 	m_solidBrush->SetColor( _color );
 
-	D2D1_ELLIPSE  ellipse = { { _pos.x, _pos.y }, _radiusX, _radiusY };
+	D2D1_ELLIPSE ellipse = { { _pos.x, _pos.y }, _radiusX, _radiusY };
 	m_renderTarget2D->FillEllipse( ellipse, m_solidBrush.Get() );
 
 	return;
