@@ -9,10 +9,10 @@ public:
 	void Start();
 	void Update();
 
-	float GetFrameTime() const;
+	double GetFrameTime() const;
 
 private:
-	double  m_frequency = 0.0;
-	__int64 m_startTime = 0;
-	float   m_frameTime = 0.0f;
+	double m_frequency = 0.0;
+	long long m_startTime = 0;
+	double m_frameTime = 0.0;
 };

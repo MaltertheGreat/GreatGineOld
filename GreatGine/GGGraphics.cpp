@@ -25,7 +25,7 @@ GGGraphics::GGGraphics( const GGWindow& _window, GGConfig& _config )
 	m_renderer.SetCamera( _config.GetFloat( "fov", 80.0f ), m_resolutionX, m_resolutionY );
 }
 
-void GGGraphics::Update( GGWorld& _world, float _frameTime )
+void GGGraphics::Update( GGWorld& _world, double _frameTime )
 {
 	auto& chunks = _world.GetChunkArray();
 	for( UINT i = 0; i < (GGWorld::DIAMETER * GGWorld::DIAMETER); ++i )

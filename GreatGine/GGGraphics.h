@@ -39,7 +39,7 @@ public:
 	GGGraphics( const GGWindow& _window, GGConfig& _config );
 
 public:
-	void Update( GGWorld& _world, float _frameTime );
+	void Update( GGWorld& _world, double _frameTime );
 	void Render();
 
 	UINT GetResolutionX() const;

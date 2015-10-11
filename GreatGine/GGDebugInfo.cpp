@@ -3,7 +3,7 @@
 using namespace DirectX;
 using namespace std;
 
-void GGDebugInfo::Update( float _frameTime, const XMFLOAT3& _cameraPos, const DirectX::XMFLOAT3& _cameraRot )
+void GGDebugInfo::Update( double _frameTime, const XMFLOAT3& _cameraPos, const DirectX::XMFLOAT3& _cameraRot )
 {
 	m_fpsCounter.Update( _frameTime );
 

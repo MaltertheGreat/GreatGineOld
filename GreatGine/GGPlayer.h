@@ -2,6 +2,7 @@
 
 #include "GGInputHandler.h"
 #include "GGWorld.h"
+#include "GGMath.h"
 
 class GGInput;
 class GGConfig;
@@ -27,7 +28,7 @@ public:
 	GGPlayer( GGInput& _input, GGConfig& _config );
 
 public:
-	void Update( GGWorld& _world, float _timeDelta );
+	void Update( GGWorld& _world, double _timeDelta );
 
 	const DirectX::XMFLOAT3 GetPosition() const;
 	const DirectX::XMFLOAT3& GetRotation() const;
@@ -38,15 +39,15 @@ public:
 
 private:
 	static GGObject PlayerObject( const DirectX::XMFLOAT3& _pos );
-	void UpdatePosition( GGWorld& _world, float _timeDelta );
-	void InteractWithWorld( GGWorld& _world, float _timeDelta );
+	void UpdatePosition( GGWorld& _world );
+	void InteractWithWorld( GGWorld& _world );
 
 private:
 	bool m_isAlive;
 	bool m_digging;
 	bool m_placing;
-	float m_diggingCooldown;
-	float m_placingCooldown;
+	UINT m_diggingCooldown;
+	UINT m_placingCooldown;
 
 	WPARAM m_keyMap[ GG_KEYMAP_COUNT ];
 	GGChunk::GGObjectID m_headObjectID;
@@ -54,7 +55,9 @@ private:
 	UINT m_chunkX;
 	UINT m_chunkZ;
 
-	DirectX::XMFLOAT3 m_position;
-	DirectX::XMFLOAT3 m_velocity;
+	DirectX::XMINT3 m_position;
+	DirectX::XMINT3 m_velocity;
+	//DirectX::XMFLOAT3 m_position;
+	//DirectX::XMFLOAT3 m_velocity;
 	DirectX::XMFLOAT3 m_rotation;
 };

@@ -1,7 +1,7 @@
 #include "PCH.h"
 #include "GGFPSCounter.h"
 
-void GGFPSCounter::Update( float _frameTime )
+void GGFPSCounter::Update( double _frameTime )
 {
 	const int accumulatorSize = 30;
 	if( m_measurementCount < accumulatorSize )

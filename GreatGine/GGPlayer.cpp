@@ -25,11 +25,11 @@ GGPlayer::GGPlayer( GGInput& _input, GGConfig& _config )
 	_input.RegisterHandler( this );
 }
 
-void GGPlayer::Update( GGWorld& _world, float _timeDelta )
+void GGPlayer::Update( GGWorld& _world, double _timeDelta )
 {
 	if( !m_isAlive )
 	{
-		m_position = { 0.0f, 10.0f, 0.0f };
+		m_position = GGConvertToGG( { 0.0f, 10.0f, 0.0f } );
 		m_chunkX = GGWorld::DIAMETER / 2;
 		m_chunkZ = GGWorld::DIAMETER / 2;
 
@@ -39,13 +39,13 @@ void GGPlayer::Update( GGWorld& _world, float _timeDelta )
 			return;
 		}
 
-		m_headObjectID = chunk.AddObject( PlayerObject( m_position ) );
+		m_headObjectID = chunk.AddObject( PlayerObject( GGConvertToSI( m_position ) ) );
 
 		m_isAlive = true;
 	}
 
-	UpdatePosition( _world, _timeDelta );
-	InteractWithWorld( _world, _timeDelta );
+	UpdatePosition( _world );
+	InteractWithWorld( _world );
 
 	return;
 }
@@ -58,9 +58,9 @@ const XMFLOAT3 GGPlayer::GetPosition() const
 	position.x += m_chunkX * GGChunk::DIMENSION;
 	position.z += m_chunkZ * GGChunk::DIMENSION;
 
-	position.x += m_position.x;
-	position.y += m_position.y;
-	position.z += m_position.z;
+	position.x += GGConvertToSI( m_position.x );
+	position.y += GGConvertToSI( m_position.y );
+	position.z += GGConvertToSI( m_position.z );
 
 	return position;
 }
@@ -72,18 +72,18 @@ const XMFLOAT3& GGPlayer::GetRotation() const
 
 void GGPlayer::HandleKeyInput( WPARAM _keyCode, bool _down )
 {
-	float velocity;
+	int velocity;
 	bool digging;
 	bool placing;
 	if( _down )
 	{
-		velocity = 5.0f;
+		velocity = 2;
 		digging = true;
 		placing = true;
 	}
 	else
 	{
-		velocity = 0.0f;
+		velocity = GGConvertToGG( 0.0f );
 		digging = false;
 		placing = false;
 	}
@@ -165,125 +165,37 @@ GGObject GGPlayer::PlayerObject( const DirectX::XMFLOAT3& _pos )
 	return GGObject( move( voxels ), bodyRadius, _pos );
 }
 
-void GGPlayer::UpdatePosition( GGWorld & _world, float _timeDelta )
+void GGPlayer::UpdatePosition( GGWorld & _world )
 {
-	auto& head = _world.GetChunk( m_chunkX, m_chunkZ ).GetObjects().at( m_headObjectID );
+	XMVECTOR position = XMLoadSInt3( &m_position );
+	XMVECTOR velocity = XMLoadSInt3( &m_velocity );
 
-	// Update player position since last frame
 	XMFLOAT3 horizontalRotation = { 0.0f, m_rotation.y, 0.0f };
 	XMVECTOR rotation = XMLoadFloat3( &horizontalRotation );
-	XMVECTOR velocity = XMLoadFloat3( &m_velocity );
-	XMVECTOR position = XMLoadFloat3( &head.GetPosition() );
-
 	rotation = XMQuaternionRotationRollPitchYawFromVector( rotation );
+
 	velocity = XMVector3Rotate( velocity, rotation );
-	position += XMVectorScale( velocity, _timeDelta );
-	//position += XMVectorSet( 1.0f, 0.0f, 0.0f, 0.0f );
 
-	int chunkOffsetX = 0;
-	int chunkOffsetZ = 0;
+	position += velocity;
 
-	// Keep player in chunk boundaries
-	float x = XMVectorGetX( position );
-	while( x > (GGChunk::DIMENSION / 2.0f) )
-	{
-		x -= GGChunk::DIMENSION;
-		++chunkOffsetX;
-	}
-	while( x <= -(GGChunk::DIMENSION / 2.0f) )
-	{
-		x += GGChunk::DIMENSION;
-		--chunkOffsetX;
-	}
+	XMStoreSInt3( &m_position, position );
 
-	float y = XMVectorGetY( position );
-
-	float z = XMVectorGetZ( position );
-	while( z > (GGChunk::DIMENSION / 2.0f) )
-	{
-		z -= GGChunk::DIMENSION;
-		++chunkOffsetZ;
-	}
-	while( z <= -(GGChunk::DIMENSION / 2.0f) )
-	{
-		z += GGChunk::DIMENSION;
-		--chunkOffsetZ;
-	}
-
-	// Keep player in world boundaries
-	UINT chunkX = m_chunkX;
-	if( chunkOffsetX )
-	{
-		if( -chunkOffsetX > static_cast<LONGLONG>(chunkX) )
-		{
-			chunkX = 0;
-		}
-		else if( chunkOffsetX > static_cast<LONGLONG>(GGWorld::DIAMETER - 1 - chunkX) )
-		{
-			chunkX = GGWorld::DIAMETER - 1;
-		}
-		else
-		{
-			chunkX += chunkOffsetX;
-		}
-	}
-
-	UINT chunkZ = m_chunkZ;
-	if( chunkOffsetZ )
-	{
-		if( -chunkOffsetZ > static_cast<LONGLONG>(chunkZ) )
-		{
-			chunkZ = 0;
-		}
-		else if( chunkOffsetZ > static_cast<LONGLONG>(GGWorld::DIAMETER - 1 - chunkZ) )
-		{
-			chunkZ = GGWorld::DIAMETER - 1;
-		}
-		else
-		{
-			chunkZ += chunkOffsetZ;
-		}
-	}
-
-	// Update player model
-	if( m_chunkX != chunkX || m_chunkZ != chunkZ )
-	{
-		_world.GetChunk( m_chunkX, m_chunkZ ).RemoveObject( m_headObjectID );
-
-		m_chunkX = chunkX;
-		m_chunkZ = chunkZ;
-
-		m_headObjectID = _world.GetChunk( m_chunkX, m_chunkZ ).AddObject( PlayerObject( { x, y, z } ) );
-	}
-	else
-	{
-		_world.GetChunk( m_chunkX, m_chunkZ ).ModifyObject( m_headObjectID, { x, y, z } );
-	}
-
-	m_position = { x, y, z };
+	_world.GetChunk( m_chunkX, m_chunkZ ).ModifyObject( m_headObjectID, GGConvertToSI( m_position ) );
 
 	return;
 }
 
-void GGPlayer::InteractWithWorld( GGWorld & _world, float _timeDelta )
+void GGPlayer::InteractWithWorld( GGWorld & _world )
 {
-	const float cooldown = 0.1f;
-	if( m_diggingCooldown > _timeDelta )
+	const UINT cooldown = 6;
+	if( m_diggingCooldown > 0 )
 	{
-		m_diggingCooldown -= _timeDelta;
-	}
-	else
-	{
-		m_diggingCooldown = 0.0f;
+		--m_diggingCooldown;
 	}
 
-	if( m_placingCooldown > _timeDelta )
+	if( m_placingCooldown > 0 )
 	{
-		m_placingCooldown -= _timeDelta;
-	}
-	else
-	{
-		m_placingCooldown = 0.0f;
+		--m_placingCooldown;
 	}
 
 	if( !m_digging && !m_placing )
@@ -291,9 +203,9 @@ void GGPlayer::InteractWithWorld( GGWorld & _world, float _timeDelta )
 		return;
 	}
 
-	if( m_diggingCooldown == 0.0f || m_placingCooldown == 0.0f )
+	if( m_diggingCooldown == 0 || m_placingCooldown == 0 )
 	{
-		auto voxelObjectChunk = _world.GetVoxelFromRay( m_chunkX, m_chunkZ, m_position, m_rotation, 5.0f, &m_headObjectID );
+		auto voxelObjectChunk = _world.GetVoxelFromRay( m_chunkX, m_chunkZ, GGConvertToSI( m_position ), m_rotation, 5.0f, &m_headObjectID );
 
 		if( voxelObjectChunk )
 		{
@@ -305,7 +217,7 @@ void GGPlayer::InteractWithWorld( GGWorld & _world, float _timeDelta )
 			GGVoxel::GG_VOXEL_FACE face = voxelObjectChunk->face;
 
 
-			if( m_digging && m_diggingCooldown == 0.0f )
+			if( m_digging && m_diggingCooldown == 0 )
 			{
 				UINT voxelIndex = x * GGObject::DIAMETER * GGObject::DIAMETER + y * GGObject::DIAMETER + z;
 
@@ -319,7 +231,7 @@ void GGPlayer::InteractWithWorld( GGWorld & _world, float _timeDelta )
 				m_diggingCooldown = cooldown;
 			}
 
-			if( m_placing && m_placingCooldown == 0.0 )
+			if( m_placing && m_placingCooldown == 0 )
 			{
 				switch( face )
 				{

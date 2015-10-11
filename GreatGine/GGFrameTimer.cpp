@@ -34,15 +34,15 @@ void GGFrameTimer::Update()
 		GG_THROW;
 	}
 
-	__int64 currentTime = count.QuadPart;
+	long long currentTime = count.QuadPart;
 
-	m_frameTime = static_cast<float>((currentTime - m_startTime) / m_frequency);
+	m_frameTime = (currentTime - m_startTime) / m_frequency;
 	m_startTime = currentTime;
 
 	return;
 }
 
-float GGFrameTimer::GetFrameTime() const
+double GGFrameTimer::GetFrameTime() const
 {
 	return m_frameTime;
 }

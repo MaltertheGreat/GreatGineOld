@@ -50,7 +50,7 @@ void GGApplication::Run()
 void GGApplication::Update()
 {
 	m_timer.Update();
-	float frameTime = m_timer.GetFrameTime();
+	double frameTime = m_timer.GetFrameTime();
 
 	m_game.Update( m_world, frameTime );
 	m_graphics.Update( m_world, frameTime );
