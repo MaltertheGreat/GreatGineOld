@@ -267,7 +267,7 @@ void GGRenderer::UpdateCamera( const DirectX::XMFLOAT3& _position, const DirectX
 	XMVECTOR rotation = XMLoadFloat3( &_rotation );
 	rotation = XMQuaternionRotationRollPitchYawFromVector( rotation );	// Convert rotation vector to quaternion
 	XMVECTOR lookDir = XMVector3Rotate( XMVectorSet( 0.0f, 0.0f, 1.0f, 0.0f ), rotation );
-	XMVECTOR upDir = XMVectorSet( 0.0f, 1.0f, 0.0f, 0.0f );
+	XMVECTOR upDir = XMVector3Rotate( XMVectorSet( 0.0f, 1.0f, 0.0f, 0.0f ), rotation );
 
 	XMFLOAT4X4 viewMatrix;
 	XMMATRIX view = XMMatrixLookToLH( position, lookDir, upDir );

@@ -130,25 +130,24 @@ void GGPlayer::HandleKeyInput( WPARAM _keyCode, bool _down )
 
 void GGPlayer::HandleMouseInput( int _x, int _y )
 {
-	const float piDiv2 = 1.57079631f;// PI/2 rounded down for float precision-thingy
 	m_rotation.x += _y * 0.005f;
-	if( m_rotation.x >= piDiv2 )
+	if( m_rotation.x >= XM_PIDIV2 )
 	{
-		m_rotation.x = piDiv2;
+		m_rotation.x = XM_PIDIV2;
 	}
-	else if( m_rotation.x <= -piDiv2 )
+	else if( m_rotation.x <= -XM_PIDIV2 )
 	{
-		m_rotation.x = -piDiv2;
+		m_rotation.x = -XM_PIDIV2;
 	}
 
 	m_rotation.y += _x * 0.005f;
-	if( m_rotation.y >= XMConvertToRadians( 360.0f ) )
+	if( m_rotation.y >= XM_PI )
 	{
-		m_rotation.y -= XMConvertToRadians( 360.0f );
+		m_rotation.y = m_rotation.y - XM_2PI;
 	}
-	else if( m_rotation.y <= 0 )
+	else if( m_rotation.y < -XM_PI )
 	{
-		m_rotation.y += XMConvertToRadians( 360.0f );
+		m_rotation.y = XM_2PI + m_rotation.y;
 	}
 
 	return;
