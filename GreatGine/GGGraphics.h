@@ -39,7 +39,7 @@ public:
 	GGGraphics( const GGWindow& _window, GGConfig& _config );
 
 public:
-	void Update( GGWorld& _world, float _frameTime );
+	void Update( GGWorld& _world, double _timeDelta );
 	void Render();
 
 	UINT GetResolutionX() const;
@@ -60,7 +60,7 @@ private:
 	UINT     m_resolutionY;
 	WPARAM   m_keyMap[ GG_KEYMAP_COUNT ];
 
-	GGRenderer::FILL_TYPE m_currentFillType;
+	GGRenderer::FILL_TYPE              m_currentFillType;
 	std::bitset<GG_RENDER_FLAGS_COUNT> m_renderFlags;
 
 	GGDevice         m_device;

@@ -12,7 +12,7 @@ public:
 	GGGame( GGInput& _input, GGConfig& _config );
 
 public:
-	void Update( GGWorld& _world, float _timeDelta );
+	void Update( GGWorld& _world, double _timeDelta );
 
 private:
 	GGPlayer m_player;

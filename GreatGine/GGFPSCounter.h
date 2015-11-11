@@ -3,12 +3,12 @@
 class GGFPSCounter
 {
 public:
-	void Update( float _frameTime );
+	void Update( double _frameTime );
 
 	int GetFPS() const;
 
 private:
 	float m_fps = 0.0f;
-	float m_frameTimeAccumulator = 0.0f;
+	double m_frameTimeAccumulator = 0.0f;
 	int m_measurementCount = 0;
 };

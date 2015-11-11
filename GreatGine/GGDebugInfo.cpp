@@ -3,9 +3,9 @@
 using namespace DirectX;
 using namespace std;
 
-void GGDebugInfo::Update( float _frameTime, const XMFLOAT3& _cameraPos, const DirectX::XMFLOAT3& _cameraRot )
+void GGDebugInfo::Update( double _timeDelta, const XMFLOAT3& _cameraPos, const DirectX::XMFLOAT3& _cameraRot )
 {
-	m_fpsCounter.Update( _frameTime );
+	m_fpsCounter.Update( _timeDelta );
 
 	m_lines[ 0 ] = L"FPS: ";
 	m_lines[ 0 ] += to_wstring( m_fpsCounter.GetFPS() );

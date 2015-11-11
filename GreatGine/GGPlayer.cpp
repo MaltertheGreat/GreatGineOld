@@ -3,7 +3,6 @@
 #include "GGInput.h"
 #include "GGConfig.h"
 
-#include <cmath>
 using namespace std;
 using namespace DirectX;
 
@@ -25,7 +24,7 @@ GGPlayer::GGPlayer( GGInput& _input, GGConfig& _config )
 	_input.RegisterHandler( this );
 }
 
-void GGPlayer::Update( GGWorld& _world, float _timeDelta )
+void GGPlayer::Update( GGWorld& _world, double _timeDelta )
 {
 	if( !m_isAlive )
 	{
@@ -164,7 +163,7 @@ GGObject GGPlayer::PlayerObject( const DirectX::XMFLOAT3& _pos )
 	return GGObject( move( voxels ), bodyRadius, _pos );
 }
 
-void GGPlayer::UpdatePosition( GGWorld & _world, float _timeDelta )
+void GGPlayer::UpdatePosition( GGWorld & _world, double _timeDelta )
 {
 	auto& head = _world.GetChunk( m_chunkX, m_chunkZ ).GetObjects().at( m_headObjectID );
 
@@ -176,7 +175,7 @@ void GGPlayer::UpdatePosition( GGWorld & _world, float _timeDelta )
 
 	rotation = XMQuaternionRotationRollPitchYawFromVector( rotation );
 	velocity = XMVector3Rotate( velocity, rotation );
-	position += XMVectorScale( velocity, _timeDelta );
+	position += XMVectorScale( velocity, static_cast<float>(_timeDelta) );
 	//position += XMVectorSet( 1.0f, 0.0f, 0.0f, 0.0f );
 
 	int chunkOffsetX = 0;
@@ -264,21 +263,21 @@ void GGPlayer::UpdatePosition( GGWorld & _world, float _timeDelta )
 	return;
 }
 
-void GGPlayer::InteractWithWorld( GGWorld & _world, float _timeDelta )
+void GGPlayer::InteractWithWorld( GGWorld & _world, double _timeDelta )
 {
 	const float cooldown = 0.1f;
-	if( m_diggingCooldown > _timeDelta )
+	if( m_diggingCooldown > static_cast<float>(_timeDelta) )
 	{
-		m_diggingCooldown -= _timeDelta;
+		m_diggingCooldown -= static_cast<float>(_timeDelta);
 	}
 	else
 	{
 		m_diggingCooldown = 0.0f;
 	}
 
-	if( m_placingCooldown > _timeDelta )
+	if( m_placingCooldown > static_cast<float>(_timeDelta) )
 	{
-		m_placingCooldown -= _timeDelta;
+		m_placingCooldown -= static_cast<float>(_timeDelta);
 	}
 	else
 	{
@@ -302,7 +301,6 @@ void GGPlayer::InteractWithWorld( GGWorld & _world, float _timeDelta )
 			UINT y = voxelObjectChunk->voxelY;
 			UINT z = voxelObjectChunk->voxelZ;
 			GGVoxel::GG_VOXEL_FACE face = voxelObjectChunk->face;
-
 
 			if( m_digging && m_diggingCooldown == 0.0f )
 			{

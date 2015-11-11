@@ -37,6 +37,12 @@
     <Filter Include="Header Files\Game">
       <UniqueIdentifier>{91178a17-8978-444b-8b9b-4f6a55ffe19c}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Application">
+      <UniqueIdentifier>{4d7a968a-20e3-4504-8170-32fd444a9cb9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Application">
+      <UniqueIdentifier>{973f102a-f0bf-4fd8-a7b5-7299e6855089}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="GreatGine.cpp">
@@ -55,9 +61,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="GGConfig.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="GGFrameTimer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="PCH.cpp">
@@ -112,7 +115,10 @@
       <Filter>Source Files\Graphics</Filter>
     </ClCompile>
     <ClCompile Include="GGGUI.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="GGFrameTimer.cpp">
+      <Filter>Source Files\Application</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -126,12 +132,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="GGError.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="GGConfig.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="GGFrameTimer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="GGWorld.h">
@@ -191,10 +191,16 @@
     <ClInclude Include="GGInput.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="GGGUI.h">
+    <ClInclude Include="GGChunkModelSet.h">
+      <Filter>Header Files\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="GGConfig.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="GGChunkModelSet.h">
+    <ClInclude Include="GGFrameTimer.h">
+      <Filter>Header Files\Application</Filter>
+    </ClInclude>
+    <ClInclude Include="GGGUI.h">
       <Filter>Header Files\Graphics</Filter>
     </ClInclude>
   </ItemGroup>

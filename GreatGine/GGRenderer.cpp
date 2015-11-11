@@ -106,7 +106,7 @@ GGRenderer::GGRenderer( GGDirectXDriver _driver, int _syncInterval )
 		vp.TopLeftY = 0;
 		m_deviceContext->RSSetViewports( 1, &vp );
 	}
-	
+
 	// Output-Merger Stage
 	{
 		ComPtr<ID3D11Texture2D> backBuffer;
@@ -155,7 +155,7 @@ GGRenderer::GGRenderer( GGDirectXDriver _driver, int _syncInterval )
 
 		m_deviceContext->OMSetRenderTargets( 1, m_renderTargetView.GetAddressOf(), m_depthStencilView.Get() );
 	}
-	
+
 	/*
 	 * Direct2D
 	 */

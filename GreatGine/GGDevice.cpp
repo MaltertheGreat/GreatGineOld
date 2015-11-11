@@ -134,7 +134,6 @@ GGMesh GGDevice::CreateMesh( const GGMeshData& _grid ) const
 	ComPtr<ID3D11Buffer> vertexBuffer = CreateVertexBuffer( sizeof( GGMeshData::GGVertex ) * _grid.vertices.size(), _grid.vertices.data() );
 	ComPtr<ID3D11Buffer> indexBuffer = CreateIndexBuffer( sizeof( GGMeshData::GGIndex ) * _grid.indices.size(), _grid.indices.data() );
 
-
 	return GGMesh( static_cast<UINT>(_grid.indices.size()), vertexBuffer, indexBuffer );
 }
 
@@ -143,10 +142,8 @@ GGMesh GGDevice::CraeteLinesMesh( const GGLinesData& _lines ) const
 	ComPtr<ID3D11Buffer> vertexBuffer = CreateVertexBuffer( sizeof( GGLinesData::GGVertex ) * _lines.vertices.size(), _lines.vertices.data() );
 	ComPtr<ID3D11Buffer> indexBuffer = CreateIndexBuffer( sizeof( GGLinesData::GGIndex ) * _lines.indices.size(), _lines.indices.data() );
 
-
 	return GGMesh( static_cast<UINT>(_lines.indices.size()), vertexBuffer, indexBuffer );
 }
-
 
 ComPtr<ID3D11Buffer> GGDevice::CreateVertexBuffer( UINT _size, const void* _data ) const
 {

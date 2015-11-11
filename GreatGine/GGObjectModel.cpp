@@ -55,7 +55,7 @@ GGMeshData GGObjectModel::CreateObjectGrid( const GGObject& _object, const XMFLO
 		{
 			for( UINT z = 0; z < GGObject::DIAMETER; ++z )
 			{
-				CreateVoxel( x, y, z, voxels, grid,  _color );
+				CreateVoxel( x, y, z, voxels, grid, _color );
 			}
 		}
 	}

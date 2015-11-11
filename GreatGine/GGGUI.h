@@ -8,7 +8,7 @@ public:
 public:
 	void SetRenderable( bool _renderable );
 
-	void AddRectangle( int _x, int _y, int _width, int _height, float _color[4] );
+	void AddRectangle( int _x, int _y, int _width, int _height, float _color[ 4 ] );
 
 	bool IsRenderable() const;
 

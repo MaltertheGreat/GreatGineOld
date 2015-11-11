@@ -8,7 +8,7 @@ GGGame::GGGame( GGInput& _input, GGConfig& _config )
 	m_player( _input, _config )
 {}
 
-void GGGame::Update( GGWorld& _world, float _timeDelta )
+void GGGame::Update( GGWorld& _world, double _timeDelta )
 {
 	m_player.Update( _world, _timeDelta );
 

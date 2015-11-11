@@ -8,7 +8,7 @@ class GGDebugInfo
 public:
 	static const int LINE_COUNT = 3;
 public:
-	void Update( float _frameTime, const DirectX::XMFLOAT3& _cameraPos, const DirectX::XMFLOAT3& _cameraRot );
+	void Update( double _timeDelta, const DirectX::XMFLOAT3& _cameraPos, const DirectX::XMFLOAT3& _cameraRot );
 
 	const std::wstring& GetLine( int _lineNumber ) const;
 

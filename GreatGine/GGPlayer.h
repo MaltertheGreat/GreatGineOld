@@ -27,7 +27,7 @@ public:
 	GGPlayer( GGInput& _input, GGConfig& _config );
 
 public:
-	void Update( GGWorld& _world, float _timeDelta );
+	void Update( GGWorld& _world, double _timeDelta );
 
 	const DirectX::XMFLOAT3 GetPosition() const;
 	const DirectX::XMFLOAT3& GetRotation() const;
@@ -38,8 +38,8 @@ public:
 
 private:
 	static GGObject PlayerObject( const DirectX::XMFLOAT3& _pos );
-	void UpdatePosition( GGWorld& _world, float _timeDelta );
-	void InteractWithWorld( GGWorld& _world, float _timeDelta );
+	void UpdatePosition( GGWorld& _world, double _timeDelta );
+	void InteractWithWorld( GGWorld& _world, double _timeDelta );
 
 private:
 	bool m_isAlive;

@@ -25,7 +25,7 @@ GGGraphics::GGGraphics( const GGWindow& _window, GGConfig& _config )
 	m_renderer.SetCamera( _config.GetFloat( "fov", 80.0f ), m_resolutionX, m_resolutionY );
 }
 
-void GGGraphics::Update( GGWorld& _world, float _frameTime )
+void GGGraphics::Update( GGWorld& _world, double _timeDelta )
 {
 	auto& chunks = _world.GetChunkArray();
 	for( UINT i = 0; i < (GGWorld::DIAMETER * GGWorld::DIAMETER); ++i )
@@ -33,7 +33,7 @@ void GGGraphics::Update( GGWorld& _world, float _frameTime )
 		m_chunkModelSets[ i ].Update( m_device, chunks[ i ] );
 	}
 
-	m_debugInfo.Update( _frameTime, _world.GetViewPointPosition(), _world.GetViewPointRotation() );
+	m_debugInfo.Update( _timeDelta, _world.GetViewPointPosition(), _world.GetViewPointRotation() );
 	m_renderer.UpdateCamera( _world.GetViewPointPosition(), _world.GetViewPointRotation() );
 
 	return;
@@ -71,7 +71,7 @@ void GGGraphics::HandleKeyInput( WPARAM _keyCode, bool _down )
 		}
 		else if( _keyCode == m_keyMap[ GG_KEYMAP_RENDER_CHUNKS ] )
 		{
-			m_renderFlags[GG_RENDER_FLAGS_DEBUG].flip();
+			m_renderFlags[ GG_RENDER_FLAGS_DEBUG ].flip();
 		}
 	}
 

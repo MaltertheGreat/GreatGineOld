@@ -12,6 +12,26 @@ public:
 	static constexpr UINT DIAMETER = 4;
 	typedef std::array<GGChunk, DIAMETER * DIAMETER> GGChunkArray;
 
+	struct GGChunkDescription
+	{
+		UINT chunkX;
+		UINT chunkY;
+	};
+
+	struct GGObjectDescription
+	{
+		GGChunk::GGObjectID chunk;
+		UINT objectID;
+	};
+
+	/*struct GGVoxelDescription
+	{
+		GGObjectDescription object;
+		UINT voxelX;
+		UINT voxelY;
+		UINT voxelZ;
+	};*/
+
 	struct GGVoxelDescription
 	{
 		UINT chunkX;
@@ -20,6 +40,12 @@ public:
 		UINT voxelX;
 		UINT voxelY;
 		UINT voxelZ;
+		GGVoxel::GG_VOXEL_FACE face;
+	};
+
+	struct GGVoxelFaceDescription
+	{
+		GGVoxelDescription voxel;
 		GGVoxel::GG_VOXEL_FACE face;
 	};
 
