@@ -3,6 +3,7 @@
 #include "GGInput.h"
 #include "GGConfig.h"
 
+#include <string>
 using namespace std;
 using namespace DirectX;
 
@@ -263,7 +264,7 @@ void GGPlayer::UpdatePosition( GGWorld & _world, double _timeDelta )
 	return;
 }
 
-void GGPlayer::InteractWithWorld( GGWorld & _world, double _timeDelta )
+void GGPlayer::InteractWithWorld( GGWorld& _world, double _timeDelta )
 {
 	const float cooldown = 0.1f;
 	if( m_diggingCooldown > static_cast<float>(_timeDelta) )
@@ -284,12 +285,7 @@ void GGPlayer::InteractWithWorld( GGWorld & _world, double _timeDelta )
 		m_placingCooldown = 0.0f;
 	}
 
-	if( !m_digging && !m_placing )
-	{
-		return;
-	}
-
-	if( m_diggingCooldown == 0.0f || m_placingCooldown == 0.0f )
+	if( m_placing && m_placingCooldown == 0.0 )
 	{
 		auto voxelObjectChunk = _world.GetVoxelFromRay( m_chunkX, m_chunkZ, m_position, m_rotation, 5.0f, &m_headObjectID );
 
@@ -302,205 +298,214 @@ void GGPlayer::InteractWithWorld( GGWorld & _world, double _timeDelta )
 			UINT z = voxelObjectChunk->voxelZ;
 			GGVoxel::GG_VOXEL_FACE face = voxelObjectChunk->face;
 
-			if( m_digging && m_diggingCooldown == 0.0f )
+			switch( face )
 			{
-				UINT voxelIndex = x * GGObject::DIAMETER * GGObject::DIAMETER + y * GGObject::DIAMETER + z;
-
-				GGObject::GGVoxelArray newVoxels = object.GetVoxels();
-				newVoxels.at( voxelIndex ).element = 0;
-
-				GGObject newObject = GGObject( move( newVoxels ), object.GetVoxelDimension(), object.GetPosition() );
-
-				_world.GetChunk( voxelObjectChunk->chunkX, voxelObjectChunk->chunkZ ).ReplaceObject( voxelObjectChunk->objectID, move( newObject ) );
-
-				m_diggingCooldown = cooldown;
-			}
-
-			if( m_placing && m_placingCooldown == 0.0 )
-			{
-				switch( face )
+				case GGVoxel::GG_VOXEL_FACE_TOP:
 				{
-					case GGVoxel::GG_VOXEL_FACE_TOP:
+					if( y < (GGObject::DIAMETER - 1) )
 					{
-						if( y < (GGObject::DIAMETER - 1) )
-						{
-							++y;
+						++y;
 
-							break;
-						}
-						else
-						{
-							y = 0;
-
-							GGObject::GGVoxelArray newVoxels;
-							UINT voxelIndex = x * GGObject::DIAMETER * GGObject::DIAMETER + y * GGObject::DIAMETER + z;
-							newVoxels.at( voxelIndex ).element = 1;
-
-							XMFLOAT3 newPos = object.GetPosition();
-							newPos.y += GGObject::DIAMETER * object.GetVoxelDimension();
-
-							GGObject newObject = GGObject( move( newVoxels ), object.GetVoxelDimension(), newPos );
-
-							_world.GetChunk( voxelObjectChunk->chunkX, voxelObjectChunk->chunkZ ).AddObject( move( newObject ) );
-
-							m_placingCooldown = cooldown;
-
-							return;
-						}
+						break;
 					}
-					case GGVoxel::GG_VOXEL_FACE_BOTTOM:
+					else
 					{
-						if( y > 0 )
-						{
-							--y;
+						y = 0;
 
-							break;
-						}
-						else
-						{
-							y = GGObject::DIAMETER - 1;
+						GGObject::GGVoxelArray newVoxels;
+						UINT voxelIndex = x * GGObject::DIAMETER * GGObject::DIAMETER + y * GGObject::DIAMETER + z;
+						newVoxels.at( voxelIndex ).element = 1;
 
-							GGObject::GGVoxelArray newVoxels;
-							UINT voxelIndex = x * GGObject::DIAMETER * GGObject::DIAMETER + y * GGObject::DIAMETER + z;
-							newVoxels.at( voxelIndex ).element = 1;
+						XMFLOAT3 newPos = object.GetPosition();
+						newPos.y += GGObject::DIAMETER * object.GetVoxelDimension();
 
-							XMFLOAT3 newPos = object.GetPosition();
-							newPos.y -= GGObject::DIAMETER * object.GetVoxelDimension();
+						GGObject newObject = GGObject( move( newVoxels ), object.GetVoxelDimension(), newPos );
 
-							GGObject newObject = GGObject( move( newVoxels ), object.GetVoxelDimension(), newPos );
+						_world.GetChunk( voxelObjectChunk->chunkX, voxelObjectChunk->chunkZ ).AddObject( move( newObject ) );
 
-							_world.GetChunk( voxelObjectChunk->chunkX, voxelObjectChunk->chunkZ ).AddObject( move( newObject ) );
+						m_placingCooldown = cooldown;
 
-							m_placingCooldown = cooldown;
-
-							return;
-						}
-					}
-					case GGVoxel::GG_VOXEL_FACE_NORTH:
-					{
-						if( z < (GGObject::DIAMETER - 1) )
-						{
-							++z;
-
-							break;
-						}
-						else
-						{
-							z = 0;
-
-							GGObject::GGVoxelArray newVoxels;
-							UINT voxelIndex = x * GGObject::DIAMETER * GGObject::DIAMETER + y * GGObject::DIAMETER + z;
-							newVoxels.at( voxelIndex ).element = 1;
-
-							XMFLOAT3 newPos = object.GetPosition();
-							newPos.z += GGObject::DIAMETER * object.GetVoxelDimension();
-
-							GGObject newObject = GGObject( move( newVoxels ), object.GetVoxelDimension(), newPos );
-
-							_world.GetChunk( voxelObjectChunk->chunkX, voxelObjectChunk->chunkZ ).AddObject( move( newObject ) );
-
-							m_placingCooldown = cooldown;
-
-							return;
-						}
-					}
-					case GGVoxel::GG_VOXEL_FACE_SOUTH:
-					{
-						if( z > 0 )
-						{
-							--z;
-
-							break;
-						}
-						else
-						{
-							z = GGObject::DIAMETER - 1;
-
-							GGObject::GGVoxelArray newVoxels;
-							UINT voxelIndex = x * GGObject::DIAMETER * GGObject::DIAMETER + y * GGObject::DIAMETER + z;
-							newVoxels.at( voxelIndex ).element = 1;
-
-							XMFLOAT3 newPos = object.GetPosition();
-							newPos.z -= GGObject::DIAMETER * object.GetVoxelDimension();
-
-							GGObject newObject = GGObject( move( newVoxels ), object.GetVoxelDimension(), newPos );
-
-							_world.GetChunk( voxelObjectChunk->chunkX, voxelObjectChunk->chunkZ ).AddObject( move( newObject ) );
-
-							m_placingCooldown = cooldown;
-
-							return;
-						}
-					}
-					case GGVoxel::GG_VOXEL_FACE_EAST:
-					{
-						if( x < (GGObject::DIAMETER - 1) )
-						{
-							++x;
-
-							break;
-						}
-						else
-						{
-							x = 0;
-
-							GGObject::GGVoxelArray newVoxels;
-							UINT voxelIndex = x * GGObject::DIAMETER * GGObject::DIAMETER + y * GGObject::DIAMETER + z;
-							newVoxels.at( voxelIndex ).element = 1;
-
-							XMFLOAT3 newPos = object.GetPosition();
-							newPos.x += GGObject::DIAMETER * object.GetVoxelDimension();
-
-							GGObject newObject = GGObject( move( newVoxels ), object.GetVoxelDimension(), newPos );
-
-							_world.GetChunk( voxelObjectChunk->chunkX, voxelObjectChunk->chunkZ ).AddObject( move( newObject ) );
-
-							m_placingCooldown = cooldown;
-
-							return;
-						}
-					}
-					case GGVoxel::GG_VOXEL_FACE_WEST:
-					{
-						if( x > 0 )
-						{
-							--x;
-
-							break;
-						}
-						else
-						{
-							x = GGObject::DIAMETER - 1;
-
-							GGObject::GGVoxelArray newVoxels;
-							UINT voxelIndex = x * GGObject::DIAMETER * GGObject::DIAMETER + y * GGObject::DIAMETER + z;
-							newVoxels.at( voxelIndex ).element = 1;
-
-							XMFLOAT3 newPos = object.GetPosition();
-							newPos.x -= GGObject::DIAMETER * object.GetVoxelDimension();
-
-							GGObject newObject = GGObject( move( newVoxels ), object.GetVoxelDimension(), newPos );
-
-							_world.GetChunk( voxelObjectChunk->chunkX, voxelObjectChunk->chunkZ ).AddObject( move( newObject ) );
-
-							m_placingCooldown = cooldown;
-
-							return;
-						}
+						return;
 					}
 				}
+				case GGVoxel::GG_VOXEL_FACE_BOTTOM:
+				{
+					if( y > 0 )
+					{
+						--y;
 
-				UINT voxelIndex = x * GGObject::DIAMETER * GGObject::DIAMETER + y * GGObject::DIAMETER + z;
+						break;
+					}
+					else
+					{
+						y = GGObject::DIAMETER - 1;
 
-				GGObject::GGVoxelArray newVoxels = object.GetVoxels();
-				newVoxels.at( voxelIndex ).element = 1;
+						GGObject::GGVoxelArray newVoxels;
+						UINT voxelIndex = x * GGObject::DIAMETER * GGObject::DIAMETER + y * GGObject::DIAMETER + z;
+						newVoxels.at( voxelIndex ).element = 1;
 
-				GGObject newObject = GGObject( move( newVoxels ), object.GetVoxelDimension(), object.GetPosition() );
+						XMFLOAT3 newPos = object.GetPosition();
+						newPos.y -= GGObject::DIAMETER * object.GetVoxelDimension();
 
-				_world.GetChunk( voxelObjectChunk->chunkX, voxelObjectChunk->chunkZ ).ReplaceObject( voxelObjectChunk->objectID, move( newObject ) );
+						GGObject newObject = GGObject( move( newVoxels ), object.GetVoxelDimension(), newPos );
 
-				m_placingCooldown = cooldown;
+						_world.GetChunk( voxelObjectChunk->chunkX, voxelObjectChunk->chunkZ ).AddObject( move( newObject ) );
+
+						m_placingCooldown = cooldown;
+
+						return;
+					}
+				}
+				case GGVoxel::GG_VOXEL_FACE_NORTH:
+				{
+					if( z < (GGObject::DIAMETER - 1) )
+					{
+						++z;
+
+						break;
+					}
+					else
+					{
+						z = 0;
+
+						GGObject::GGVoxelArray newVoxels;
+						UINT voxelIndex = x * GGObject::DIAMETER * GGObject::DIAMETER + y * GGObject::DIAMETER + z;
+						newVoxels.at( voxelIndex ).element = 1;
+
+						XMFLOAT3 newPos = object.GetPosition();
+						newPos.z += GGObject::DIAMETER * object.GetVoxelDimension();
+
+						GGObject newObject = GGObject( move( newVoxels ), object.GetVoxelDimension(), newPos );
+
+						_world.GetChunk( voxelObjectChunk->chunkX, voxelObjectChunk->chunkZ ).AddObject( move( newObject ) );
+
+						m_placingCooldown = cooldown;
+
+						return;
+					}
+				}
+				case GGVoxel::GG_VOXEL_FACE_SOUTH:
+				{
+					if( z > 0 )
+					{
+						--z;
+
+						break;
+					}
+					else
+					{
+						z = GGObject::DIAMETER - 1;
+
+						GGObject::GGVoxelArray newVoxels;
+						UINT voxelIndex = x * GGObject::DIAMETER * GGObject::DIAMETER + y * GGObject::DIAMETER + z;
+						newVoxels.at( voxelIndex ).element = 1;
+
+						XMFLOAT3 newPos = object.GetPosition();
+						newPos.z -= GGObject::DIAMETER * object.GetVoxelDimension();
+
+						GGObject newObject = GGObject( move( newVoxels ), object.GetVoxelDimension(), newPos );
+
+						_world.GetChunk( voxelObjectChunk->chunkX, voxelObjectChunk->chunkZ ).AddObject( move( newObject ) );
+
+						m_placingCooldown = cooldown;
+
+						return;
+					}
+				}
+				case GGVoxel::GG_VOXEL_FACE_EAST:
+				{
+					if( x < (GGObject::DIAMETER - 1) )
+					{
+						++x;
+
+						break;
+					}
+					else
+					{
+						x = 0;
+
+						GGObject::GGVoxelArray newVoxels;
+						UINT voxelIndex = x * GGObject::DIAMETER * GGObject::DIAMETER + y * GGObject::DIAMETER + z;
+						newVoxels.at( voxelIndex ).element = 1;
+
+						XMFLOAT3 newPos = object.GetPosition();
+						newPos.x += GGObject::DIAMETER * object.GetVoxelDimension();
+
+						GGObject newObject = GGObject( move( newVoxels ), object.GetVoxelDimension(), newPos );
+
+						_world.GetChunk( voxelObjectChunk->chunkX, voxelObjectChunk->chunkZ ).AddObject( move( newObject ) );
+
+						m_placingCooldown = cooldown;
+
+						return;
+					}
+				}
+				case GGVoxel::GG_VOXEL_FACE_WEST:
+				{
+					if( x > 0 )
+					{
+						--x;
+
+						break;
+					}
+					else
+					{
+						x = GGObject::DIAMETER - 1;
+
+						GGObject::GGVoxelArray newVoxels;
+						UINT voxelIndex = x * GGObject::DIAMETER * GGObject::DIAMETER + y * GGObject::DIAMETER + z;
+						newVoxels.at( voxelIndex ).element = 1;
+
+						XMFLOAT3 newPos = object.GetPosition();
+						newPos.x -= GGObject::DIAMETER * object.GetVoxelDimension();
+
+						GGObject newObject = GGObject( move( newVoxels ), object.GetVoxelDimension(), newPos );
+
+						_world.GetChunk( voxelObjectChunk->chunkX, voxelObjectChunk->chunkZ ).AddObject( move( newObject ) );
+
+						m_placingCooldown = cooldown;
+
+						return;
+					}
+				}
 			}
+
+			UINT voxelIndex = x * GGObject::DIAMETER * GGObject::DIAMETER + y * GGObject::DIAMETER + z;
+
+			GGObject::GGVoxelArray newVoxels = object.GetVoxels();
+			newVoxels.at( voxelIndex ).element = 1;
+
+			GGObject newObject = GGObject( move( newVoxels ), object.GetVoxelDimension(), object.GetPosition() );
+
+			_world.GetChunk( voxelObjectChunk->chunkX, voxelObjectChunk->chunkZ ).ReplaceObject( voxelObjectChunk->objectID, move( newObject ) );
+
+			m_placingCooldown = cooldown;
+		}
+	}
+
+	if( m_digging && m_diggingCooldown == 0.0f )
+	{
+		auto voxelObjectChunk = _world.GetVoxelFromRay( m_chunkX, m_chunkZ, m_position, m_rotation, 5.0f, &m_headObjectID );
+
+		if( voxelObjectChunk )
+		{
+			auto& chunk = _world.GetChunk( voxelObjectChunk->chunkX, voxelObjectChunk->chunkZ );
+			auto& object = chunk.GetObjects().at( voxelObjectChunk->objectID );
+			UINT x = voxelObjectChunk->voxelX;
+			UINT y = voxelObjectChunk->voxelY;
+			UINT z = voxelObjectChunk->voxelZ;
+
+			GGVoxel::GG_VOXEL_FACE face = voxelObjectChunk->face;
+			UINT voxelIndex = x * GGObject::DIAMETER * GGObject::DIAMETER + y * GGObject::DIAMETER + z;
+
+			GGObject::GGVoxelArray newVoxels = object.GetVoxels();
+			newVoxels.at( voxelIndex ).element = 0;
+
+			GGObject newObject = GGObject( move( newVoxels ), object.GetVoxelDimension(), object.GetPosition() );
+
+			_world.GetChunk( voxelObjectChunk->chunkX, voxelObjectChunk->chunkZ ).ReplaceObject( voxelObjectChunk->objectID, move( newObject ) );
+
+			m_diggingCooldown = cooldown;
 		}
 	}
 

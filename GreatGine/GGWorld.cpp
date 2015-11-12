@@ -2,6 +2,7 @@
 #include "GGWorld.h"
 
 #include <random>
+#include <string>
 using namespace DirectX;
 using namespace std;
 
@@ -72,17 +73,13 @@ const DirectX::XMFLOAT3 & GGWorld::GetViewPointRotation() const
 
 float sgn( float f )
 {
-	if( f > 0.0f )
+	if( f >= 0.0f )
 	{
 		return 1.0f;
 	}
-	else if( f < 0.0f )
-	{
-		return -1.0f;
-	}
 	else
 	{
-		return 0.0f;
+		return -1.0f;
 	}
 }
 
@@ -92,7 +89,7 @@ unique_ptr<GGWorld::GGVoxelDescription> GGWorld::GetVoxelFromRay( UINT _originCh
 	XMStoreFloat3( &ray, XMVector3Rotate( XMVectorSet( 0.0f, 0.0f, 1.0f, 1.0f ), XMQuaternionRotationRollPitchYaw( _rotation.x, _rotation.y, _rotation.z ) ) );
 
 	float minRayLength = INFINITY;
-	unique_ptr<GGVoxelDescription> closestVoxelDesc = unique_ptr<GGVoxelDescription>(nullptr);
+	unique_ptr<GGVoxelDescription> closestVoxelDesc = unique_ptr<GGVoxelDescription>( nullptr );
 
 	vector<tuple<GGChunk&, UINT, UINT, XMFLOAT3 >> chunksToCheck;
 	chunksToCheck.push_back( tuple<GGChunk&, UINT, UINT, XMFLOAT3 >( GetChunk( _originChunkX, _originChunkZ ), _originChunkX, _originChunkZ, _originPosition ) );
@@ -176,7 +173,7 @@ unique_ptr<GGWorld::GGVoxelDescription> GGWorld::GetVoxelFromRay( UINT _originCh
 
 	for( auto& chunkIterator : chunksToCheck )
 	{
-		auto& objects = get<0>( chunkIterator).GetObjects();
+		auto& objects = get<0>( chunkIterator ).GetObjects();
 		for( auto iterator : objects )
 		{
 			GGChunk::GGObjectID objectID = iterator.first;
@@ -192,12 +189,11 @@ unique_ptr<GGWorld::GGVoxelDescription> GGWorld::GetVoxelFromRay( UINT _originCh
 			auto tuple = GetVoxelFromRayInObject( get<3>( chunkIterator ), ray, _length, object );
 
 			float rayLength = get<1>( tuple );
-			unique_ptr<GGVoxelDescription>& voxelDesc = get<0>( tuple );
 
 			if( rayLength < minRayLength )
 			{
 				minRayLength = rayLength;
-				closestVoxelDesc = move( voxelDesc );
+				closestVoxelDesc = move( get<0>( tuple ) );
 
 				closestVoxelDesc->chunkX = get<1>( chunkIterator );
 				closestVoxelDesc->chunkZ = get<2>( chunkIterator );
@@ -205,7 +201,47 @@ unique_ptr<GGWorld::GGVoxelDescription> GGWorld::GetVoxelFromRay( UINT _originCh
 			}
 		}
 	}
-
+	if( closestVoxelDesc )
+	{
+		OutputDebugStringA( (to_string( minRayLength )).c_str() );
+		switch( closestVoxelDesc->face )
+		{
+			case GGVoxel::GG_VOXEL_FACE_BOTTOM:
+			{
+				OutputDebugStringA( " bottom face \n" );
+				break;
+			}
+			case GGVoxel::GG_VOXEL_FACE_TOP:
+			{
+				OutputDebugStringA( " top face \n" );
+				break;
+			}
+			case GGVoxel::GG_VOXEL_FACE_EAST:
+			{
+				OutputDebugStringA( " east face \n" );
+				break;
+			}
+			case GGVoxel::GG_VOXEL_FACE_WEST:
+			{
+				OutputDebugStringA( " west face \n" );
+				break;
+			}
+			case GGVoxel::GG_VOXEL_FACE_NORTH:
+			{
+				OutputDebugStringA( " north face \n" );
+				break;
+			}
+			case GGVoxel::GG_VOXEL_FACE_SOUTH:
+			{
+				OutputDebugStringA( " south face \n" );
+				break;
+			}
+		}
+	}
+	else
+	{
+		OutputDebugStringA( "No voxel found \n" );
+	}
 	return move( closestVoxelDesc );
 }
 
@@ -221,7 +257,6 @@ GGWorld::GGChunkArray GGWorld::InitializeChunks()
 	{
 		chunk = GGChunk( { x, 0.0f, z } );
 
-		XMFLOAT3 position = { x, 0.0f, z };
 		z += GGChunk::DIMENSION;
 		if( z > chunkOffset )
 		{
@@ -290,9 +325,39 @@ tuple<unique_ptr<GGWorld::GGVoxelDescription>, float> GGWorld::GetVoxelFromRayIn
 	int z = static_cast<int>(floor( fZ / voxelDimension ));
 
 	// Ray origin inside voxel <-0.5 ~ 0.5>
-	float voxelX = sgn( fX ) * (abs( fmod( fX, voxelDimension ) ) - voxelRadius);
-	float voxelY = sgn( fY ) * (abs( fmod( fY, voxelDimension ) ) - voxelRadius);
-	float voxelZ = sgn( fZ ) * (abs( fmod( fZ, voxelDimension ) ) - voxelRadius);
+	float voxelX;
+	float voxelY;
+	float voxelZ;
+	if( fX < 0.0f )
+	{
+		voxelX = fmod( fX, voxelDimension ) + voxelRadius;
+		if( voxelX == voxelRadius )
+			voxelX = -voxelRadius;
+	}
+	else
+	{
+		voxelX = fmod( fX, voxelDimension ) - voxelRadius;
+	}
+	if( fY < 0.0f )
+	{
+		voxelY = fmod( fY, voxelDimension ) + voxelRadius;
+		if( voxelY == voxelRadius )
+			voxelY = -voxelRadius;
+	}
+	else
+	{
+		voxelY = fmod( fY, voxelDimension ) - voxelRadius;
+	}
+	if( fZ < 0.0f )
+	{
+		voxelZ = fmod( fZ, voxelDimension ) + voxelRadius;
+		if( voxelZ == voxelRadius )
+			voxelZ = -voxelRadius;
+	}
+	else
+	{
+		voxelZ = fmod( fZ, voxelDimension ) - voxelRadius;
+	}
 
 	float totalRayLength = 0.0f;
 	while( true )
@@ -411,11 +476,8 @@ tuple<unique_ptr<GGWorld::GGVoxelDescription>, float> GGWorld::GetVoxelFromRayIn
 				totalRayLength += lengthZ;
 			}
 		}
+
 		if( totalRayLength > _length )
-		{
-			break;
-		}
-		if( totalRayLength == 0.0f )
 		{
 			break;
 		}
@@ -442,7 +504,9 @@ tuple<unique_ptr<GGWorld::GGVoxelDescription>, float> GGWorld::GetVoxelFromRayIn
 		auto& voxels = _object.GetVoxels();
 		if( voxels.at( voxelIndex ).element != 0 )
 		{
-			return make_tuple( unique_ptr<GGWorld::GGVoxelDescription>(new GGVoxelDescription{ NULL, NULL, NULL, uX, uY, uZ, face }), totalRayLength );
+			string debugString = "Ray length: " + to_string( totalRayLength ) + "\n";
+			OutputDebugStringA( debugString.c_str() );
+			return make_tuple( unique_ptr<GGWorld::GGVoxelDescription>( new GGVoxelDescription{ NULL, NULL, NULL, uX, uY, uZ, face } ), totalRayLength );
 		}
 	}
 
