@@ -6,8 +6,6 @@
 using namespace DirectX;
 using namespace std;
 
-array<XMFLOAT3, 1> test{ { { 0.0f, 0.0f, 0.0f } } };
-
 GGWorld::GGWorld()
 	:
 	m_renderable( true ),
@@ -49,6 +47,13 @@ bool GGWorld::IsRenderable() const
 	return m_renderable;
 }
 
+GGChunk & GGWorld::GetChunk( GGChunkDescription _desc )
+{
+	UINT index = _desc.chunkX * DIAMETER + _desc.chunkZ;
+
+	return m_chunks[ index ];
+}
+
 GGChunk& GGWorld::GetChunk( UINT _x, UINT _z )
 {
 	UINT index = _x * DIAMETER + _z;
@@ -83,16 +88,16 @@ float sgn( float f )
 	}
 }
 
-unique_ptr<GGWorld::GGVoxelDescription> GGWorld::GetVoxelFromRay( UINT _originChunkX, UINT _originChunkZ, const XMFLOAT3& _originPosition, const XMFLOAT3& _rotation, float _length, GGChunk::GGObjectID* _excludedObject )
+unique_ptr<GGWorld::GGVoxelFaceDescription> GGWorld::GetVoxelFromRay( UINT _originChunkX, UINT _originChunkZ, const XMFLOAT3& _originPosition, const XMFLOAT3& _rotation, float _length, GGObjectDescription* _excludedObject )
 {
 	XMFLOAT3 ray;
 	XMStoreFloat3( &ray, XMVector3Rotate( XMVectorSet( 0.0f, 0.0f, 1.0f, 1.0f ), XMQuaternionRotationRollPitchYaw( _rotation.x, _rotation.y, _rotation.z ) ) );
 
 	float minRayLength = INFINITY;
-	unique_ptr<GGVoxelDescription> closestVoxelDesc = unique_ptr<GGVoxelDescription>( nullptr );
+	unique_ptr<GGVoxelFaceDescription> closestVoxelDesc;
 
-	vector<tuple<GGChunk&, UINT, UINT, XMFLOAT3 >> chunksToCheck;
-	chunksToCheck.push_back( tuple<GGChunk&, UINT, UINT, XMFLOAT3 >( GetChunk( _originChunkX, _originChunkZ ), _originChunkX, _originChunkZ, _originPosition ) );
+	vector<pair<GGChunkDescription, XMFLOAT3 >> chunksToCheck;
+	chunksToCheck.push_back( { { _originChunkX, _originChunkZ }, _originPosition } );
 	if( _originChunkX > 0 )
 	{
 		UINT chunkX = _originChunkX - 1;
@@ -100,7 +105,7 @@ unique_ptr<GGWorld::GGVoxelDescription> GGWorld::GetVoxelFromRay( UINT _originCh
 		XMFLOAT3 pos = _originPosition;
 		pos.x += GGChunk::DIMENSION;
 
-		chunksToCheck.emplace_back( tuple<GGChunk&, UINT, UINT, XMFLOAT3 >( GetChunk( chunkX, chunkZ ), chunkX, chunkZ, pos ) );
+		chunksToCheck.push_back( { { chunkX, chunkZ }, pos } );
 	}
 	if( _originChunkZ > 0 )
 	{
@@ -109,7 +114,7 @@ unique_ptr<GGWorld::GGVoxelDescription> GGWorld::GetVoxelFromRay( UINT _originCh
 		XMFLOAT3 pos = _originPosition;
 		pos.z += GGChunk::DIMENSION;
 
-		chunksToCheck.emplace_back( tuple<GGChunk&, UINT, UINT, XMFLOAT3 >( GetChunk( chunkX, chunkZ ), chunkX, chunkZ, pos ) );
+		chunksToCheck.push_back( { { chunkX, chunkZ }, pos } );
 	}
 	if( _originChunkX > 0 && _originChunkZ > 0 )
 	{
@@ -119,7 +124,7 @@ unique_ptr<GGWorld::GGVoxelDescription> GGWorld::GetVoxelFromRay( UINT _originCh
 		pos.x += GGChunk::DIMENSION;
 		pos.z += GGChunk::DIMENSION;
 
-		chunksToCheck.emplace_back( tuple<GGChunk&, UINT, UINT, XMFLOAT3 >( GetChunk( chunkX, chunkZ ), chunkX, chunkZ, pos ) );
+		chunksToCheck.push_back( { { chunkX, chunkZ }, pos } );
 	}
 	if( _originChunkX > 0 && _originChunkZ < DIAMETER - 1 )
 	{
@@ -129,7 +134,7 @@ unique_ptr<GGWorld::GGVoxelDescription> GGWorld::GetVoxelFromRay( UINT _originCh
 		pos.x += GGChunk::DIMENSION;
 		pos.z -= GGChunk::DIMENSION;
 
-		chunksToCheck.emplace_back( tuple<GGChunk&, UINT, UINT, XMFLOAT3 >( GetChunk( chunkX, chunkZ ), chunkX, chunkZ, pos ) );
+		chunksToCheck.push_back( { { chunkX, chunkZ }, pos } );
 	}
 
 	if( _originChunkX < DIAMETER - 1 )
@@ -139,7 +144,7 @@ unique_ptr<GGWorld::GGVoxelDescription> GGWorld::GetVoxelFromRay( UINT _originCh
 		XMFLOAT3 pos = _originPosition;
 		pos.x -= GGChunk::DIMENSION;
 
-		chunksToCheck.emplace_back( tuple<GGChunk&, UINT, UINT, XMFLOAT3 >( GetChunk( chunkX, chunkZ ), chunkX, chunkZ, pos ) );
+		chunksToCheck.push_back( { { chunkX, chunkZ }, pos } );
 	}
 	if( _originChunkZ < DIAMETER - 1 )
 	{
@@ -148,7 +153,7 @@ unique_ptr<GGWorld::GGVoxelDescription> GGWorld::GetVoxelFromRay( UINT _originCh
 		XMFLOAT3 pos = _originPosition;
 		pos.z -= GGChunk::DIMENSION;
 
-		chunksToCheck.emplace_back( tuple<GGChunk&, UINT, UINT, XMFLOAT3 >( GetChunk( chunkX, chunkZ ), chunkX, chunkZ, pos ) );
+		chunksToCheck.push_back( { { chunkX, chunkZ }, pos } );
 	}
 	if( _originChunkX < DIAMETER - 1 && _originChunkZ < DIAMETER - 1 )
 	{
@@ -158,7 +163,7 @@ unique_ptr<GGWorld::GGVoxelDescription> GGWorld::GetVoxelFromRay( UINT _originCh
 		pos.x -= GGChunk::DIMENSION;
 		pos.z -= GGChunk::DIMENSION;
 
-		chunksToCheck.emplace_back( tuple<GGChunk&, UINT, UINT, XMFLOAT3 >( GetChunk( chunkX, chunkZ ), chunkX, chunkZ, pos ) );
+		chunksToCheck.push_back( { { chunkX, chunkZ }, pos } );
 	}
 	if( _originChunkX < DIAMETER - 1 && _originChunkZ > 0 )
 	{
@@ -168,80 +173,44 @@ unique_ptr<GGWorld::GGVoxelDescription> GGWorld::GetVoxelFromRay( UINT _originCh
 		pos.x -= GGChunk::DIMENSION;
 		pos.z += GGChunk::DIMENSION;
 
-		chunksToCheck.emplace_back( tuple<GGChunk&, UINT, UINT, XMFLOAT3 >( GetChunk( chunkX, chunkZ ), chunkX, chunkZ, pos ) );
+		chunksToCheck.push_back( { { chunkX, chunkZ }, pos } );
 	}
 
 	for( auto& chunkIterator : chunksToCheck )
 	{
-		auto& objects = get<0>( chunkIterator ).GetObjects();
-		for( auto iterator : objects )
+		GGChunkDescription chunk = chunkIterator.first;
+		auto& objects = GetChunk( chunk ).GetObjects();
+
+		for( auto objectIterator : objects )
 		{
-			GGChunk::GGObjectID objectID = iterator.first;
+			GGChunk::GGObjectID objectID = objectIterator.first;
 			if( _excludedObject )
 			{
-				if( objectID == *_excludedObject )
+				if( chunk == _excludedObject->chunk )
 				{
-					continue;
+					if( objectID == _excludedObject->objectID )
+					{
+						continue;
+					}
 				}
 			}
-			auto& object = iterator.second;
+			auto& object = objectIterator.second;
 
-			auto tuple = GetVoxelFromRayInObject( get<3>( chunkIterator ), ray, _length, object );
+			auto voxelFromRay = GetVoxelFromRayInObject( chunkIterator.second, ray, _length, object );
 
-			float rayLength = get<1>( tuple );
+			float rayLength = voxelFromRay.second;
 
 			if( rayLength < minRayLength )
 			{
 				minRayLength = rayLength;
-				closestVoxelDesc = move( get<0>( tuple ) );
+				closestVoxelDesc = move( voxelFromRay.first );
 
-				closestVoxelDesc->chunkX = get<1>( chunkIterator );
-				closestVoxelDesc->chunkZ = get<2>( chunkIterator );
-				closestVoxelDesc->objectID = objectID;
+				closestVoxelDesc->voxel.object.objectID = objectID;
+				closestVoxelDesc->voxel.object.chunk = chunk;
 			}
 		}
 	}
-	if( closestVoxelDesc )
-	{
-		OutputDebugStringA( (to_string( minRayLength )).c_str() );
-		switch( closestVoxelDesc->face )
-		{
-			case GGVoxel::GG_VOXEL_FACE_BOTTOM:
-			{
-				OutputDebugStringA( " bottom face \n" );
-				break;
-			}
-			case GGVoxel::GG_VOXEL_FACE_TOP:
-			{
-				OutputDebugStringA( " top face \n" );
-				break;
-			}
-			case GGVoxel::GG_VOXEL_FACE_EAST:
-			{
-				OutputDebugStringA( " east face \n" );
-				break;
-			}
-			case GGVoxel::GG_VOXEL_FACE_WEST:
-			{
-				OutputDebugStringA( " west face \n" );
-				break;
-			}
-			case GGVoxel::GG_VOXEL_FACE_NORTH:
-			{
-				OutputDebugStringA( " north face \n" );
-				break;
-			}
-			case GGVoxel::GG_VOXEL_FACE_SOUTH:
-			{
-				OutputDebugStringA( " south face \n" );
-				break;
-			}
-		}
-	}
-	else
-	{
-		OutputDebugStringA( "No voxel found \n" );
-	}
+
 	return move( closestVoxelDesc );
 }
 
@@ -310,7 +279,7 @@ GGObject::GGVoxelArray GGWorld::CreateRandomVoxels()
 	return voxels;
 }
 
-tuple<unique_ptr<GGWorld::GGVoxelDescription>, float> GGWorld::GetVoxelFromRayInObject( const XMFLOAT3& _originPos, const XMFLOAT3& _ray, float _length, const GGObject& _object )
+pair<unique_ptr<GGWorld::GGVoxelFaceDescription>, float> GGWorld::GetVoxelFromRayInObject( const XMFLOAT3& _originPos, const XMFLOAT3& _ray, float _length, const GGObject& _object )
 {
 	const float voxelDimension = _object.GetVoxelDimension();
 	const float voxelRadius = voxelDimension / 2.0f;
@@ -504,11 +473,41 @@ tuple<unique_ptr<GGWorld::GGVoxelDescription>, float> GGWorld::GetVoxelFromRayIn
 		auto& voxels = _object.GetVoxels();
 		if( voxels.at( voxelIndex ).element != 0 )
 		{
-			string debugString = "Ray length: " + to_string( totalRayLength ) + "\n";
-			OutputDebugStringA( debugString.c_str() );
-			return make_tuple( unique_ptr<GGWorld::GGVoxelDescription>( new GGVoxelDescription{ NULL, NULL, NULL, uX, uY, uZ, face } ), totalRayLength );
+			GGVoxelFaceDescription faceDesc;
+			faceDesc.face = face;
+			faceDesc.voxel.voxelX = uX;
+			faceDesc.voxel.voxelY = uY;
+			faceDesc.voxel.voxelZ = uZ;
+
+			return make_pair( make_unique<GGVoxelFaceDescription>( faceDesc ), totalRayLength );
 		}
 	}
 
-	return make_tuple( nullptr, INFINITY );
+	return make_pair( nullptr, INFINITY );
+}
+
+bool operator ==( const GGWorld::GGChunkDescription& a, const GGWorld::GGChunkDescription& b )
+{
+	if( a.chunkX == b.chunkX )
+	{
+		if( a.chunkZ == b.chunkZ )
+		{
+			return true;
+		}
+	}
+
+	return false;
+}
+
+bool operator ==( const GGWorld::GGObjectDescription& a, const GGWorld::GGObjectDescription& b )
+{
+	if( a.chunk == b.chunk )
+	{
+		if( a.objectID == b.objectID )
+		{
+			return true;
+		}
+	}
+
+	return false;
 }

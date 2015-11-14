@@ -49,10 +49,11 @@ private:
 	float m_placingCooldown;
 
 	WPARAM m_keyMap[ GG_KEYMAP_COUNT ];
-	GGChunk::GGObjectID m_headObjectID;
+	GGWorld::GGObjectDescription m_headObject;
+	//GGChunk::GGObjectID m_headObjectID;
 
-	UINT m_chunkX;
-	UINT m_chunkZ;
+	//UINT m_chunkX;
+	//UINT m_chunkZ;
 
 	DirectX::XMFLOAT3 m_position;
 	DirectX::XMFLOAT3 m_velocity;

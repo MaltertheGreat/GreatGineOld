@@ -30,16 +30,16 @@ void GGPlayer::Update( GGWorld& _world, double _timeDelta )
 	if( !m_isAlive )
 	{
 		m_position = { 0.0f, 10.0f, 0.0f };
-		m_chunkX = GGWorld::DIAMETER / 2;
-		m_chunkZ = GGWorld::DIAMETER / 2;
+		m_headObject.chunk.chunkX = GGWorld::DIAMETER / 2;
+		m_headObject.chunk.chunkZ = GGWorld::DIAMETER / 2;
 
-		auto& chunk = _world.GetChunk( m_chunkX, m_chunkZ );
+		auto& chunk = _world.GetChunk( m_headObject.chunk.chunkX, m_headObject.chunk.chunkZ );
 		if( chunk.GetState() == GGChunk::GG_CHUNK_STATE_UNGENERATED )
 		{
 			return;
 		}
 
-		m_headObjectID = chunk.AddObject( PlayerObject( m_position ) );
+		m_headObject.objectID = chunk.AddObject( PlayerObject( m_position ) );
 
 		m_isAlive = true;
 	}
@@ -55,8 +55,8 @@ const XMFLOAT3 GGPlayer::GetPosition() const
 	XMFLOAT3 position; // Relative to center of the world
 	float offset = -((GGWorld::DIAMETER / 2) * GGChunk::DIMENSION) + (GGChunk::DIMENSION / 2);
 	position = { offset, 0, offset };
-	position.x += m_chunkX * GGChunk::DIMENSION;
-	position.z += m_chunkZ * GGChunk::DIMENSION;
+	position.x += m_headObject.chunk.chunkX * GGChunk::DIMENSION;
+	position.z += m_headObject.chunk.chunkZ * GGChunk::DIMENSION;
 
 	position.x += m_position.x;
 	position.y += m_position.y;
@@ -166,7 +166,7 @@ GGObject GGPlayer::PlayerObject( const DirectX::XMFLOAT3& _pos )
 
 void GGPlayer::UpdatePosition( GGWorld & _world, double _timeDelta )
 {
-	auto& head = _world.GetChunk( m_chunkX, m_chunkZ ).GetObjects().at( m_headObjectID );
+	auto& head = _world.GetChunk( m_headObject.chunk.chunkX, m_headObject.chunk.chunkZ ).GetObjects().at( m_headObject.objectID );
 
 	// Update player position since last frame
 	XMFLOAT3 horizontalRotation = { 0.0f, m_rotation.y, 0.0f };
@@ -210,7 +210,7 @@ void GGPlayer::UpdatePosition( GGWorld & _world, double _timeDelta )
 	}
 
 	// Keep player in world boundaries
-	UINT chunkX = m_chunkX;
+	UINT chunkX = m_headObject.chunk.chunkX;
 	if( chunkOffsetX )
 	{
 		if( -chunkOffsetX > static_cast<LONGLONG>(chunkX) )
@@ -227,7 +227,7 @@ void GGPlayer::UpdatePosition( GGWorld & _world, double _timeDelta )
 		}
 	}
 
-	UINT chunkZ = m_chunkZ;
+	UINT chunkZ = m_headObject.chunk.chunkZ;
 	if( chunkOffsetZ )
 	{
 		if( -chunkOffsetZ > static_cast<LONGLONG>(chunkZ) )
@@ -245,18 +245,18 @@ void GGPlayer::UpdatePosition( GGWorld & _world, double _timeDelta )
 	}
 
 	// Update player model
-	if( m_chunkX != chunkX || m_chunkZ != chunkZ )
+	if( m_headObject.chunk.chunkX != chunkX || m_headObject.chunk.chunkZ != chunkZ )
 	{
-		_world.GetChunk( m_chunkX, m_chunkZ ).RemoveObject( m_headObjectID );
+		_world.GetChunk( m_headObject.chunk.chunkX, m_headObject.chunk.chunkZ ).RemoveObject( m_headObject.objectID );
 
-		m_chunkX = chunkX;
-		m_chunkZ = chunkZ;
+		m_headObject.chunk.chunkX = chunkX;
+		m_headObject.chunk.chunkZ = chunkZ;
 
-		m_headObjectID = _world.GetChunk( m_chunkX, m_chunkZ ).AddObject( PlayerObject( { x, y, z } ) );
+		m_headObject.objectID = _world.GetChunk( m_headObject.chunk.chunkX, m_headObject.chunk.chunkZ ).AddObject( PlayerObject( { x, y, z } ) );
 	}
 	else
 	{
-		_world.GetChunk( m_chunkX, m_chunkZ ).ModifyObject( m_headObjectID, { x, y, z } );
+		_world.GetChunk( m_headObject.chunk.chunkX, m_headObject.chunk.chunkZ ).ModifyObject( m_headObject.objectID, { x, y, z } );
 	}
 
 	m_position = { x, y, z };
@@ -287,15 +287,18 @@ void GGPlayer::InteractWithWorld( GGWorld& _world, double _timeDelta )
 
 	if( m_placing && m_placingCooldown == 0.0 )
 	{
-		auto voxelObjectChunk = _world.GetVoxelFromRay( m_chunkX, m_chunkZ, m_position, m_rotation, 5.0f, &m_headObjectID );
+		auto voxelObjectChunk = _world.GetVoxelFromRay( m_headObject.chunk.chunkX, m_headObject.chunk.chunkZ, m_position, m_rotation, 5.0f, &m_headObject );
 
 		if( voxelObjectChunk )
 		{
-			auto& chunk = _world.GetChunk( voxelObjectChunk->chunkX, voxelObjectChunk->chunkZ );
-			auto& object = chunk.GetObjects().at( voxelObjectChunk->objectID );
-			UINT x = voxelObjectChunk->voxelX;
-			UINT y = voxelObjectChunk->voxelY;
-			UINT z = voxelObjectChunk->voxelZ;
+			UINT chunkX = voxelObjectChunk->voxel.object.chunk.chunkX;
+			UINT chunkZ = voxelObjectChunk->voxel.object.chunk.chunkZ;
+
+			auto& chunk = _world.GetChunk( voxelObjectChunk->voxel.object.chunk );
+			auto& object = chunk.GetObjects().at( voxelObjectChunk->voxel.object.objectID );
+			UINT x = voxelObjectChunk->voxel.voxelX;
+			UINT y = voxelObjectChunk->voxel.voxelY;
+			UINT z = voxelObjectChunk->voxel.voxelZ;
 			GGVoxel::GG_VOXEL_FACE face = voxelObjectChunk->face;
 
 			switch( face )
@@ -321,7 +324,7 @@ void GGPlayer::InteractWithWorld( GGWorld& _world, double _timeDelta )
 
 						GGObject newObject = GGObject( move( newVoxels ), object.GetVoxelDimension(), newPos );
 
-						_world.GetChunk( voxelObjectChunk->chunkX, voxelObjectChunk->chunkZ ).AddObject( move( newObject ) );
+						_world.GetChunk( chunkX, chunkZ ).AddObject( move( newObject ) );
 
 						m_placingCooldown = cooldown;
 
@@ -349,7 +352,7 @@ void GGPlayer::InteractWithWorld( GGWorld& _world, double _timeDelta )
 
 						GGObject newObject = GGObject( move( newVoxels ), object.GetVoxelDimension(), newPos );
 
-						_world.GetChunk( voxelObjectChunk->chunkX, voxelObjectChunk->chunkZ ).AddObject( move( newObject ) );
+						_world.GetChunk( chunkX, chunkZ ).AddObject( move( newObject ) );
 
 						m_placingCooldown = cooldown;
 
@@ -377,7 +380,7 @@ void GGPlayer::InteractWithWorld( GGWorld& _world, double _timeDelta )
 
 						GGObject newObject = GGObject( move( newVoxels ), object.GetVoxelDimension(), newPos );
 
-						_world.GetChunk( voxelObjectChunk->chunkX, voxelObjectChunk->chunkZ ).AddObject( move( newObject ) );
+						_world.GetChunk( chunkX, chunkZ ).AddObject( move( newObject ) );
 
 						m_placingCooldown = cooldown;
 
@@ -405,7 +408,7 @@ void GGPlayer::InteractWithWorld( GGWorld& _world, double _timeDelta )
 
 						GGObject newObject = GGObject( move( newVoxels ), object.GetVoxelDimension(), newPos );
 
-						_world.GetChunk( voxelObjectChunk->chunkX, voxelObjectChunk->chunkZ ).AddObject( move( newObject ) );
+						_world.GetChunk( chunkX, chunkZ ).AddObject( move( newObject ) );
 
 						m_placingCooldown = cooldown;
 
@@ -433,7 +436,7 @@ void GGPlayer::InteractWithWorld( GGWorld& _world, double _timeDelta )
 
 						GGObject newObject = GGObject( move( newVoxels ), object.GetVoxelDimension(), newPos );
 
-						_world.GetChunk( voxelObjectChunk->chunkX, voxelObjectChunk->chunkZ ).AddObject( move( newObject ) );
+						_world.GetChunk( chunkX, chunkZ ).AddObject( move( newObject ) );
 
 						m_placingCooldown = cooldown;
 
@@ -461,7 +464,7 @@ void GGPlayer::InteractWithWorld( GGWorld& _world, double _timeDelta )
 
 						GGObject newObject = GGObject( move( newVoxels ), object.GetVoxelDimension(), newPos );
 
-						_world.GetChunk( voxelObjectChunk->chunkX, voxelObjectChunk->chunkZ ).AddObject( move( newObject ) );
+						_world.GetChunk( chunkX, chunkZ ).AddObject( move( newObject ) );
 
 						m_placingCooldown = cooldown;
 
@@ -477,7 +480,7 @@ void GGPlayer::InteractWithWorld( GGWorld& _world, double _timeDelta )
 
 			GGObject newObject = GGObject( move( newVoxels ), object.GetVoxelDimension(), object.GetPosition() );
 
-			_world.GetChunk( voxelObjectChunk->chunkX, voxelObjectChunk->chunkZ ).ReplaceObject( voxelObjectChunk->objectID, move( newObject ) );
+			_world.GetChunk( chunkX, chunkZ ).ReplaceObject( voxelObjectChunk->voxel.object.objectID, move( newObject ) );
 
 			m_placingCooldown = cooldown;
 		}
@@ -485,15 +488,18 @@ void GGPlayer::InteractWithWorld( GGWorld& _world, double _timeDelta )
 
 	if( m_digging && m_diggingCooldown == 0.0f )
 	{
-		auto voxelObjectChunk = _world.GetVoxelFromRay( m_chunkX, m_chunkZ, m_position, m_rotation, 5.0f, &m_headObjectID );
+		auto voxelObjectChunk = _world.GetVoxelFromRay( m_headObject.chunk.chunkX, m_headObject.chunk.chunkZ, m_position, m_rotation, 5.0f, &m_headObject );
 
 		if( voxelObjectChunk )
 		{
-			auto& chunk = _world.GetChunk( voxelObjectChunk->chunkX, voxelObjectChunk->chunkZ );
-			auto& object = chunk.GetObjects().at( voxelObjectChunk->objectID );
-			UINT x = voxelObjectChunk->voxelX;
-			UINT y = voxelObjectChunk->voxelY;
-			UINT z = voxelObjectChunk->voxelZ;
+			UINT chunkX = voxelObjectChunk->voxel.object.chunk.chunkX;
+			UINT chunkZ = voxelObjectChunk->voxel.object.chunk.chunkZ;
+
+			auto& chunk = _world.GetChunk( chunkX, chunkZ );
+			auto& object = chunk.GetObjects().at( voxelObjectChunk->voxel.object.objectID );
+			UINT x = voxelObjectChunk->voxel.voxelX;
+			UINT y = voxelObjectChunk->voxel.voxelY;
+			UINT z = voxelObjectChunk->voxel.voxelZ;
 
 			GGVoxel::GG_VOXEL_FACE face = voxelObjectChunk->face;
 			UINT voxelIndex = x * GGObject::DIAMETER * GGObject::DIAMETER + y * GGObject::DIAMETER + z;
@@ -503,7 +509,7 @@ void GGPlayer::InteractWithWorld( GGWorld& _world, double _timeDelta )
 
 			GGObject newObject = GGObject( move( newVoxels ), object.GetVoxelDimension(), object.GetPosition() );
 
-			_world.GetChunk( voxelObjectChunk->chunkX, voxelObjectChunk->chunkZ ).ReplaceObject( voxelObjectChunk->objectID, move( newObject ) );
+			_world.GetChunk( chunkX, chunkZ ).ReplaceObject( voxelObjectChunk->voxel.object.objectID, move( newObject ) );
 
 			m_diggingCooldown = cooldown;
 		}
