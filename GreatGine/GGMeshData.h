@@ -2,7 +2,6 @@
 
 #include <vector>
 #include <DirectXMath.h>
-#include <wrl/client.h>
 
 struct GGMeshData
 {

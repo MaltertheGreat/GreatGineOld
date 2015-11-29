@@ -32,17 +32,6 @@ public:
 		UINT voxelZ;
 	};
 
-	/*struct GGVoxelDescription
-	{
-		UINT chunkX;
-		UINT chunkZ;
-		GGChunk::GGObjectID objectID;
-		UINT voxelX;
-		UINT voxelY;
-		UINT voxelZ;
-		GGVoxel::GG_VOXEL_FACE face;
-	};*/
-
 	struct GGVoxelFaceDescription
 	{
 		GGVoxelDescription voxel;
@@ -55,13 +44,14 @@ public:
 public:
 	void Update();
 
-	void SetRenderable( bool _renderable );
 	void SetViewPoint( const DirectX::XMFLOAT3& _position, const DirectX::XMFLOAT3& _rotation );
 
-	bool IsRenderable() const;
 	GGChunk& GetChunk( GGChunkDescription _desc );
-	GGChunk& GetChunk( UINT _x, UINT _z );
+	GGChunk& GetChunk( UINT _x, UINT _z );// Remove this function
 	GGChunkArray& GetChunkArray();
+
+	const GGChunk& GetChunk( GGChunkDescription _desc )const;
+	const GGChunkArray& GetChunkArray() const;
 	const DirectX::XMFLOAT3& GetViewPointPosition() const;
 	const DirectX::XMFLOAT3& GetViewPointRotation() const;
 
@@ -76,7 +66,6 @@ private:
 	std::pair<std::unique_ptr<GGVoxelFaceDescription>, float> GetVoxelFromRayInObject( const DirectX::XMFLOAT3& _originPos, const DirectX::XMFLOAT3& _ray, float _length, const GGObject& _object );
 
 private:
-	bool m_renderable;
 	GGChunkArray m_chunks;
 	DirectX::XMFLOAT3 m_viewPointPosition;
 	DirectX::XMFLOAT3 m_viewPointRotation;

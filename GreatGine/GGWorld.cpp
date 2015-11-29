@@ -8,7 +8,6 @@ using namespace std;
 
 GGWorld::GGWorld()
 	:
-	m_renderable( true ),
 	m_chunks( InitializeChunks() )
 {}
 
@@ -27,13 +26,6 @@ void GGWorld::Update()
 	return;
 }
 
-void GGWorld::SetRenderable( bool _renderable )
-{
-	m_renderable = _renderable;
-
-	return;
-}
-
 void GGWorld::SetViewPoint( const DirectX::XMFLOAT3& _position, const DirectX::XMFLOAT3& _rotation )
 {
 	m_viewPointPosition = _position;
@@ -42,12 +34,7 @@ void GGWorld::SetViewPoint( const DirectX::XMFLOAT3& _position, const DirectX::X
 	return;
 }
 
-bool GGWorld::IsRenderable() const
-{
-	return m_renderable;
-}
-
-GGChunk & GGWorld::GetChunk( GGChunkDescription _desc )
+GGChunk& GGWorld::GetChunk( GGChunkDescription _desc )
 {
 	UINT index = _desc.chunkX * DIAMETER + _desc.chunkZ;
 
@@ -62,6 +49,18 @@ GGChunk& GGWorld::GetChunk( UINT _x, UINT _z )
 }
 
 GGWorld::GGChunkArray& GGWorld::GetChunkArray()
+{
+	return m_chunks;
+}
+
+const GGChunk& GGWorld::GetChunk( GGChunkDescription _desc ) const
+{
+	UINT index = _desc.chunkX * DIAMETER + _desc.chunkZ;
+
+	return m_chunks[ index ];
+}
+
+const GGWorld::GGChunkArray& GGWorld::GetChunkArray() const
 {
 	return m_chunks;
 }

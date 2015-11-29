@@ -18,23 +18,29 @@ GGGraphics::GGGraphics( const GGWindow& _window, GGConfig& _config )
 
 	m_device( _window, m_resolutionX, m_resolutionY ),
 	m_renderer( m_device.GetDriver(), _config.GetInt( "sync_interval", 0 ) ),
-	m_basicShader( m_device.CreateShader() ),
-	m_debugChunkMesh( m_device.CraeteLinesMesh( GGLinesData::VerticalLine( 50.0f, { 1.0f, 0.749f, 0.0f } ) ) ),
-	m_debugChunkShader( m_device.CreateLinesShader() )
+	m_scene( m_device ),
+	m_basicShader( m_device.CreateShader() )
+	//m_debugChunkMesh( m_device.CraeteLinesMesh( GGLinesData::VerticalLine( 50.0f, { 1.0f, 0.749f, 0.0f } ) ) ),
+	//m_debugChunkShader( m_device.CreateLinesShader() )
 {
 	m_renderer.SetCamera( _config.GetFloat( "fov", 80.0f ), m_resolutionX, m_resolutionY );
 }
 
 void GGGraphics::Update( GGWorld& _world, double _timeDelta )
 {
-	auto& chunks = _world.GetChunkArray();
+	/*auto& chunks = _world.GetChunkArray();
 	for( UINT i = 0; i < (GGWorld::DIAMETER * GGWorld::DIAMETER); ++i )
 	{
 		m_chunkModelSets[ i ].Update( m_device, chunks[ i ] );
-	}
+	}*/
 
-	m_debugInfo.Update( _timeDelta, _world.GetViewPointPosition(), _world.GetViewPointRotation() );
-	m_renderer.UpdateCamera( _world.GetViewPointPosition(), _world.GetViewPointRotation() );
+	m_scene.Update( _world );
+
+	auto& camera = m_scene.GetCamera();
+
+	m_debugInfo.Update( _timeDelta, camera.position, camera.rotation );
+	// Camera from scene
+	m_renderer.UpdateCamera( camera.position, camera.rotation );
 
 	return;
 }
@@ -59,6 +65,11 @@ UINT GGGraphics::GetResolutionX() const
 UINT GGGraphics::GetResolutionY() const
 {
 	return m_resolutionY;
+}
+
+GGScene& GGGraphics::GetScene()
+{
+	return m_scene;
 }
 
 void GGGraphics::HandleKeyInput( WPARAM _keyCode, bool _down )
@@ -102,16 +113,18 @@ void GGGraphics::Render3D()
 	m_renderer.SetRenderType( GGRenderer::RENDER_TYPE_MESH );
 	m_renderer.SetFillType( m_currentFillType );
 
-	if( m_renderFlags[ GG_RENDER_FLAGS_WORLD ] )
+	m_renderer.SetShader( m_basicShader );
+	auto& chunkModels = m_scene.GetChunkModels();
+	for( auto& chunk : chunkModels )
 	{
-		m_renderer.SetShader( m_basicShader );
-		for( auto& modelSet : m_chunkModelSets )
+		for( auto& objectModel : chunk )
 		{
-			modelSet.Render( m_renderer );
+			m_renderer.SetMesh( objectModel.second.GetMesh() );
+			m_renderer.RenderMesh( objectModel.second.GetMesh(), objectModel.second.GetTransformation() );
 		}
 	}
 
-	if( m_renderFlags[ GG_RENDER_FLAGS_DEBUG ] )
+	/*if( m_renderFlags[ GG_RENDER_FLAGS_DEBUG ] )
 	{
 		m_renderer.SetRenderType( GGRenderer::RENDER_TYPE_LINES );
 		m_renderer.SetShader( m_debugChunkShader );
@@ -138,7 +151,7 @@ void GGGraphics::Render3D()
 
 			x += GGChunk::DIMENSION;
 		}
-	}
+	}*/
 
 	return;
 }

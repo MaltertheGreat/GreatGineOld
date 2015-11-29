@@ -52,7 +52,7 @@ void GGPlayer::Update( GGWorld& _world, double _timeDelta )
 
 const XMFLOAT3 GGPlayer::GetPosition() const
 {
-	XMFLOAT3 position; // Relative to center of the world
+	/*XMFLOAT3 position; // Relative to center of the world
 	float offset = -((GGWorld::DIAMETER / 2) * GGChunk::DIMENSION) + (GGChunk::DIMENSION / 2);
 	position = { offset, 0, offset };
 	position.x += m_headObject.chunk.chunkX * GGChunk::DIMENSION;
@@ -60,14 +60,19 @@ const XMFLOAT3 GGPlayer::GetPosition() const
 
 	position.x += m_position.x;
 	position.y += m_position.y;
-	position.z += m_position.z;
+	position.z += m_position.z;*/
 
-	return position;
+	return m_position;
 }
 
 const XMFLOAT3& GGPlayer::GetRotation() const
 {
 	return m_rotation;
+}
+
+const GGWorld::GGChunkDescription GGPlayer::GetChunk() const
+{
+	return m_headObject.chunk;
 }
 
 void GGPlayer::HandleKeyInput( WPARAM _keyCode, bool _down )
@@ -252,11 +257,11 @@ void GGPlayer::UpdatePosition( GGWorld & _world, double _timeDelta )
 		m_headObject.chunk.chunkX = chunkX;
 		m_headObject.chunk.chunkZ = chunkZ;
 
-		m_headObject.objectID = _world.GetChunk( m_headObject.chunk.chunkX, m_headObject.chunk.chunkZ ).AddObject( PlayerObject( { x, y, z } ) );
+		m_headObject.objectID = _world.GetChunk( m_headObject.chunk ).AddObject( PlayerObject( { x, y, z } ) );
 	}
 	else
 	{
-		_world.GetChunk( m_headObject.chunk.chunkX, m_headObject.chunk.chunkZ ).ModifyObject( m_headObject.objectID, { x, y, z } );
+		_world.GetChunk( m_headObject.chunk ).ModifyObject( m_headObject.objectID, { x, y, z } );
 	}
 
 	m_position = { x, y, z };

@@ -43,6 +43,8 @@ public:
 	const GGObjectIDs& GetAddedObjectIDs() const;
 	const GGObjectIDs& GetModifiedObjectIDs() const;
 	const GGObjectIDs& GetRemovedObjectIDs() const;
+	// TODO:
+	//const GGObjectIDs& GetMovedObjectIDs() const;
 
 private:
 	GG_CHUNK_STATE    m_state = GG_CHUNK_STATE_UNGENERATED;

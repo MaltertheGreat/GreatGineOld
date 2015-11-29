@@ -22,7 +22,7 @@ GGObjectModel::GGObjectModel( const GGDevice& _device, const GGObject& _object, 
 	XMStoreFloat4x4( &m_transformation, trasformation );
 }
 
-void GGObjectModel::Update( const GGObject & _object, const XMFLOAT3 & _position )
+void GGObjectModel::Update( const GGObject& _object, const XMFLOAT3& _position )
 {
 	XMVECTOR position = XMLoadFloat3( &_position );
 	position += XMLoadFloat3( &_object.GetPosition() );
@@ -31,6 +31,16 @@ void GGObjectModel::Update( const GGObject & _object, const XMFLOAT3 & _position
 	XMMATRIX transformation = XMMatrixScaling( objectScale, objectScale, objectScale );
 	transformation = XMMatrixMultiply( transformation, XMMatrixTranslationFromVector( position ) );
 	XMStoreFloat4x4( &m_transformation, transformation );
+}
+
+void GGObjectModel::Move( const XMFLOAT3& _offset )
+{
+	XMMATRIX transformation = XMLoadFloat4x4( &m_transformation );
+	transformation = XMMatrixMultiply( transformation, XMMatrixTranslation( _offset.x, _offset.y, _offset.z ) );
+
+	XMStoreFloat4x4( &m_transformation, transformation );
+
+	return;
 }
 
 const GGMesh GGObjectModel::GetMesh() const

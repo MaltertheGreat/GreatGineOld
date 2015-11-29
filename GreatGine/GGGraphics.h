@@ -6,6 +6,7 @@
 #include "GGInputHandler.h"
 #include "GGDevice.h"
 #include "GGRenderer.h"
+#include "GGScene.h"
 #include "GGChunkModelSet.h"
 #include "GGShader.h"
 #include "GGDebugInfo.h"
@@ -44,6 +45,7 @@ public:
 
 	UINT GetResolutionX() const;
 	UINT GetResolutionY() const;
+	GGScene& GetScene();
 
 public:
 	virtual void HandleKeyInput( WPARAM _keyCode, bool _down ) override;
@@ -65,9 +67,12 @@ private:
 
 	GGDevice         m_device;
 	GGRenderer       m_renderer;
-	GGChunkModelSets m_chunkModelSets;
+	GGScene          m_scene;
 	GGShader         m_basicShader;
+
 	GGDebugInfo      m_debugInfo;
+
+	/*GGChunkModelSets m_chunkModelSets;
 	GGMesh           m_debugChunkMesh;
-	GGShader         m_debugChunkShader;
+	GGShader         m_debugChunkShader;*/
 };

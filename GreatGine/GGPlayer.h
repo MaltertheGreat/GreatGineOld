@@ -31,6 +31,7 @@ public:
 
 	const DirectX::XMFLOAT3 GetPosition() const;
 	const DirectX::XMFLOAT3& GetRotation() const;
+	const GGWorld::GGChunkDescription GetChunk() const;
 
 public:
 	virtual void HandleKeyInput( WPARAM _keyCode, bool _down ) override;

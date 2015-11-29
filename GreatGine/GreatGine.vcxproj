@@ -200,6 +200,7 @@
     <ClCompile Include="GGObject.cpp" />
     <ClCompile Include="GGPlayer.cpp" />
     <ClCompile Include="GGRenderer.cpp" />
+    <ClCompile Include="GGScene.cpp" />
     <ClCompile Include="GGShader.cpp" />
     <ClCompile Include="GGWindow.cpp" />
     <ClCompile Include="GGWorld.cpp" />
@@ -234,6 +235,7 @@
     <ClInclude Include="GGObject.h" />
     <ClInclude Include="GGPlayer.h" />
     <ClInclude Include="GGRenderer.h" />
+    <ClInclude Include="GGScene.h" />
     <ClInclude Include="GGShader.h" />
     <ClInclude Include="GGVoxel.h" />
     <ClInclude Include="GGWindow.h" />

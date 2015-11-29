@@ -120,6 +120,9 @@
     <ClCompile Include="GGFrameTimer.cpp">
       <Filter>Source Files\Application</Filter>
     </ClCompile>
+    <ClCompile Include="GGScene.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GGApplication.h">
@@ -201,6 +204,9 @@
       <Filter>Header Files\Application</Filter>
     </ClInclude>
     <ClInclude Include="GGGUI.h">
+      <Filter>Header Files\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="GGScene.h">
       <Filter>Header Files\Graphics</Filter>
     </ClInclude>
   </ItemGroup>
