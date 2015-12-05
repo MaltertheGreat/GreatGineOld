@@ -11,10 +11,10 @@ GGScene::GGScene( GGDevice& _device )
 
 void GGScene::Update( const GGWorld& _world )
 {
-	long long chunkX = m_centerChunk.chunkX - RENDER_DISTANCE;
+	long long chunkX = static_cast<long long>(m_centerChunk.chunkX) - RENDER_DISTANCE;
 	for( int x = 0; x < SCENE_DIAMETER; ++x )
 	{
-		long long chunkZ = m_centerChunk.chunkZ - RENDER_DISTANCE;
+		long long chunkZ = static_cast<long long>(m_centerChunk.chunkZ) - RENDER_DISTANCE;
 		for( int z = 0; z < SCENE_DIAMETER; ++z )
 		{
 			if( chunkX >= 0 && chunkX < GGWorld::DIAMETER && chunkZ >= 0 && chunkZ < GGWorld::DIAMETER )
@@ -108,12 +108,12 @@ void GGScene::MoveScene( long long _dX, long long _dZ )
 
 		for( int x = 0; x < SCENE_DIAMETER; ++x )
 		{
-			int newX = x + _dX;
+			int newX = static_cast<int>(x + _dX);
 			if( newX >= 0 && newX < SCENE_DIAMETER )
 			{
 				for( int z = 0; z < SCENE_DIAMETER; ++z )
 				{
-					int newZ = z + _dZ;
+					int newZ = static_cast<int>(z + _dZ);
 					if( newZ >= 0 && newZ < SCENE_DIAMETER )
 					{
 						auto& newChunkModel = newChunkModels[ newX * SCENE_DIAMETER + newZ ];

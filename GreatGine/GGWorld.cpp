@@ -373,7 +373,7 @@ pair<unique_ptr<GGWorld::GGVoxelFaceDescription>, float> GGWorld::GetVoxelFromRa
 			lengthZ = INFINITY;
 		}
 
-		GGVoxel::GG_VOXEL_FACE face;
+		GGVoxel::GG_VOXEL_FACE face = GGVoxel::GG_VOXEL_FACE_TOP;
 
 		// Choose the shortest of lengths
 		if( lengthX <= lengthY )

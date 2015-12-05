@@ -506,7 +506,6 @@ void GGPlayer::InteractWithWorld( GGWorld& _world, double _timeDelta )
 			UINT y = voxelObjectChunk->voxel.voxelY;
 			UINT z = voxelObjectChunk->voxel.voxelZ;
 
-			GGVoxel::GG_VOXEL_FACE face = voxelObjectChunk->face;
 			UINT voxelIndex = x * GGObject::DIAMETER * GGObject::DIAMETER + y * GGObject::DIAMETER + z;
 
 			GGObject::GGVoxelArray newVoxels = object.GetVoxels();

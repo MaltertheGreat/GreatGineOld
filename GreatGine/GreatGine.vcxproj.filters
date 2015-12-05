@@ -13,9 +13,6 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
-    <Filter Include="Shaders">
-      <UniqueIdentifier>{fe0a2b3c-4de6-462f-aad4-e1fe01bffb2b}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Header Files\World">
       <UniqueIdentifier>{06d4fe4f-3710-4b93-a1b5-9bd78f73a4a9}</UniqueIdentifier>
     </Filter>
@@ -42,6 +39,9 @@
     </Filter>
     <Filter Include="Source Files\Application">
       <UniqueIdentifier>{973f102a-f0bf-4fd8-a7b5-7299e6855089}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shader Files">
+      <UniqueIdentifier>{fe0a2b3c-4de6-462f-aad4-e1fe01bffb2b}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -212,16 +212,16 @@
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="basicVS.hlsl">
-      <Filter>Shaders</Filter>
+      <Filter>Shader Files</Filter>
     </FxCompile>
     <FxCompile Include="basicPS.hlsl">
-      <Filter>Shaders</Filter>
+      <Filter>Shader Files</Filter>
     </FxCompile>
     <FxCompile Include="linesVS.hlsl">
-      <Filter>Shaders</Filter>
+      <Filter>Shader Files</Filter>
     </FxCompile>
     <FxCompile Include="linesPS.hlsl">
-      <Filter>Shaders</Filter>
+      <Filter>Shader Files</Filter>
     </FxCompile>
   </ItemGroup>
 </Project>

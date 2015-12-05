@@ -2,7 +2,7 @@
 #include "GGConfig.h"
 #include "GGApplication.h"
 
-int WINAPI WinMain( HINSTANCE _hInstance, HINSTANCE, LPSTR, int )
+int WINAPI WinMain( _In_ HINSTANCE _hInstance, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int )
 {
 	try
 	{
@@ -13,7 +13,7 @@ int WINAPI WinMain( HINSTANCE _hInstance, HINSTANCE, LPSTR, int )
 	}
 	catch( const std::exception& error )
 	{
-		MessageBoxA( NULL, error.what(), "An error occured!", MB_ICONERROR );
+		MessageBoxA( NULL, error.what(), "An error occurred!", MB_ICONERROR );
 	}
 
 	return 0;

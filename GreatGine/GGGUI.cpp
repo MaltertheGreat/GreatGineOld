@@ -15,7 +15,7 @@ void GGGUI::SetRenderable( bool _renderable )
 	return;
 }
 
-void GGGUI::AddRectangle( int _x, int _y, int _width, int _height, float _color[ 4 ] )
+void GGGUI::AddRectangle( int, int, int, int, float* )
 {}
 
 bool GGGUI::IsRenderable() const

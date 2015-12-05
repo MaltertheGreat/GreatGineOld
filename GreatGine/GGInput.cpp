@@ -56,7 +56,7 @@ void GGInput::ProcessInput( const MSG& _msg )
 
 void GGInput::ProcessRawInput( LPARAM _lParam )
 {
-	UINT dwSize;
+	UINT dwSize = 0;
 
 	GetRawInputData( (HRAWINPUT)_lParam, RID_INPUT, NULL, &dwSize, sizeof( RAWINPUTHEADER ) );
 
