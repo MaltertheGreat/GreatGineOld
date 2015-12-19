@@ -119,8 +119,11 @@ void GGGraphics::Render3D()
 	{
 		for( auto& objectModel : chunk )
 		{
-			m_renderer.SetMesh( objectModel.second.GetMesh() );
-			m_renderer.RenderMesh( objectModel.second.GetMesh(), objectModel.second.GetTransformation() );
+			if( !objectModel.IsEmpty() )
+			{
+				m_renderer.SetMesh( objectModel.GetMesh() );
+				m_renderer.RenderMesh( objectModel.GetMesh(), objectModel.GetTransformation() );
+			}
 		}
 	}
 

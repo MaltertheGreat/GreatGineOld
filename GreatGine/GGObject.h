@@ -1,6 +1,6 @@
 #pragma once
 
-#include <array>
+#include <vector>
 #include <DirectXMath.h>
 
 #include "GGVoxel.h"
@@ -8,24 +8,27 @@
 class GGObject
 {
 public:
-	static constexpr UINT DIAMETER = 16;
-	typedef std::array<GGVoxel, DIAMETER * DIAMETER * DIAMETER> GGVoxelArray;
+	static constexpr UINT MAX_DIAMETER = 16;
+	static constexpr UINT MAX_SIZE = MAX_DIAMETER * MAX_DIAMETER * MAX_DIAMETER;
+	typedef std::vector<GGVoxel> GGVoxels;
 
 public:
-	GGObject( GGVoxelArray&& _voxels, float _voxelDimension, const DirectX::XMFLOAT3& _position );
+	GGObject();
+	GGObject( GGVoxels&& _voxels, float _voxelDimension, const DirectX::XMFLOAT3& _position );
 
 public:
 	void SetPosition( const DirectX::XMFLOAT3& _pos );
 	void SetColor( const DirectX::XMFLOAT3& _color );
 
+	const bool IsEmpty() const;
 	const float GetVoxelDimension() const;
 	const DirectX::XMFLOAT3& GetPosition() const;
 	const DirectX::XMFLOAT3& GetColor() const;
-	const GGVoxelArray& GetVoxels() const;
+	const GGVoxels& GetVoxels() const;
 
 private:
 	float             m_voxelDimension;
-	DirectX::XMFLOAT3 m_position;	// Relative to center of chunk
+	DirectX::XMFLOAT3 m_position; // Relative to center of chunk
 	DirectX::XMFLOAT3 m_color;
-	GGVoxelArray      m_voxels;
+	GGVoxels          m_voxels;
 };

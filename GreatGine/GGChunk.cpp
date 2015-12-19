@@ -14,71 +14,57 @@ void GGChunk::Update()
 {
 	m_addedObjectIDs.clear();
 	m_modifiedObjectIDs.clear();
-	m_removedObjectIDs.clear();
 
 	return;
 }
 
 GGChunk::GGObjectID GGChunk::AddObject( GGObject&& _object )
 {
-	bool empty = true;
-	auto voxels = _object.GetVoxels();
-	for( auto& voxel : voxels )
+	GGObjectID newObjectID;
+	if( m_emptyObjectIDs.empty() )
 	{
-		if( voxel.element )
-		{
-			empty = false;
-			break;
-		}
-	}
-	assert( !empty );
-
-	m_objects.insert( { m_newObjectID, move( _object ) } ).second;
-
-	m_addedObjectIDs.push_back( m_newObjectID );
-
-	return m_newObjectID++;
-}
-
-void GGChunk::ModifyObject( GGObjectID id, const DirectX::XMFLOAT3& _position )
-{
-	m_objects.at( id ).SetPosition( _position );
-	m_modifiedObjectIDs.push_back( id );
-
-	return;
-}
-
-void GGChunk::ReplaceObject( GGObjectID id, GGObject&& _newObject )
-{
-	bool empty = true;
-	auto voxels = _newObject.GetVoxels();
-	for( auto& voxel : voxels )
-	{
-		if( voxel.element )
-		{
-			empty = false;
-			break;
-		}
-	}
-
-	if( empty )
-	{
-		RemoveObject( id );
+		newObjectID = m_objects.size();
+		m_objects.push_back( move( _object ) );
 	}
 	else
 	{
-		_newObject.SetColor( m_objects.at( id ).GetColor() );
-		m_objects.at( id ) = move( _newObject );
-		m_addedObjectIDs.push_back( id );
+		newObjectID = m_emptyObjectIDs.back();
+		m_emptyObjectIDs.pop_back();
+
+		m_objects[ newObjectID ] = move( _object );
 	}
+
+	m_addedObjectIDs.push_back( newObjectID );
+
+	return newObjectID;
+}
+
+void GGChunk::ModifyObject( GGObjectID _id, const DirectX::XMFLOAT3& _position )
+{
+	m_objects.at( _id ).SetPosition( _position );
+	m_modifiedObjectIDs.push_back( _id );
 
 	return;
 }
 
-void GGChunk::RemoveObject( GGObjectID id )
+void GGChunk::RemoveObject( GGObjectID _id )
 {
-	m_objects.erase( id );
-	m_removedObjectIDs.push_back( id );
+	ReplaceObject( _id, GGObject() );
+	m_emptyObjectIDs.push_back( _id );
+
+	return;
+}
+
+void GGChunk::ReplaceObject( GGObjectID _id, GGObject&& _newObject )
+{
+	if( _newObject.IsEmpty() )
+	{
+		m_emptyObjectIDs.push_back( _id );
+	}
+
+	m_objects.at( _id ) = move( _newObject );
+
+	m_addedObjectIDs.push_back( _id );
 
 	return;
 }
@@ -113,9 +99,4 @@ const GGChunk::GGObjectIDs& GGChunk::GetAddedObjectIDs() const
 const GGChunk::GGObjectIDs& GGChunk::GetModifiedObjectIDs() const
 {
 	return m_modifiedObjectIDs;
-}
-
-const GGChunk::GGObjectIDs& GGChunk::GetRemovedObjectIDs() const
-{
-	return m_removedObjectIDs;
 }

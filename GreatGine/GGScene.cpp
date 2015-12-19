@@ -69,31 +69,32 @@ void GGScene::SetCamera( const GGCamera& _camera )
 
 void GGScene::UpdateChunkModel( GGChunkModel& _chunkModel, const GGChunk& _chunk, const DirectX::XMFLOAT3& _position )
 {
+	auto& objects = _chunk.GetObjects();
+
 	if( _chunkModel.empty() )
 	{
-		for( auto& object : _chunk.GetObjects() )
+		for( auto& object : objects )
 		{
-			_chunkModel[ object.first ] = GGObjectModel( m_device, object.second, _position, object.second.GetColor() );
+			_chunkModel.push_back( GGObjectModel( m_device, object, _position ) );
 		}
 	}
 	else
 	{
-		auto& newObjectIDs = _chunk.GetAddedObjectIDs();
-		for( auto& id : newObjectIDs )
+		if( _chunkModel.size() != objects.size() )
 		{
-			_chunkModel[ id ] = GGObjectModel( m_device, _chunk.GetObjects().at( id ), _position, _chunk.GetObjects().at( id ).GetColor() );
+			_chunkModel.resize( objects.size() );
+		}
+
+		auto& addedObjectIDs = _chunk.GetAddedObjectIDs();
+		for( auto& id : addedObjectIDs )
+		{
+			_chunkModel[ id ] = GGObjectModel( m_device, objects[ id ], _position );
 		}
 
 		auto& modifiedObjectIDs = _chunk.GetModifiedObjectIDs();
 		for( auto& id : modifiedObjectIDs )
 		{
-			_chunkModel.at( id ).Update( _chunk.GetObjects().at( id ), _position );
-		}
-
-		auto& removedObjectIDs = _chunk.GetRemovedObjectIDs();
-		for( auto& id : removedObjectIDs )
-		{
-			_chunkModel.erase( id );
+			_chunkModel[ id ].Update( objects[ id ], _position );
 		}
 	}
 
@@ -120,7 +121,7 @@ void GGScene::MoveScene( long long _dX, long long _dZ )
 						newChunkModel = std::move( m_chunkModels[ x * SCENE_DIAMETER + z ] );
 						for( auto& objectModel : newChunkModel )
 						{
-							objectModel.second.Move( { _dX * GGChunk::DIMENSION, 0.0f, _dZ * GGChunk::DIMENSION } );
+							objectModel.Move( { _dX * GGChunk::DIMENSION, 0.0f, _dZ * GGChunk::DIMENSION } );
 						}
 					}
 				}

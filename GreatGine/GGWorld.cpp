@@ -41,13 +41,6 @@ GGChunk& GGWorld::GetChunk( GGChunkDescription _desc )
 	return m_chunks[ index ];
 }
 
-GGChunk& GGWorld::GetChunk( UINT _x, UINT _z )
-{
-	UINT index = _x * DIAMETER + _z;
-
-	return m_chunks[ index ];
-}
-
 GGWorld::GGChunkArray& GGWorld::GetChunkArray()
 {
 	return m_chunks;
@@ -65,12 +58,12 @@ const GGWorld::GGChunkArray& GGWorld::GetChunkArray() const
 	return m_chunks;
 }
 
-const DirectX::XMFLOAT3 & GGWorld::GetViewPointPosition() const
+const DirectX::XMFLOAT3& GGWorld::GetViewPointPosition() const
 {
 	return m_viewPointPosition;
 }
 
-const DirectX::XMFLOAT3 & GGWorld::GetViewPointRotation() const
+const DirectX::XMFLOAT3& GGWorld::GetViewPointRotation() const
 {
 	return m_viewPointRotation;
 }
@@ -180,20 +173,20 @@ unique_ptr<GGWorld::GGVoxelFaceDescription> GGWorld::GetVoxelFromRay( UINT _orig
 		GGChunkDescription chunk = chunkIterator.first;
 		auto& objects = GetChunk( chunk ).GetObjects();
 
-		for( auto objectIterator : objects )
+		for( GGChunk::GGObjectID id = 0; id < objects.size(); ++id )
 		{
-			GGChunk::GGObjectID objectID = objectIterator.first;
 			if( _excludedObject )
 			{
 				if( chunk == _excludedObject->chunk )
 				{
-					if( objectID == _excludedObject->objectID )
+					if( id == _excludedObject->objectID )
 					{
 						continue;
 					}
 				}
 			}
-			auto& object = objectIterator.second;
+
+			auto& object = objects[ id ];
 
 			auto voxelFromRay = GetVoxelFromRayInObject( chunkIterator.second, ray, _length, object );
 
@@ -204,7 +197,7 @@ unique_ptr<GGWorld::GGVoxelFaceDescription> GGWorld::GetVoxelFromRay( UINT _orig
 				minRayLength = rayLength;
 				closestVoxelDesc = move( voxelFromRay.first );
 
-				closestVoxelDesc->voxel.object.objectID = objectID;
+				closestVoxelDesc->voxel.object.objectID = id;
 				closestVoxelDesc->voxel.object.chunk = chunk;
 			}
 		}
@@ -238,7 +231,7 @@ GGWorld::GGChunkArray GGWorld::InitializeChunks()
 
 void GGWorld::GenerateChunk( GGChunk& _chunk )
 {
-	float voxelDimension = GGChunk::DIMENSION / static_cast<float>(GGObject::DIAMETER);
+	float voxelDimension = GGChunk::DIMENSION / static_cast<float>(GGObject::MAX_DIAMETER);
 	XMFLOAT3 position = { 0.0f, 0.0f, 0.0f };
 	GGObject object( move( CreateRandomVoxels() ), voxelDimension, position );
 
@@ -260,13 +253,13 @@ void GGWorld::GenerateChunk( GGChunk& _chunk )
 	return;
 }
 
-GGObject::GGVoxelArray GGWorld::CreateRandomVoxels()
+GGObject::GGVoxels GGWorld::CreateRandomVoxels()
 {
 	static default_random_engine gen;
 	//static bernoulli_distribution solid( 0.025 );
 	static bernoulli_distribution solid( 1.0 );
 
-	GGObject::GGVoxelArray voxels;
+	GGObject::GGVoxels voxels( GGObject::MAX_SIZE );
 	for( auto& voxel : voxels )
 	{
 		if( solid( gen ) )
@@ -280,6 +273,11 @@ GGObject::GGVoxelArray GGWorld::CreateRandomVoxels()
 
 pair<unique_ptr<GGWorld::GGVoxelFaceDescription>, float> GGWorld::GetVoxelFromRayInObject( const XMFLOAT3& _originPos, const XMFLOAT3& _ray, float _length, const GGObject& _object )
 {
+	if( _object.IsEmpty() )
+	{
+		return make_pair( nullptr, INFINITY );
+	}
+
 	const float voxelDimension = _object.GetVoxelDimension();
 	const float voxelRadius = voxelDimension / 2.0f;
 
@@ -450,7 +448,7 @@ pair<unique_ptr<GGWorld::GGVoxelFaceDescription>, float> GGWorld::GetVoxelFromRa
 			break;
 		}
 
-		const UINT objectRadius = GGObject::DIAMETER / 2;
+		const UINT objectRadius = GGObject::MAX_DIAMETER / 2;
 		if( x >= static_cast<int>(objectRadius) || x < -static_cast<int>(objectRadius) )
 		{
 			continue;
@@ -467,8 +465,8 @@ pair<unique_ptr<GGWorld::GGVoxelFaceDescription>, float> GGWorld::GetVoxelFromRa
 		UINT uX = static_cast<UINT>(x + objectRadius);
 		UINT uY = static_cast<UINT>(y + objectRadius);
 		UINT uZ = static_cast<UINT>(z + objectRadius);
-		UINT voxelIndex = uX * GGObject::DIAMETER * GGObject::DIAMETER + uY * GGObject::DIAMETER + uZ;
-		assert( voxelIndex < GGObject::DIAMETER * GGObject::DIAMETER * GGObject::DIAMETER );
+		UINT voxelIndex = uX * GGObject::MAX_DIAMETER * GGObject::MAX_DIAMETER + uY * GGObject::MAX_DIAMETER + uZ;
+		assert( voxelIndex < GGObject::MAX_SIZE );
 		auto& voxels = _object.GetVoxels();
 		if( voxels.at( voxelIndex ).element != 0 )
 		{

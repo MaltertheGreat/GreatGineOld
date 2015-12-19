@@ -17,7 +17,7 @@ public:
 	static constexpr int SCENE_DIAMETER = (2 * RENDER_DISTANCE + 1);
 	static constexpr int SCENE_SIZE = SCENE_DIAMETER * SCENE_DIAMETER;
 
-	typedef std::unordered_map<UINT, GGObjectModel> GGChunkModel;
+	typedef std::vector<GGObjectModel> GGChunkModel;
 	typedef std::array<GGChunkModel, SCENE_SIZE> GGChunkModelArray;
 
 	struct GGCamera
@@ -42,10 +42,6 @@ public:
 private:
 	void UpdateChunkModel( GGChunkModel& _chunkModel, const GGChunk& _chunk, const DirectX::XMFLOAT3& _position );
 	void MoveScene( long long _dX, long long _dZ );
-
-	/*void AddObjectModel( GGWorld::GGObjectDescription _objectDesc );
-	void UpdateObjectModel( GGWorld::GGObjectDescription _objectDesc );
-	void RemoveObjectModel( GGWorld::GGObjectDescription _objectDesc );*/
 
 private:
 	GGDevice& m_device;

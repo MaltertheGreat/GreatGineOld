@@ -4,12 +4,33 @@
 using namespace DirectX;
 using namespace std;
 
-GGObject::GGObject( GGVoxelArray&& _voxels, float _voxelDimension, const XMFLOAT3& _position )
+GGObject::GGObject()
+	:
+	m_voxelDimension( 0.0f )
+{}
+
+GGObject::GGObject( GGVoxels&& _voxels, float _voxelDimension, const DirectX::XMFLOAT3& _position )
 	:
 	m_voxelDimension( _voxelDimension ),
 	m_position( _position ),
 	m_voxels( move( _voxels ) )
 {
+	bool empty = true;
+	for( auto voxel : m_voxels )
+	{
+		if( voxel.element != 0 )
+		{
+			empty = false;
+			break;
+		}
+	}
+
+	if( empty )
+	{
+		m_voxels.clear();
+		m_voxelDimension = 0.0f;
+	}
+
 	static random_device gen;
 	static uniform_real_distribution<float> color( 0.25f, 0.75f );
 
@@ -18,16 +39,28 @@ GGObject::GGObject( GGVoxelArray&& _voxels, float _voxelDimension, const XMFLOAT
 	m_color.z = color( gen );
 }
 
-void GGObject::SetPosition( const XMFLOAT3 & _pos )
+void GGObject::SetPosition( const XMFLOAT3& _pos )
 {
 	m_position = _pos;
 }
 
-void GGObject::SetColor( const DirectX::XMFLOAT3 & _color )
+void GGObject::SetColor( const DirectX::XMFLOAT3& _color )
 {
 	m_color = _color;
 
 	return;
+}
+
+const bool GGObject::IsEmpty() const
+{
+	if( m_voxels.size() )
+	{
+		return false;
+	}
+	else
+	{
+		return true;
+	}
 }
 
 const float GGObject::GetVoxelDimension() const
@@ -45,7 +78,7 @@ const XMFLOAT3& GGObject::GetColor() const
 	return m_color;
 }
 
-const GGObject::GGVoxelArray& GGObject::GetVoxels() const
+const GGObject::GGVoxels& GGObject::GetVoxels() const
 {
 	return m_voxels;
 }

@@ -47,7 +47,6 @@ public:
 	void SetViewPoint( const DirectX::XMFLOAT3& _position, const DirectX::XMFLOAT3& _rotation );
 
 	GGChunk& GetChunk( GGChunkDescription _desc );
-	GGChunk& GetChunk( UINT _x, UINT _z );// Remove this function
 	GGChunkArray& GetChunkArray();
 
 	const GGChunk& GetChunk( GGChunkDescription _desc )const;
@@ -61,7 +60,7 @@ private:
 	// TODO: Move these functions to some sort of world generator
 	static GGChunkArray InitializeChunks();
 	static void GenerateChunk( GGChunk& _chunk );
-	static GGObject::GGVoxelArray CreateRandomVoxels();
+	static GGObject::GGVoxels CreateRandomVoxels();
 
 	std::pair<std::unique_ptr<GGVoxelFaceDescription>, float> GetVoxelFromRayInObject( const DirectX::XMFLOAT3& _originPos, const DirectX::XMFLOAT3& _ray, float _length, const GGObject& _object );
 
