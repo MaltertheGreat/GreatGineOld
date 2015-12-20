@@ -39,9 +39,6 @@ public:
 	};
 
 public:
-	GGWorld();
-
-public:
 	void Update();
 
 	void SetViewPoint( const DirectX::XMFLOAT3& _position, const DirectX::XMFLOAT3& _rotation );

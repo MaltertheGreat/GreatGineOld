@@ -2,14 +2,6 @@
 #include "GGChunk.h"
 using namespace std;
 
-GGChunk::GGChunk()
-{}
-
-GGChunk::GGChunk( DirectX::XMFLOAT3 _position )
-	:
-	m_position( _position )
-{}
-
 void GGChunk::Update()
 {
 	m_addedObjectIDs.clear();
@@ -50,7 +42,6 @@ void GGChunk::ModifyObject( GGObjectID _id, const DirectX::XMFLOAT3& _position )
 void GGChunk::RemoveObject( GGObjectID _id )
 {
 	ReplaceObject( _id, GGObject() );
-	m_emptyObjectIDs.push_back( _id );
 
 	return;
 }
@@ -59,10 +50,17 @@ void GGChunk::ReplaceObject( GGObjectID _id, GGObject&& _newObject )
 {
 	if( _newObject.IsEmpty() )
 	{
-		m_emptyObjectIDs.push_back( _id );
+		if( m_objects[ _id ].IsEmpty() )
+		{
+			return;
+		}
+		else
+		{
+			m_emptyObjectIDs.push_back( _id );
+		}
 	}
 
-	m_objects.at( _id ) = move( _newObject );
+	m_objects[ _id ] = move( _newObject );
 
 	m_addedObjectIDs.push_back( _id );
 
@@ -79,11 +77,6 @@ void GGChunk::SetState( GGChunk::GG_CHUNK_STATE _state )
 GGChunk::GG_CHUNK_STATE GGChunk::GetState() const
 {
 	return m_state;
-}
-
-const DirectX::XMFLOAT3& GGChunk::GetPosition() const
-{
-	return m_position;
 }
 
 const GGChunk::GGObjects& GGChunk::GetObjects() const

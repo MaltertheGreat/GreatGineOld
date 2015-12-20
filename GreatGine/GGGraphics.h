@@ -7,7 +7,6 @@
 #include "GGDevice.h"
 #include "GGRenderer.h"
 #include "GGScene.h"
-#include "GGChunkModelSet.h"
 #include "GGShader.h"
 #include "GGDebugInfo.h"
 #include "GGWorld.h"
@@ -33,8 +32,6 @@ private:
 
 		GG_RENDER_FLAGS_COUNT
 	};
-
-	typedef std::array<GGChunkModelSet, GGWorld::DIAMETER * GGWorld::DIAMETER> GGChunkModelSets;
 
 public:
 	GGGraphics( const GGWindow& _window, GGConfig& _config );

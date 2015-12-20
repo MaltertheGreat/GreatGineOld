@@ -6,11 +6,6 @@
 using namespace DirectX;
 using namespace std;
 
-GGWorld::GGWorld()
-	:
-	m_chunks( InitializeChunks() )
-{}
-
 void GGWorld::Update()
 {
 	for( auto& chunk : m_chunks )
@@ -204,29 +199,6 @@ unique_ptr<GGWorld::GGVoxelFaceDescription> GGWorld::GetVoxelFromRay( UINT _orig
 	}
 
 	return move( closestVoxelDesc );
-}
-
-GGWorld::GGChunkArray GGWorld::InitializeChunks()
-{
-	GGChunkArray chunks;
-
-	const float chunkOffset = DIAMETER / 2.0f * GGChunk::DIMENSION - GGChunk::DIMENSION * 0.5f;
-	float x = -chunkOffset;
-	float z = -chunkOffset;
-
-	for( auto& chunk : chunks )
-	{
-		chunk = GGChunk( { x, 0.0f, z } );
-
-		z += GGChunk::DIMENSION;
-		if( z > chunkOffset )
-		{
-			z = -chunkOffset;
-			x += GGChunk::DIMENSION;
-		}
-	}
-
-	return chunks;
 }
 
 void GGWorld::GenerateChunk( GGChunk& _chunk )
