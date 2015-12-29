@@ -63,18 +63,6 @@ const DirectX::XMFLOAT3& GGWorld::GetViewPointRotation() const
 	return m_viewPointRotation;
 }
 
-float sgn( float f )
-{
-	if( f >= 0.0f )
-	{
-		return 1.0f;
-	}
-	else
-	{
-		return -1.0f;
-	}
-}
-
 unique_ptr<GGWorld::GGVoxelFaceDescription> GGWorld::GetVoxelFromRay( UINT _originChunkX, UINT _originChunkZ, const XMFLOAT3& _originPosition, const XMFLOAT3& _rotation, float _length, GGObjectDescription* _excludedObject )
 {
 	XMFLOAT3 ray;
@@ -83,8 +71,96 @@ unique_ptr<GGWorld::GGVoxelFaceDescription> GGWorld::GetVoxelFromRay( UINT _orig
 	float minRayLength = INFINITY;
 	unique_ptr<GGVoxelFaceDescription> closestVoxelDesc;
 
+	auto chunksToCheck = ChunksToCheckRay( _originChunkX, _originChunkZ, _originPosition );
+
+	for( auto& chunkIterator : chunksToCheck )
+	{
+		GGChunkDescription chunk = chunkIterator.first;
+		auto& objects = GetChunk( chunk ).GetObjects();
+
+		for( GGChunk::GGObjectID id = 0; id < objects.size(); ++id )
+		{
+			if( _excludedObject )
+			{
+				if( chunk == _excludedObject->chunk )
+				{
+					if( id == _excludedObject->objectID )
+					{
+						continue;
+					}
+				}
+			}
+
+			auto& object = objects[ id ];
+
+			auto voxelFromRay = GetVoxelFromRayInObject( chunkIterator.second, ray, _length, object );
+
+			float rayLength = voxelFromRay.second;
+
+			if( rayLength < minRayLength )
+			{
+				minRayLength = rayLength;
+				closestVoxelDesc = move( voxelFromRay.first );
+
+				closestVoxelDesc->voxel.object.objectID = id;
+				closestVoxelDesc->voxel.object.chunk = chunk;
+			}
+		}
+	}
+
+	return move( closestVoxelDesc );
+}
+
+void GGWorld::GenerateChunk( GGChunk& _chunk )
+{
+	static random_device generator;
+	static uniform_real_distribution<float> distribution( 0.25f, 0.75f );
+
+	float voxelDimension = GGChunk::DIMENSION / static_cast<float>(GGObject::MAX_DIAMETER);
+	XMFLOAT3 position = { 0.0f, 0.0f, 0.0f };
+	XMFLOAT3 color = { distribution( generator ), distribution( generator ),  distribution( generator ) };
+
+	_chunk.AddObject( { CreateRandomVoxels(), voxelDimension, position, color } );
+
+	static bernoulli_distribution solid( 0.1 );
+	if( solid( generator ) )
+	{
+		voxelDimension /= 4.0f;
+		position = { 0.0f, GGChunk::DIMENSION / 2.0f, 0.0f };
+		color = { distribution( generator ), distribution( generator ),  distribution( generator ) };
+		GGObject smallObject( move( CreateRandomVoxels() ), voxelDimension, position, color );
+
+		_chunk.AddObject( move( smallObject ) );
+	}
+
+	_chunk.SetState( GGChunk::GG_CHUNK_STATE_GENERAETD );
+
+	return;
+}
+
+GGObject::GGVoxels GGWorld::CreateRandomVoxels()
+{
+	static default_random_engine gen;
+	//static bernoulli_distribution solid( 0.025 );
+	static bernoulli_distribution solid( 1.0 );
+
+	GGObject::GGVoxels voxels( GGObject::MAX_SIZE );
+	for( auto& voxel : voxels )
+	{
+		if( solid( gen ) )
+		{
+			voxel.element = 1;
+		}
+	}
+
+	return voxels;
+}
+
+vector<pair<GGWorld::GGChunkDescription, XMFLOAT3>> GGWorld::ChunksToCheckRay( UINT _originChunkX, UINT _originChunkZ, const XMFLOAT3& _originPosition )
+{
 	vector<pair<GGChunkDescription, XMFLOAT3 >> chunksToCheck;
 	chunksToCheck.push_back( { { _originChunkX, _originChunkZ }, _originPosition } );
+
 	if( _originChunkX > 0 )
 	{
 		UINT chunkX = _originChunkX - 1;
@@ -163,84 +239,7 @@ unique_ptr<GGWorld::GGVoxelFaceDescription> GGWorld::GetVoxelFromRay( UINT _orig
 		chunksToCheck.push_back( { { chunkX, chunkZ }, pos } );
 	}
 
-	for( auto& chunkIterator : chunksToCheck )
-	{
-		GGChunkDescription chunk = chunkIterator.first;
-		auto& objects = GetChunk( chunk ).GetObjects();
-
-		for( GGChunk::GGObjectID id = 0; id < objects.size(); ++id )
-		{
-			if( _excludedObject )
-			{
-				if( chunk == _excludedObject->chunk )
-				{
-					if( id == _excludedObject->objectID )
-					{
-						continue;
-					}
-				}
-			}
-
-			auto& object = objects[ id ];
-
-			auto voxelFromRay = GetVoxelFromRayInObject( chunkIterator.second, ray, _length, object );
-
-			float rayLength = voxelFromRay.second;
-
-			if( rayLength < minRayLength )
-			{
-				minRayLength = rayLength;
-				closestVoxelDesc = move( voxelFromRay.first );
-
-				closestVoxelDesc->voxel.object.objectID = id;
-				closestVoxelDesc->voxel.object.chunk = chunk;
-			}
-		}
-	}
-
-	return move( closestVoxelDesc );
-}
-
-void GGWorld::GenerateChunk( GGChunk& _chunk )
-{
-	float voxelDimension = GGChunk::DIMENSION / static_cast<float>(GGObject::MAX_DIAMETER);
-	XMFLOAT3 position = { 0.0f, 0.0f, 0.0f };
-	GGObject object( move( CreateRandomVoxels() ), voxelDimension, position );
-
-	_chunk.AddObject( move( object ) );
-
-	static default_random_engine gen;
-	static bernoulli_distribution solid( 0.1 );
-	if( solid( gen ) )
-	{
-		voxelDimension /= 4.0f;
-		position = { 0.0f, GGChunk::DIMENSION / 2.0f, 0.0f };
-		GGObject smallObject( move( CreateRandomVoxels() ), voxelDimension, position );
-
-		_chunk.AddObject( move( smallObject ) );
-	}
-
-	_chunk.SetState( GGChunk::GG_CHUNK_STATE_GENERAETD );
-
-	return;
-}
-
-GGObject::GGVoxels GGWorld::CreateRandomVoxels()
-{
-	static default_random_engine gen;
-	//static bernoulli_distribution solid( 0.025 );
-	static bernoulli_distribution solid( 1.0 );
-
-	GGObject::GGVoxels voxels( GGObject::MAX_SIZE );
-	for( auto& voxel : voxels )
-	{
-		if( solid( gen ) )
-		{
-			voxel.element = 1;
-		}
-	}
-
-	return voxels;
+	return chunksToCheck;
 }
 
 pair<unique_ptr<GGWorld::GGVoxelFaceDescription>, float> GGWorld::GetVoxelFromRayInObject( const XMFLOAT3& _originPos, const XMFLOAT3& _ray, float _length, const GGObject& _object )
@@ -262,7 +261,7 @@ pair<unique_ptr<GGWorld::GGVoxelFaceDescription>, float> GGWorld::GetVoxelFromRa
 	int y = static_cast<int>(floor( fY / voxelDimension ));
 	int z = static_cast<int>(floor( fZ / voxelDimension ));
 
-	// Ray origin inside voxel <-0.5 ~ 0.5>
+	// Ray origin inside voxel <-0.5 ~ 0.5)
 	float voxelX;
 	float voxelY;
 	float voxelZ;

@@ -3,7 +3,7 @@
 #include "GGInput.h"
 #include "GGConfig.h"
 
-#include <string>
+#include <random>
 using namespace std;
 using namespace DirectX;
 
@@ -52,16 +52,6 @@ void GGPlayer::Update( GGWorld& _world, double _timeDelta )
 
 const XMFLOAT3 GGPlayer::GetPosition() const
 {
-	/*XMFLOAT3 position; // Relative to center of the world
-	float offset = -((GGWorld::DIAMETER / 2) * GGChunk::DIMENSION) + (GGChunk::DIMENSION / 2);
-	position = { offset, 0, offset };
-	position.x += m_headObject.chunk.chunkX * GGChunk::DIMENSION;
-	position.z += m_headObject.chunk.chunkZ * GGChunk::DIMENSION;
-
-	position.x += m_position.x;
-	position.y += m_position.y;
-	position.z += m_position.z;*/
-
 	return m_position;
 }
 
@@ -158,15 +148,16 @@ void GGPlayer::HandleMouseInput( int _x, int _y )
 	return;
 }
 
-GGObject GGPlayer::PlayerObject( const DirectX::XMFLOAT3& _pos )
+GGObject GGPlayer::PlayerObject( const XMFLOAT3& _pos )
 {
 	GGObject::GGVoxels voxels( GGObject::MAX_SIZE );
 	voxels[ 0 ].element = 1;
 	//voxels[ 2152 ].element = 1;
 	voxels[ 4095 ].element = 1;
 	float bodyRadius = 1.0f;
+	XMFLOAT3 bodyColor = { 1.0f, 0.0f, 1.0f };
 
-	return GGObject( move( voxels ), bodyRadius, _pos );
+	return GGObject( move( voxels ), bodyRadius, _pos, bodyColor );
 }
 
 void GGPlayer::UpdatePosition( GGWorld & _world, double _timeDelta )
@@ -182,7 +173,6 @@ void GGPlayer::UpdatePosition( GGWorld & _world, double _timeDelta )
 	rotation = XMQuaternionRotationRollPitchYawFromVector( rotation );
 	velocity = XMVector3Rotate( velocity, rotation );
 	position += XMVectorScale( velocity, static_cast<float>(_timeDelta) );
-	//position += XMVectorSet( 1.0f, 0.0f, 0.0f, 0.0f );
 
 	int chunkOffsetX = 0;
 	int chunkOffsetZ = 0;
@@ -296,196 +286,7 @@ void GGPlayer::InteractWithWorld( GGWorld& _world, double _timeDelta )
 
 		if( voxelObjectChunk )
 		{
-			UINT chunkX = voxelObjectChunk->voxel.object.chunk.chunkX;
-			UINT chunkZ = voxelObjectChunk->voxel.object.chunk.chunkZ;
-
-			auto& chunk = _world.GetChunk( voxelObjectChunk->voxel.object.chunk );
-			auto& object = chunk.GetObjects().at( voxelObjectChunk->voxel.object.objectID );
-			UINT x = voxelObjectChunk->voxel.voxelX;
-			UINT y = voxelObjectChunk->voxel.voxelY;
-			UINT z = voxelObjectChunk->voxel.voxelZ;
-			GGVoxel::GG_VOXEL_FACE face = voxelObjectChunk->face;
-
-			switch( face )
-			{
-				case GGVoxel::GG_VOXEL_FACE_TOP:
-				{
-					if( y < (GGObject::MAX_DIAMETER - 1) )
-					{
-						++y;
-
-						break;
-					}
-					else
-					{
-						y = 0;
-
-						GGObject::GGVoxels newVoxels( GGObject::MAX_SIZE );
-						UINT voxelIndex = x * GGObject::MAX_DIAMETER * GGObject::MAX_DIAMETER + y * GGObject::MAX_DIAMETER + z;
-						newVoxels.at( voxelIndex ).element = 1;
-
-						XMFLOAT3 newPos = object.GetPosition();
-						newPos.y += GGObject::MAX_DIAMETER * object.GetVoxelDimension();
-
-						GGObject newObject = GGObject( move( newVoxels ), object.GetVoxelDimension(), newPos );
-
-						_world.GetChunk( { chunkX, chunkZ } ).AddObject( move( newObject ) );
-
-						m_placingCooldown = cooldown;
-
-						return;
-					}
-				}
-				case GGVoxel::GG_VOXEL_FACE_BOTTOM:
-				{
-					if( y > 0 )
-					{
-						--y;
-
-						break;
-					}
-					else
-					{
-						y = GGObject::MAX_DIAMETER - 1;
-
-						GGObject::GGVoxels newVoxels( GGObject::MAX_SIZE );
-						UINT voxelIndex = x * GGObject::MAX_DIAMETER * GGObject::MAX_DIAMETER + y * GGObject::MAX_DIAMETER + z;
-						newVoxels.at( voxelIndex ).element = 1;
-
-						XMFLOAT3 newPos = object.GetPosition();
-						newPos.y -= GGObject::MAX_DIAMETER * object.GetVoxelDimension();
-
-						GGObject newObject = GGObject( move( newVoxels ), object.GetVoxelDimension(), newPos );
-
-						_world.GetChunk( { chunkX, chunkZ } ).AddObject( move( newObject ) );
-
-						m_placingCooldown = cooldown;
-
-						return;
-					}
-				}
-				case GGVoxel::GG_VOXEL_FACE_NORTH:
-				{
-					if( z < (GGObject::MAX_DIAMETER - 1) )
-					{
-						++z;
-
-						break;
-					}
-					else
-					{
-						z = 0;
-
-						GGObject::GGVoxels newVoxels( GGObject::MAX_SIZE );
-						UINT voxelIndex = x * GGObject::MAX_DIAMETER * GGObject::MAX_DIAMETER + y * GGObject::MAX_DIAMETER + z;
-						newVoxels.at( voxelIndex ).element = 1;
-
-						XMFLOAT3 newPos = object.GetPosition();
-						newPos.z += GGObject::MAX_DIAMETER * object.GetVoxelDimension();
-
-						GGObject newObject = GGObject( move( newVoxels ), object.GetVoxelDimension(), newPos );
-
-						_world.GetChunk( { chunkX, chunkZ } ).AddObject( move( newObject ) );
-
-						m_placingCooldown = cooldown;
-
-						return;
-					}
-				}
-				case GGVoxel::GG_VOXEL_FACE_SOUTH:
-				{
-					if( z > 0 )
-					{
-						--z;
-
-						break;
-					}
-					else
-					{
-						z = GGObject::MAX_DIAMETER - 1;
-
-						GGObject::GGVoxels newVoxels( GGObject::MAX_SIZE );
-						UINT voxelIndex = x * GGObject::MAX_DIAMETER * GGObject::MAX_DIAMETER + y * GGObject::MAX_DIAMETER + z;
-						newVoxels.at( voxelIndex ).element = 1;
-
-						XMFLOAT3 newPos = object.GetPosition();
-						newPos.z -= GGObject::MAX_DIAMETER * object.GetVoxelDimension();
-
-						GGObject newObject = GGObject( move( newVoxels ), object.GetVoxelDimension(), newPos );
-
-						_world.GetChunk( { chunkX, chunkZ } ).AddObject( move( newObject ) );
-
-						m_placingCooldown = cooldown;
-
-						return;
-					}
-				}
-				case GGVoxel::GG_VOXEL_FACE_EAST:
-				{
-					if( x < (GGObject::MAX_DIAMETER - 1) )
-					{
-						++x;
-
-						break;
-					}
-					else
-					{
-						x = 0;
-
-						GGObject::GGVoxels newVoxels( GGObject::MAX_SIZE );
-						UINT voxelIndex = x * GGObject::MAX_DIAMETER * GGObject::MAX_DIAMETER + y * GGObject::MAX_DIAMETER + z;
-						newVoxels.at( voxelIndex ).element = 1;
-
-						XMFLOAT3 newPos = object.GetPosition();
-						newPos.x += GGObject::MAX_DIAMETER * object.GetVoxelDimension();
-
-						GGObject newObject = GGObject( move( newVoxels ), object.GetVoxelDimension(), newPos );
-
-						_world.GetChunk( { chunkX, chunkZ } ).AddObject( move( newObject ) );
-
-						m_placingCooldown = cooldown;
-
-						return;
-					}
-				}
-				case GGVoxel::GG_VOXEL_FACE_WEST:
-				{
-					if( x > 0 )
-					{
-						--x;
-
-						break;
-					}
-					else
-					{
-						x = GGObject::MAX_DIAMETER - 1;
-
-						GGObject::GGVoxels newVoxels( GGObject::MAX_SIZE );
-						UINT voxelIndex = x * GGObject::MAX_DIAMETER * GGObject::MAX_DIAMETER + y * GGObject::MAX_DIAMETER + z;
-						newVoxels.at( voxelIndex ).element = 1;
-
-						XMFLOAT3 newPos = object.GetPosition();
-						newPos.x -= GGObject::MAX_DIAMETER * object.GetVoxelDimension();
-
-						GGObject newObject = GGObject( move( newVoxels ), object.GetVoxelDimension(), newPos );
-
-						_world.GetChunk( { chunkX, chunkZ } ).AddObject( move( newObject ) );
-
-						m_placingCooldown = cooldown;
-
-						return;
-					}
-				}
-			}
-
-			UINT voxelIndex = x * GGObject::MAX_DIAMETER * GGObject::MAX_DIAMETER + y * GGObject::MAX_DIAMETER + z;
-
-			GGObject::GGVoxels newVoxels = object.GetVoxels();
-			newVoxels.at( voxelIndex ).element = 1;
-
-			GGObject newObject = GGObject( move( newVoxels ), object.GetVoxelDimension(), object.GetPosition() );
-
-			_world.GetChunk( { chunkX, chunkZ } ).ReplaceObject( voxelObjectChunk->voxel.object.objectID, move( newObject ) );
+			PlaceVoxel( *voxelObjectChunk, _world );
 
 			m_placingCooldown = cooldown;
 		}
@@ -497,10 +298,7 @@ void GGPlayer::InteractWithWorld( GGWorld& _world, double _timeDelta )
 
 		if( voxelObjectChunk )
 		{
-			UINT chunkX = voxelObjectChunk->voxel.object.chunk.chunkX;
-			UINT chunkZ = voxelObjectChunk->voxel.object.chunk.chunkZ;
-
-			auto& chunk = _world.GetChunk( { chunkX, chunkZ } );
+			auto& chunk = _world.GetChunk( voxelObjectChunk->voxel.object.chunk );
 			auto& object = chunk.GetObjects().at( voxelObjectChunk->voxel.object.objectID );
 			UINT x = voxelObjectChunk->voxel.voxelX;
 			UINT y = voxelObjectChunk->voxel.voxelY;
@@ -511,12 +309,175 @@ void GGPlayer::InteractWithWorld( GGWorld& _world, double _timeDelta )
 			GGObject::GGVoxels newVoxels = object.GetVoxels();
 			newVoxels.at( voxelIndex ).element = 0;
 
-			GGObject newObject = GGObject( move( newVoxels ), object.GetVoxelDimension(), object.GetPosition() );
+			GGObject newObject = GGObject( move( newVoxels ), object.GetVoxelDimension(), object.GetPosition(), object.GetColor() );
 
-			_world.GetChunk( { chunkX, chunkZ } ).ReplaceObject( voxelObjectChunk->voxel.object.objectID, move( newObject ) );
+			if( newObject.IsEmpty() )
+			{
+				chunk.RemoveObject( voxelObjectChunk->voxel.object.objectID );
+			}
+			else
+			{
+				chunk.ReplaceObject( voxelObjectChunk->voxel.object.objectID, move( newObject ) );
+			}
 
 			m_diggingCooldown = cooldown;
 		}
+	}
+
+	return;
+}
+
+void GGPlayer::PlaceVoxel( const GGWorld::GGVoxelFaceDescription& _desc, GGWorld& _world )
+{
+	auto& chunk = _world.GetChunk( _desc.voxel.object.chunk );
+	auto& object = chunk.GetObjects().at( _desc.voxel.object.objectID );
+	UINT x = _desc.voxel.voxelX;
+	UINT y = _desc.voxel.voxelY;
+	UINT z = _desc.voxel.voxelZ;
+	GGVoxel::GG_VOXEL_FACE face = _desc.face;
+
+	bool createNewObject = false;
+	XMFLOAT3 newObjectPos = object.GetPosition();
+	GGWorld::GGChunkDescription newObjectChunk = _desc.voxel.object.chunk;
+
+	switch( face )
+	{
+		case GGVoxel::GG_VOXEL_FACE_TOP:
+		{
+			if( y < (GGObject::MAX_DIAMETER - 1) )
+			{
+				++y;
+			}
+			else
+			{
+				createNewObject = true;
+				y = 0;
+				newObjectPos.y += GGObject::MAX_DIAMETER * object.GetVoxelDimension();
+			}
+
+			break;
+		}
+		case GGVoxel::GG_VOXEL_FACE_BOTTOM:
+		{
+			if( y > 0 )
+			{
+				--y;
+			}
+			else
+			{
+				createNewObject = true;
+				y = GGObject::MAX_DIAMETER - 1;
+				newObjectPos.y -= GGObject::MAX_DIAMETER * object.GetVoxelDimension();
+			}
+
+			break;
+		}
+		case GGVoxel::GG_VOXEL_FACE_NORTH:
+		{
+			if( z < (GGObject::MAX_DIAMETER - 1) )
+			{
+				++z;
+			}
+			else
+			{
+				createNewObject = true;
+				z = 0;
+				newObjectPos.z += GGObject::MAX_DIAMETER * object.GetVoxelDimension();
+				if( newObjectPos.z >= (GGChunk::DIMENSION / 2.0f) )
+				{
+					newObjectPos.z -= GGChunk::DIMENSION;
+					newObjectChunk.chunkZ++;
+				}
+			}
+
+			break;
+		}
+		case GGVoxel::GG_VOXEL_FACE_SOUTH:
+		{
+			if( z > 0 )
+			{
+				--z;
+			}
+			else
+			{
+				createNewObject = true;
+				z = GGObject::MAX_DIAMETER - 1;
+				newObjectPos.z -= GGObject::MAX_DIAMETER * object.GetVoxelDimension();
+				if( newObjectPos.z < (GGChunk::DIMENSION / -2.0f) )
+				{
+					newObjectPos.z += GGChunk::DIMENSION;
+					newObjectChunk.chunkZ--;
+				}
+			}
+
+			break;
+		}
+		case GGVoxel::GG_VOXEL_FACE_EAST:
+		{
+			if( x < (GGObject::MAX_DIAMETER - 1) )
+			{
+				++x;
+			}
+			else
+			{
+				createNewObject = true;
+				x = 0;
+				newObjectPos.x += GGObject::MAX_DIAMETER * object.GetVoxelDimension();
+				if( newObjectPos.x >= (GGChunk::DIMENSION / 2.0f) )
+				{
+					newObjectPos.x -= GGChunk::DIMENSION;
+					newObjectChunk.chunkX++;
+				}
+			}
+
+			break;
+		}
+		case GGVoxel::GG_VOXEL_FACE_WEST:
+		{
+			if( x > 0 )
+			{
+				--x;
+			}
+			else
+			{
+				createNewObject = true;
+				x = GGObject::MAX_DIAMETER - 1;
+				newObjectPos.x -= GGObject::MAX_DIAMETER * object.GetVoxelDimension();
+				if( newObjectPos.x < (GGChunk::DIMENSION / -2.0f) )
+				{
+					newObjectPos.x += GGChunk::DIMENSION;
+					newObjectChunk.chunkX--;
+				}
+			}
+
+			break;
+		}
+	}
+
+	UINT voxelIndex = x * GGObject::MAX_DIAMETER * GGObject::MAX_DIAMETER + y * GGObject::MAX_DIAMETER + z;
+
+	if( createNewObject )
+	{
+		static random_device generator;
+		static uniform_real_distribution<float> distribution( 0.25f, 0.75f );
+
+		GGObject::GGVoxels newVoxels( GGObject::MAX_SIZE );
+		newVoxels.at( voxelIndex ).element = 1;
+
+		XMFLOAT3 color = { distribution( generator ), distribution( generator ),  distribution( generator ) };
+
+		GGObject newObject = GGObject( move( newVoxels ), object.GetVoxelDimension(), newObjectPos, color );
+
+		_world.GetChunk( newObjectChunk ).AddObject( move( newObject ) );
+	}
+	else
+	{
+		GGObject::GGVoxels newVoxels = object.GetVoxels();
+		newVoxels.at( voxelIndex ).element = 1;
+
+		GGObject newObject = GGObject( move( newVoxels ), object.GetVoxelDimension(), newObjectPos, object.GetColor() );
+
+		_world.GetChunk( newObjectChunk ).ReplaceObject( _desc.voxel.object.objectID, move( newObject ) );
 	}
 
 	return;

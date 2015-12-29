@@ -41,6 +41,7 @@ private:
 	static GGObject PlayerObject( const DirectX::XMFLOAT3& _pos );
 	void UpdatePosition( GGWorld& _world, double _timeDelta );
 	void InteractWithWorld( GGWorld& _world, double _timeDelta );
+	void PlaceVoxel( const GGWorld::GGVoxelFaceDescription& _desc, GGWorld& _world );
 
 private:
 	bool m_isAlive;
@@ -51,10 +52,6 @@ private:
 
 	WPARAM m_keyMap[ GG_KEYMAP_COUNT ];
 	GGWorld::GGObjectDescription m_headObject;
-	//GGChunk::GGObjectID m_headObjectID;
-
-	//UINT m_chunkX;
-	//UINT m_chunkZ;
 
 	DirectX::XMFLOAT3 m_position;
 	DirectX::XMFLOAT3 m_velocity;

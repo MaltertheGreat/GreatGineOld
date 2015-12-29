@@ -55,10 +55,10 @@ public:
 
 private:
 	// TODO: Move these functions to some sort of world generator
-	static GGChunkArray InitializeChunks();
 	static void GenerateChunk( GGChunk& _chunk );
 	static GGObject::GGVoxels CreateRandomVoxels();
 
+	std::vector<std::pair<GGChunkDescription, DirectX::XMFLOAT3 >> ChunksToCheckRay( UINT _originChunkX, UINT _originChunkZ, const DirectX::XMFLOAT3& _originPosition );
 	std::pair<std::unique_ptr<GGVoxelFaceDescription>, float> GetVoxelFromRayInObject( const DirectX::XMFLOAT3& _originPos, const DirectX::XMFLOAT3& _ray, float _length, const GGObject& _object );
 
 private:

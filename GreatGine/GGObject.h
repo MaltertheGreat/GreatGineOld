@@ -14,7 +14,7 @@ public:
 
 public:
 	GGObject();
-	GGObject( GGVoxels&& _voxels, float _voxelDimension, const DirectX::XMFLOAT3& _position );
+	GGObject( GGVoxels&& _voxels, float _voxelDimension, const DirectX::XMFLOAT3& _position, const DirectX::XMFLOAT3& _color );
 
 public:
 	void SetPosition( const DirectX::XMFLOAT3& _pos );

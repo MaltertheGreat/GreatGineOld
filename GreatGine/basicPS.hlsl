@@ -12,7 +12,7 @@ float4 main( PixelInputType _input ) : SV_TARGET
 	float3 lightDirection = { -1.0f, 3.0f, -2.0f };
 	lightDirection = normalize( lightDirection );
 
-	float ambient = 0.2f;
+	float ambient = 0.333f;
 	float diffuse = saturate( dot( _input.normal, lightDirection ) );
 	float light = max( diffuse, ambient );
 
