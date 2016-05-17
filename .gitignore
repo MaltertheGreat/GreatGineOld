@@ -187,3 +187,6 @@ FakesAssemblies/
 GeneratedArtifacts/
 _Pvt_Extensions/
 ModelManifest.xml
+/GreatGine.VC.db
+/GreatGine.VC.VC.opendb
+/GreatGine/Shaders

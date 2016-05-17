@@ -6,31 +6,38 @@ using namespace std;
 void GGChunk::Update()
 {
 	m_addedObjectIDs.clear();
-	m_modifiedObjectIDs.clear();
 	m_awakeObjectIDs.clear();
+	m_modifiedObjectIDs.clear();
+	m_removedObjectIDs.clear();
 
 	return;
 }
 
 GGChunk::GGObjectID GGChunk::AddObject( GGObject&& _object )
 {
-	assert( !_object.IsEmpty() );
 	XMFLOAT3 objectPos = _object.GetPosition();
 	assert( objectPos.x < (DIMENSION / 2.0f) && objectPos.x >= (DIMENSION / -2.0f) );
 	assert( objectPos.z < (DIMENSION / 2.0f) && objectPos.z >= (DIMENSION / -2.0f) );
 
-	GGObjectID newObjectID;
+	GGObjectID newObjectID = 0;
+	std::pair<GGObjectID, GGObject> newObject( 0, move( _object ) );
 	if( m_emptyObjectIDs.empty() )
 	{
 		newObjectID = m_objects.size();
-		m_objects.push_back( move( _object ) );
+		newObject.first = newObjectID;
+
+		//Insert new object at the end
+		m_objects.insert( m_objects.end(), move( newObject ) );
 	}
 	else
 	{
 		newObjectID = m_emptyObjectIDs.back();
+		newObject.first = newObjectID;
+
 		m_emptyObjectIDs.pop_back();
 
-		m_objects[ newObjectID ] = move( _object );
+		// Insert new object in an empty spot
+		m_objects.insert( m_objects.end(), move( newObject ) );
 	}
 
 	m_addedObjectIDs.push_back( newObjectID );
@@ -52,12 +59,10 @@ void GGChunk::ModifyObject( GGObjectID _id, const DirectX::XMFLOAT3& _position )
 
 void GGChunk::RemoveObject( GGObjectID _id )
 {
-	if( !m_objects[ _id ].IsEmpty() )
+	if( m_objects.erase( _id ) )
 	{
-		m_objects[ _id ] = GGObject();
-
-		m_addedObjectIDs.push_back( _id );
 		m_emptyObjectIDs.push_back( _id );
+		m_removedObjectIDs.push_back( _id );
 	}
 
 	return;
@@ -65,7 +70,6 @@ void GGChunk::RemoveObject( GGObjectID _id )
 
 void GGChunk::ReplaceObject( GGObjectID _id, GGObject&& _newObject )
 {
-	assert( !_newObject.IsEmpty() );
 	XMFLOAT3 objectPos = _newObject.GetPosition();
 	assert( objectPos.x < (DIMENSION / 2.0f) && objectPos.x >= (DIMENSION / -2.0f) );
 	assert( objectPos.z < (DIMENSION / 2.0f) && objectPos.z >= (DIMENSION / -2.0f) );
@@ -76,7 +80,14 @@ void GGChunk::ReplaceObject( GGObjectID _id, GGObject&& _newObject )
 		m_emptyObjectIDs.erase( emptyObject );
 	}
 
-	m_objects[ _id ] = move( _newObject );
+	// If key is already taken, erase the current object
+	auto it = m_objects.find( _id );
+	if( it != m_objects.end() )
+	{
+		m_objects.erase( it );
+	}
+
+	m_objects.insert( pair<GGObjectID, GGObject>( _id, move( _newObject ) ) );
 
 	m_addedObjectIDs.push_back( _id );
 	m_awakeObjectIDs.push_back( _id );
@@ -113,12 +124,17 @@ const GGChunk::GGObjectIDs& GGChunk::GetAddedObjectIDs() const
 	return m_addedObjectIDs;
 }
 
+const GGChunk::GGObjectIDs& GGChunk::GetAwakeObjectIDs() const
+{
+	return m_awakeObjectIDs;
+}
+
 const GGChunk::GGObjectIDs& GGChunk::GetModifiedObjectIDs() const
 {
 	return m_modifiedObjectIDs;
 }
 
-const GGChunk::GGObjectIDs& GGChunk::GetAwakeObjectIDs() const
+const GGChunk::GGObjectIDs& GGChunk::GetRemovedObjectIDs() const
 {
-	return m_awakeObjectIDs;
+	return m_removedObjectIDs;
 }

@@ -20,7 +20,7 @@ void GGScene::Update( const GGWorld& _world )
 			if( chunkX >= 0 && chunkX < GGWorld::DIAMETER && chunkZ >= 0 && chunkZ < GGWorld::DIAMETER )
 			{
 				UINT index = x * SCENE_DIAMETER + z;
-				auto& chunkModel = m_chunkModels[ index ];
+				auto& chunkModel = m_chunkModels[index];
 
 				auto& chunk = _world.GetChunk( { static_cast<UINT>(chunkX), static_cast<UINT>(chunkZ) } );
 
@@ -75,26 +75,32 @@ void GGScene::UpdateChunkModel( GGChunkModel& _chunkModel, const GGChunk& _chunk
 	{
 		for( auto& object : objects )
 		{
-			_chunkModel.push_back( GGObjectModel( m_device, object, _position ) );
+			_chunkModel.push_back( GGObjectModel( m_device, object.second, _position ) );
 		}
 	}
 	else
 	{
-		if( _chunkModel.size() != objects.size() )
+		if( _chunkModel.size() < objects.size() )
 		{
 			_chunkModel.resize( objects.size() );
 		}
 
 		auto& addedObjectIDs = _chunk.GetAddedObjectIDs();
-		for( auto& id : addedObjectIDs )
+		for( auto id : addedObjectIDs )
 		{
-			_chunkModel[ id ] = GGObjectModel( m_device, objects[ id ], _position );
+			_chunkModel[id] = GGObjectModel( m_device, objects.at( id ), _position );
 		}
 
 		auto& modifiedObjectIDs = _chunk.GetModifiedObjectIDs();
-		for( auto& id : modifiedObjectIDs )
+		for( auto id : modifiedObjectIDs )
 		{
-			_chunkModel[ id ].Update( objects[ id ], _position );
+			_chunkModel[id].Update( objects.at( id ), _position );
+		}
+
+		auto& removedObjectIDs = _chunk.GetRemovedObjectIDs();
+		for( auto id : removedObjectIDs )
+		{
+			_chunkModel[id] = GGObjectModel();
 		}
 	}
 
@@ -117,8 +123,8 @@ void GGScene::MoveScene( long long _dX, long long _dZ )
 					int newZ = static_cast<int>(z + _dZ);
 					if( newZ >= 0 && newZ < SCENE_DIAMETER )
 					{
-						auto& newChunkModel = newChunkModels[ newX * SCENE_DIAMETER + newZ ];
-						newChunkModel = std::move( m_chunkModels[ x * SCENE_DIAMETER + z ] );
+						auto& newChunkModel = newChunkModels[newX * SCENE_DIAMETER + newZ];
+						newChunkModel = std::move( m_chunkModels[x * SCENE_DIAMETER + z] );
 						for( auto& objectModel : newChunkModel )
 						{
 							objectModel.Move( { _dX * GGChunk::DIMENSION, 0.0f, _dZ * GGChunk::DIMENSION } );

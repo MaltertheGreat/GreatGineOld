@@ -33,7 +33,7 @@ GGChunk& GGWorld::GetChunk( GGChunkDescription _desc )
 {
 	UINT index = _desc.chunkX * DIAMETER + _desc.chunkZ;
 
-	return m_chunks[ index ];
+	return m_chunks[index];
 }
 
 GGWorld::GGChunkArray& GGWorld::GetChunkArray()
@@ -45,7 +45,7 @@ const GGChunk& GGWorld::GetChunk( GGChunkDescription _desc ) const
 {
 	UINT index = _desc.chunkX * DIAMETER + _desc.chunkZ;
 
-	return m_chunks[ index ];
+	return m_chunks[index];
 }
 
 const GGWorld::GGChunkArray& GGWorld::GetChunkArray() const
@@ -78,22 +78,21 @@ unique_ptr<GGWorld::GGVoxelFaceDescription> GGWorld::GetVoxelFromRay( UINT _orig
 		GGChunkDescription chunk = chunkIterator.first;
 		auto& objects = GetChunk( chunk ).GetObjects();
 
-		for( GGChunk::GGObjectID id = 0; id < objects.size(); ++id )
+		//for( GGChunk::GGObjectID id = 0; id < objects.size(); ++id )
+		for( auto object : objects )
 		{
 			if( _excludedObject )
 			{
 				if( chunk == _excludedObject->chunk )
 				{
-					if( id == _excludedObject->objectID )
+					if( object.first == _excludedObject->objectID )
 					{
 						continue;
 					}
 				}
 			}
 
-			auto& object = objects[ id ];
-
-			auto voxelFromRay = GetVoxelFromRayInObject( chunkIterator.second, ray, _length, object );
+			auto voxelFromRay = GetVoxelFromRayInObject( chunkIterator.second, ray, _length, object.second );
 
 			float rayLength = voxelFromRay.second;
 
@@ -102,7 +101,7 @@ unique_ptr<GGWorld::GGVoxelFaceDescription> GGWorld::GetVoxelFromRay( UINT _orig
 				minRayLength = rayLength;
 				closestVoxelDesc = move( voxelFromRay.first );
 
-				closestVoxelDesc->voxel.object.objectID = id;
+				closestVoxelDesc->voxel.object.objectID = object.first;
 				closestVoxelDesc->voxel.object.chunk = chunk;
 			}
 		}
@@ -244,11 +243,6 @@ vector<pair<GGWorld::GGChunkDescription, XMFLOAT3>> GGWorld::ChunksToCheckRay( U
 
 pair<unique_ptr<GGWorld::GGVoxelFaceDescription>, float> GGWorld::GetVoxelFromRayInObject( const XMFLOAT3& _originPos, const XMFLOAT3& _ray, float _length, const GGObject& _object )
 {
-	if( _object.IsEmpty() )
-	{
-		return make_pair( nullptr, INFINITY );
-	}
-
 	const float voxelDimension = _object.GetVoxelDimension();
 	const float voxelRadius = voxelDimension / 2.0f;
 

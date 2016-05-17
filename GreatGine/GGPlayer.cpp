@@ -83,39 +83,39 @@ void GGPlayer::HandleKeyInput( WPARAM _keyCode, bool _down )
 		placing = false;
 	}
 
-	if( _keyCode == m_keyMap[ GG_KEYMAP_FORWARD ] )
+	if( _keyCode == m_keyMap[GG_KEYMAP_FORWARD] )
 	{
 		m_velocity.z = velocity;
 	}
-	else if( _keyCode == m_keyMap[ GG_KEYMAP_BACKWARD ] )
+	else if( _keyCode == m_keyMap[GG_KEYMAP_BACKWARD] )
 	{
 		m_velocity.z = -velocity;
 	}
 
-	if( _keyCode == m_keyMap[ GG_KEYMAP_RIGHTWARD ] )
+	if( _keyCode == m_keyMap[GG_KEYMAP_RIGHTWARD] )
 	{
 		m_velocity.x = velocity;
 	}
-	else if( _keyCode == m_keyMap[ GG_KEYMAP_LEFTWARD ] )
+	else if( _keyCode == m_keyMap[GG_KEYMAP_LEFTWARD] )
 	{
 		m_velocity.x = -velocity;
 	}
 
-	if( _keyCode == m_keyMap[ GG_KEYMAP_UPWARD ] )
+	if( _keyCode == m_keyMap[GG_KEYMAP_UPWARD] )
 	{
 		m_velocity.y = velocity;
 	}
-	else if( _keyCode == m_keyMap[ GG_KEYMAP_DOWNWARD ] )
+	else if( _keyCode == m_keyMap[GG_KEYMAP_DOWNWARD] )
 	{
 		m_velocity.y = -velocity;
 	}
 
-	if( _keyCode == m_keyMap[ GG_KEYMAP_DIG ] )
+	if( _keyCode == m_keyMap[GG_KEYMAP_DIG] )
 	{
 		m_digging = digging;
 	}
 
-	if( _keyCode == m_keyMap[ GG_KEYMAP_PLACE ] )
+	if( _keyCode == m_keyMap[GG_KEYMAP_PLACE] )
 	{
 		m_placing = placing;
 	}
@@ -151,9 +151,9 @@ void GGPlayer::HandleMouseInput( int _x, int _y )
 GGObject GGPlayer::PlayerObject( const XMFLOAT3& _pos )
 {
 	GGObject::GGVoxels voxels( GGObject::MAX_SIZE );
-	voxels[ 0 ].element = 1;
+	voxels[0].element = 1;
 	//voxels[ 2152 ].element = 1;
-	voxels[ 4095 ].element = 1;
+	voxels[4095].element = 1;
 	float bodyRadius = 1.0f;
 	XMFLOAT3 bodyColor = { 1.0f, 0.0f, 1.0f };
 
@@ -309,14 +309,24 @@ void GGPlayer::InteractWithWorld( GGWorld& _world, double _timeDelta )
 			GGObject::GGVoxels newVoxels = object.GetVoxels();
 			newVoxels.at( voxelIndex ).element = 0;
 
-			GGObject newObject = GGObject( move( newVoxels ), object.GetVoxelDimension(), object.GetPosition(), object.GetColor() );
+			bool objectEmpty = true;
+			for( auto voxel : newVoxels )
+			{
+				if( voxel.element != 0 )
+				{
+					objectEmpty = false;
+					break;
+				}
+			}
 
-			if( newObject.IsEmpty() )
+			if( objectEmpty )
 			{
 				chunk.RemoveObject( voxelObjectChunk->voxel.object.objectID );
 			}
 			else
 			{
+				GGObject newObject = GGObject( move( newVoxels ), object.GetVoxelDimension(), object.GetPosition(), object.GetColor() );
+
 				chunk.ReplaceObject( voxelObjectChunk->voxel.object.objectID, move( newObject ) );
 			}
 

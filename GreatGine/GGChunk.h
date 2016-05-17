@@ -1,5 +1,6 @@
 #pragma once
 
+#include <map>
 #include <vector>
 
 #include "GGObject.h"
@@ -15,7 +16,7 @@ public:
 
 public:
 	typedef UINT GGObjectID;
-	typedef std::vector<GGObject> GGObjects;
+	typedef std::map<GGObjectID, GGObject> GGObjects;
 	typedef std::vector<GGObjectID> GGObjectIDs;
 
 public:
@@ -36,15 +37,18 @@ public:
 
 	const GGObjects& GetObjects() const;
 	const GGObjectIDs& GetAddedObjectIDs() const;
-	const GGObjectIDs& GetModifiedObjectIDs() const;
 	const GGObjectIDs& GetAwakeObjectIDs() const;
+	const GGObjectIDs& GetModifiedObjectIDs() const;
+	const GGObjectIDs& GetRemovedObjectIDs() const;
 
 private:
 	GG_CHUNK_STATE    m_state = GG_CHUNK_STATE_UNGENERATED;
 
-	GGObjects   m_objects;
+	GGObjects m_objects;
 	GGObjectIDs m_emptyObjectIDs;
+
 	GGObjectIDs m_addedObjectIDs;
-	GGObjectIDs m_modifiedObjectIDs;
 	GGObjectIDs m_awakeObjectIDs;
+	GGObjectIDs m_modifiedObjectIDs;
+	GGObjectIDs m_removedObjectIDs;
 };
