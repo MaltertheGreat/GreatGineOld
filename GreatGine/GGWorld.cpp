@@ -76,10 +76,9 @@ unique_ptr<GGWorld::GGVoxelFaceDescription> GGWorld::GetVoxelFromRay( UINT _orig
 	for( auto& chunkIterator : chunksToCheck )
 	{
 		GGChunkDescription chunk = chunkIterator.first;
-		auto& objects = GetChunk( chunk ).GetObjects();
+		const auto& objects = GetChunk( chunk ).GetObjects();
 
-		//for( GGChunk::GGObjectID id = 0; id < objects.size(); ++id )
-		for( auto object : objects )
+		for( auto& object : objects )
 		{
 			if( _excludedObject )
 			{
