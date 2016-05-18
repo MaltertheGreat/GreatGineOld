@@ -43,6 +43,9 @@
     <Filter Include="Shader Files">
       <UniqueIdentifier>{fe0a2b3c-4de6-462f-aad4-e1fe01bffb2b}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Physics">
+      <UniqueIdentifier>{8ac32d44-aa7f-4a79-81ed-6b7bf253462d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="GreatGine.cpp">
@@ -110,9 +113,6 @@
     </ClCompile>
     <ClCompile Include="GGInput.cpp">
       <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="GGGUI.cpp">
-      <Filter>Source Files\Graphics</Filter>
     </ClCompile>
     <ClCompile Include="GGFrameTimer.cpp">
       <Filter>Source Files\Application</Filter>
@@ -200,14 +200,17 @@
     <ClInclude Include="GGFrameTimer.h">
       <Filter>Header Files\Application</Filter>
     </ClInclude>
-    <ClInclude Include="GGGUI.h">
-      <Filter>Header Files\Graphics</Filter>
-    </ClInclude>
     <ClInclude Include="GGScene.h">
       <Filter>Header Files\Graphics</Filter>
     </ClInclude>
     <ClInclude Include="GGPhysics.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GGObjectData.h">
+      <Filter>Header Files\World</Filter>
+    </ClInclude>
+    <ClInclude Include="GGPhysicsObjectData.h">
+      <Filter>Header Files\Physics</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

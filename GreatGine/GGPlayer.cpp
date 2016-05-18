@@ -2,6 +2,7 @@
 #include "GGPlayer.h"
 #include "GGInput.h"
 #include "GGConfig.h"
+#include "GGPhysicsObjectData.h"
 
 #include <random>
 using namespace std;
@@ -27,13 +28,14 @@ GGPlayer::GGPlayer( GGInput& _input, GGConfig& _config )
 
 void GGPlayer::Update( GGWorld& _world, double _timeDelta )
 {
+	auto& chunk = _world.GetChunk( m_headObject.chunk );
+
 	if( !m_isAlive )
 	{
 		m_position = { 0.0f, 10.0f, 0.0f };
 		m_headObject.chunk.chunkX = GGWorld::DIAMETER / 2;
 		m_headObject.chunk.chunkZ = GGWorld::DIAMETER / 2;
 
-		auto& chunk = _world.GetChunk( { m_headObject.chunk.chunkX, m_headObject.chunk.chunkZ } );
 		if( chunk.GetState() == GGChunk::GG_CHUNK_STATE_UNGENERATED )
 		{
 			return;
@@ -43,6 +45,10 @@ void GGPlayer::Update( GGWorld& _world, double _timeDelta )
 
 		m_isAlive = true;
 	}
+
+	GGObjectData::GGObjectDataID id = 1; // Magic number ;p
+	unique_ptr<GGPhysicsObjectData> objectData = make_unique<GGPhysicsObjectData>( id, m_velocity );
+	chunk.SetObjectData( m_headObject.objectID, id, move( objectData ) );
 
 	UpdatePosition( _world, _timeDelta );
 	InteractWithWorld( _world, _timeDelta );
@@ -160,14 +166,18 @@ GGObject GGPlayer::PlayerObject( const XMFLOAT3& _pos )
 	return GGObject( move( voxels ), bodyRadius, _pos, bodyColor );
 }
 
-void GGPlayer::UpdatePosition( GGWorld & _world, double _timeDelta )
+void GGPlayer::UpdatePosition( GGWorld& _world, double _timeDelta )
 {
-	auto& head = _world.GetChunk( { m_headObject.chunk.chunkX, m_headObject.chunk.chunkZ } ).GetObjects().at( m_headObject.objectID );
+	auto& chunk = _world.GetChunk( m_headObject.chunk );
+	auto& head = chunk.GetObjects().at( m_headObject.objectID );
+
+	GGObjectData::GGObjectDataID id = 1; // Magic number ;p
+	auto playerData = chunk.GetObjectData<GGPhysicsObjectData>( m_headObject.objectID, id );
 
 	// Update player position since last frame
 	XMFLOAT3 horizontalRotation = { 0.0f, m_rotation.y, 0.0f };
 	XMVECTOR rotation = XMLoadFloat3( &horizontalRotation );
-	XMVECTOR velocity = XMLoadFloat3( &m_velocity );
+	XMVECTOR velocity = XMLoadFloat3( &playerData->velocity );
 	XMVECTOR position = XMLoadFloat3( &head.GetPosition() );
 
 	rotation = XMQuaternionRotationRollPitchYawFromVector( rotation );

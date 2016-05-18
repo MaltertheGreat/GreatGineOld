@@ -5,9 +5,8 @@
 #include "GGInput.h"
 #include "GGFrameTimer.h"
 #include "GGGraphics.h"
-#include "GGGame.h"
 #include "GGWorld.h"
-#include "GGGUI.h"
+#include "GGGame.h"
 
 class GGConfig;
 
@@ -39,7 +38,6 @@ private:
 	GGInput          m_input;
 	GGFrameTimer     m_timer;
 	GGGraphics       m_graphics;
-	GGGame           m_game;
 	GGWorld          m_world;
-	GGGUI            m_gui;
+	GGGame           m_game;
 };

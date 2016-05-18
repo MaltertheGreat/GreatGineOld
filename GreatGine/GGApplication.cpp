@@ -13,9 +13,8 @@ GGApplication::GGApplication( HINSTANCE _hInstance, GGConfig& _config )
 	m_window( m_title + L" v." + m_version, _hInstance, _config ),
 	m_input( m_window ),
 	m_graphics( m_window, _config ),
-	m_game( m_input, _config ),
 	m_world(),
-	m_gui( m_graphics.GetResolutionX(), m_graphics.GetResolutionY() )
+	m_game( m_input, _config )
 {
 	m_input.RegisterHandler( this );
 	m_input.RegisterHandler( &m_graphics );

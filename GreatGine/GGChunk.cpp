@@ -13,6 +13,13 @@ void GGChunk::Update()
 	return;
 }
 
+void GGChunk::SetState( GGChunk::GG_CHUNK_STATE _state )
+{
+	m_state = _state;
+
+	return;
+}
+
 GGChunk::GGObjectID GGChunk::AddObject( GGObject&& _object )
 {
 	XMFLOAT3 objectPos = _object.GetPosition();
@@ -102,9 +109,17 @@ void GGChunk::AwakenObject( GGObjectID _id )
 	return;
 }
 
-void GGChunk::SetState( GGChunk::GG_CHUNK_STATE _state )
+void GGChunk::SetObjectData( GGObjectID _objectID, GGObjectData::GGObjectDataID _dataID, std::unique_ptr<GGObjectData> _data )
 {
-	m_state = _state;
+	auto& objectDataSet = m_objectDataSets[_objectID];
+	if( _data )
+	{
+		swap( objectDataSet[_dataID], _data );
+	}
+	else
+	{
+		objectDataSet.erase( _dataID );
+	}
 
 	return;
 }

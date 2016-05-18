@@ -50,7 +50,7 @@ private:
 	float m_diggingCooldown;
 	float m_placingCooldown;
 
-	WPARAM m_keyMap[ GG_KEYMAP_COUNT ];
+	WPARAM m_keyMap[GG_KEYMAP_COUNT];
 	GGWorld::GGObjectDescription m_headObject;
 
 	DirectX::XMFLOAT3 m_position;

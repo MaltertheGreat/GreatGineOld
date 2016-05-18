@@ -185,7 +185,6 @@
     <ClCompile Include="GGApplication.cpp" />
     <ClCompile Include="GGChunk.cpp" />
     <ClCompile Include="GGGame.cpp" />
-    <ClCompile Include="GGGUI.cpp" />
     <ClCompile Include="GGInput.cpp" />
     <ClCompile Include="GGLinesData.cpp" />
     <ClCompile Include="GGObjectModel.cpp" />
@@ -218,9 +217,9 @@
     <ClInclude Include="GGApplication.h" />
     <ClInclude Include="GGChunk.h" />
     <ClInclude Include="GGGame.h" />
-    <ClInclude Include="GGGUI.h" />
     <ClInclude Include="GGInput.h" />
     <ClInclude Include="GGLinesData.h" />
+    <ClInclude Include="GGObjectData.h" />
     <ClInclude Include="GGObjectModel.h" />
     <ClInclude Include="GGConfig.h" />
     <ClInclude Include="GGDebugInfo.h" />
@@ -235,6 +234,7 @@
     <ClInclude Include="GGMesh.h" />
     <ClInclude Include="GGObject.h" />
     <ClInclude Include="GGPhysics.h" />
+    <ClInclude Include="GGPhysicsObjectData.h" />
     <ClInclude Include="GGPlayer.h" />
     <ClInclude Include="GGRenderer.h" />
     <ClInclude Include="GGScene.h" />
