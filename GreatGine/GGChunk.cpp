@@ -6,9 +6,11 @@ using namespace std;
 void GGChunk::Update()
 {
 	m_addedObjectIDs.clear();
-	m_awakenedObjectIDs.clear();
 	m_modifiedObjectIDs.clear();
 	m_removedObjectIDs.clear();
+
+	swap( m_awakenedObjectIDs, m_toBeAwakenedObjectIDs );
+	m_toBeAwakenedObjectIDs.clear();
 
 	return;
 }
@@ -48,7 +50,7 @@ GGChunk::GGObjectID GGChunk::AddObject( GGObject&& _object )
 	}
 
 	m_addedObjectIDs.push_back( newObjectID );
-	m_awakenedObjectIDs.push_back( newObjectID );
+	m_toBeAwakenedObjectIDs.push_back( newObjectID );
 
 	return newObjectID;
 }
@@ -59,7 +61,7 @@ void GGChunk::ModifyObject( GGObjectID _id, const DirectX::XMFLOAT3& _position )
 	assert( _position.z < (DIMENSION / 2.0f) && _position.z >= (DIMENSION / -2.0f) );
 	m_objects.at( _id ).SetPosition( _position );
 	m_modifiedObjectIDs.push_back( _id );
-	m_awakenedObjectIDs.push_back( _id );
+	m_toBeAwakenedObjectIDs.push_back( _id );
 
 	return;
 }
@@ -97,14 +99,14 @@ void GGChunk::ReplaceObject( GGObjectID _id, GGObject&& _newObject )
 	m_objects.insert( pair<GGObjectID, GGObject>( _id, move( _newObject ) ) );
 
 	m_addedObjectIDs.push_back( _id );
-	m_awakenedObjectIDs.push_back( _id );
+	m_toBeAwakenedObjectIDs.push_back( _id );
 
 	return;
 }
 
 void GGChunk::AwakenObject( GGObjectID _id )
 {
-	m_awakenedObjectIDs.push_back( _id );
+	m_toBeAwakenedObjectIDs.push_back( _id );
 
 	return;
 }
@@ -127,6 +129,13 @@ void GGChunk::SetObjectData( GGObjectID _objectID, GGObjectData::GGObjectDataID 
 GGChunk::GG_CHUNK_STATE GGChunk::GetState() const
 {
 	return m_state;
+}
+
+GGObject& GGChunk::GetObject( GGObjectID _id )
+{
+	assert( m_objects.find( _id ) != m_objects.end() );
+
+	return m_objects.at( _id );
 }
 
 const GGChunk::GGObjects& GGChunk::GetObjects() const

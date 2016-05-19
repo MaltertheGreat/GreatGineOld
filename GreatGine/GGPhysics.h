@@ -6,8 +6,7 @@ class GGObject;
 class GGPhysics
 {
 public:
-	void Update( GGWorld& _world, double _frameTime );
+	void Update( GGWorld& _world );
 
 private:
-	void UpdateObject( GGObject& _object, double _frameTime );
 };

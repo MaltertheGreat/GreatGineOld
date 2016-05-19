@@ -6,6 +6,7 @@
 #include "GGFrameTimer.h"
 #include "GGGraphics.h"
 #include "GGWorld.h"
+#include "GGPhysics.h"
 #include "GGGame.h"
 
 class GGConfig;
@@ -31,13 +32,14 @@ private:
 	std::wstring m_version;
 
 private:
-	bool   m_running;
+	bool m_running;
 	WPARAM m_exitKey;
 
-	GGWindow         m_window;
-	GGInput          m_input;
-	GGFrameTimer     m_timer;
-	GGGraphics       m_graphics;
-	GGWorld          m_world;
-	GGGame           m_game;
+	GGWindow m_window;
+	GGInput m_input;
+	GGFrameTimer m_timer;
+	GGGraphics m_graphics;
+	GGWorld m_world;
+	GGPhysics m_physics;
+	GGGame m_game;
 };

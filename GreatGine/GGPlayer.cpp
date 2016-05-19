@@ -252,7 +252,7 @@ void GGPlayer::UpdatePosition( GGWorld& _world, double _timeDelta )
 	// Update player model
 	if( m_headObject.chunk.chunkX != chunkX || m_headObject.chunk.chunkZ != chunkZ )
 	{
-		_world.GetChunk( { m_headObject.chunk.chunkX, m_headObject.chunk.chunkZ } ).RemoveObject( m_headObject.objectID );
+		_world.GetChunk( m_headObject.chunk ).RemoveObject( m_headObject.objectID );
 
 		m_headObject.chunk.chunkX = chunkX;
 		m_headObject.chunk.chunkZ = chunkZ;

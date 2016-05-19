@@ -7,6 +7,8 @@
 #include "GGObject.h"
 #include "GGObjectData.h"
 
+#undef GetObject
+
 class GGChunk
 {
 public:
@@ -42,6 +44,7 @@ public:
 
 	GG_CHUNK_STATE GetState() const;
 
+	GGObject& GetObject( GGObjectID _id );
 	const GGObjects& GetObjects() const;
 
 	const GGObjectIDs& GetAddedObjectIDs() const;
@@ -62,6 +65,8 @@ private:
 	GGObjectIDs m_modifiedObjectIDs;
 	GGObjectIDs m_removedObjectIDs;
 	GGObjectIDs m_awakenedObjectIDs;
+
+	GGObjectIDs m_toBeAwakenedObjectIDs;
 
 	GGObjectDataSets m_objectDataSets;
 };

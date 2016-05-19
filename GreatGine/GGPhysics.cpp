@@ -2,9 +2,22 @@
 #include "GGPhysics.h"
 #include "GGWorld.h"
 
-void GGPhysics::Update( GGWorld&, double )
-{
-}
+using namespace DirectX;
 
-void GGPhysics::UpdateObject( GGObject&, double )
-{}
+void GGPhysics::Update( GGWorld& _world )
+{
+	for( auto& chunk : _world.GetChunkArray() )
+	{
+		auto& awakenedObjectIDs = chunk.GetAwakenedObjectIDs();
+		for( auto id : awakenedObjectIDs )
+		{
+			if( id == 5 )
+			{
+				auto& object = chunk.GetObject( id );
+				XMFLOAT3 position = object.GetPosition();
+				position.y += 0.00001f;
+				chunk.ModifyObject( id, position );
+			}
+		}
+	}
+}
