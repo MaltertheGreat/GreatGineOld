@@ -14,7 +14,6 @@ GGApplication::GGApplication( HINSTANCE _hInstance, GGConfig& _config )
 	m_input( m_window ),
 	m_graphics( m_window, _config ),
 	m_world(),
-	m_physics(),
 	m_game( m_input, _config )
 {
 	m_input.RegisterHandler( this );
@@ -52,9 +51,10 @@ void GGApplication::Update()
 	m_timer.Update();
 	double frameTime = m_timer.GetFrameTime();
 
-	m_game.Update( m_world, m_graphics, frameTime );
-	m_physics.Update( m_world );
 	m_graphics.Update( m_world, frameTime );
+
+	m_game.Update( m_world, m_graphics, frameTime );
+
 	m_world.Update();
 
 	return;

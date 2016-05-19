@@ -71,37 +71,22 @@ void GGScene::UpdateChunkModel( GGChunkModel& _chunkModel, const GGChunk& _chunk
 {
 	auto& objects = _chunk.GetObjects();
 
-	if( _chunkModel.empty() )
+	auto& addedObjectIDs = _chunk.GetAddedObjectIDs();
+	for( auto id : addedObjectIDs )
 	{
-		for( auto& object : objects )
-		{
-			_chunkModel.push_back( GGObjectModel( m_device, object.second, _position ) );
-		}
+		_chunkModel[id] = GGObjectModel( m_device, objects.at( id ), _position );
 	}
-	else
+
+	auto& modifiedObjectIDs = _chunk.GetModifiedObjectIDs();
+	for( auto id : modifiedObjectIDs )
 	{
-		if( _chunkModel.size() < objects.size() )
-		{
-			_chunkModel.resize( objects.size() );
-		}
+		_chunkModel[id].Update( objects.at( id ), _position );
+	}
 
-		auto& addedObjectIDs = _chunk.GetAddedObjectIDs();
-		for( auto id : addedObjectIDs )
-		{
-			_chunkModel[id] = GGObjectModel( m_device, objects.at( id ), _position );
-		}
-
-		auto& modifiedObjectIDs = _chunk.GetModifiedObjectIDs();
-		for( auto id : modifiedObjectIDs )
-		{
-			_chunkModel[id].Update( objects.at( id ), _position );
-		}
-
-		auto& removedObjectIDs = _chunk.GetRemovedObjectIDs();
-		for( auto id : removedObjectIDs )
-		{
-			_chunkModel[id] = GGObjectModel();
-		}
+	auto& removedObjectIDs = _chunk.GetRemovedObjectIDs();
+	for( auto id : removedObjectIDs )
+	{
+		_chunkModel[id] = GGObjectModel();
 	}
 
 	return;
@@ -127,7 +112,7 @@ void GGScene::MoveScene( long long _dX, long long _dZ )
 						newChunkModel = std::move( m_chunkModels[x * SCENE_DIAMETER + z] );
 						for( auto& objectModel : newChunkModel )
 						{
-							objectModel.Move( { _dX * GGChunk::DIMENSION, 0.0f, _dZ * GGChunk::DIMENSION } );
+							objectModel.second.Move( { _dX * GGChunk::DIMENSION, 0.0f, _dZ * GGChunk::DIMENSION } );
 						}
 					}
 				}

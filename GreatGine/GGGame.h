@@ -1,6 +1,7 @@
 #pragma once
 
 #include "GGPlayer.h"
+#include "GGPhysics.h"
 
 class GGInput;
 class GGConfig;
@@ -17,4 +18,5 @@ public:
 
 private:
 	GGPlayer m_player;
+	GGPhysics m_physics;
 };

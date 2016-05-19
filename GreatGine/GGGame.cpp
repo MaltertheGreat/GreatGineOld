@@ -12,6 +12,7 @@ GGGame::GGGame( GGInput& _input, GGConfig& _config )
 void GGGame::Update( GGWorld& _world, GGGraphics& _graphics, double _timeDelta )
 {
 	m_player.Update( _world, _timeDelta );
+	m_physics.Update( _world );
 
 	auto& scene = _graphics.GetScene();
 

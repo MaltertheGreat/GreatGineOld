@@ -17,7 +17,7 @@ public:
 	static constexpr int SCENE_DIAMETER = (2 * RENDER_DISTANCE + 1);
 	static constexpr int SCENE_SIZE = SCENE_DIAMETER * SCENE_DIAMETER;
 
-	typedef std::vector<GGObjectModel> GGChunkModel;
+	typedef std::map<GGChunk::GGObjectID, GGObjectModel> GGChunkModel;
 	typedef std::array<GGChunkModel, SCENE_SIZE> GGChunkModelArray;
 
 	struct GGCamera

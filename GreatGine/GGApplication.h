@@ -6,7 +6,6 @@
 #include "GGFrameTimer.h"
 #include "GGGraphics.h"
 #include "GGWorld.h"
-#include "GGPhysics.h"
 #include "GGGame.h"
 
 class GGConfig;
@@ -40,6 +39,5 @@ private:
 	GGFrameTimer m_timer;
 	GGGraphics m_graphics;
 	GGWorld m_world;
-	GGPhysics m_physics;
 	GGGame m_game;
 };

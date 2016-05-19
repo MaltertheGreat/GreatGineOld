@@ -76,13 +76,13 @@ void GGGraphics::HandleKeyInput( WPARAM _keyCode, bool _down )
 {
 	if( _down )
 	{
-		if( _keyCode == m_keyMap[ GG_KEYMAP_FILL_TYPE ] )
+		if( _keyCode == m_keyMap[GG_KEYMAP_FILL_TYPE] )
 		{
 			SwitchFillType();
 		}
-		else if( _keyCode == m_keyMap[ GG_KEYMAP_RENDER_CHUNKS ] )
+		else if( _keyCode == m_keyMap[GG_KEYMAP_RENDER_CHUNKS] )
 		{
-			m_renderFlags[ GG_RENDER_FLAGS_DEBUG ].flip();
+			m_renderFlags[GG_RENDER_FLAGS_DEBUG].flip();
 		}
 	}
 
@@ -119,10 +119,10 @@ void GGGraphics::Render3D()
 	{
 		for( auto& objectModel : chunk )
 		{
-			if( !objectModel.IsEmpty() )
+			if( !objectModel.second.IsEmpty() )
 			{
-				m_renderer.SetMesh( objectModel.GetMesh() );
-				m_renderer.RenderMesh( objectModel.GetMesh(), objectModel.GetTransformation() );
+				m_renderer.SetMesh( objectModel.second.GetMesh() );
+				m_renderer.RenderMesh( objectModel.second.GetMesh(), objectModel.second.GetTransformation() );
 			}
 		}
 	}
@@ -163,7 +163,7 @@ void GGGraphics::Render2D()
 {
 	m_renderer.Begin2DRendering();
 
-	if( m_renderFlags[ GG_RENDER_FLAGS_GUI ] )
+	if( m_renderFlags[GG_RENDER_FLAGS_GUI] )
 	{
 		for( int i = 0; i < GGDebugInfo::LINE_COUNT; ++i )
 		{

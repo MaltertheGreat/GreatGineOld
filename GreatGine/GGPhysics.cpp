@@ -13,6 +13,7 @@ void GGPhysics::Update( GGWorld& _world )
 		{
 			if( id == 5 )
 			{
+				// Just for testing purposes
 				auto& object = chunk.GetObject( id );
 				XMFLOAT3 position = object.GetPosition();
 				position.y += 0.00001f;

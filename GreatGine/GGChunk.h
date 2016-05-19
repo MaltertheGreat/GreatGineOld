@@ -32,13 +32,13 @@ public:
 public:
 	void Update();
 
-	void SetState( GG_CHUNK_STATE _state );
-
 	GGObjectID AddObject( GGObject&& _object );
 	void ModifyObject( GGObjectID id, const DirectX::XMFLOAT3& _position );
 	void RemoveObject( GGObjectID id );
 	void ReplaceObject( GGObjectID id, GGObject&& _newObject );
 	void AwakenObject( GGObjectID _id );
+
+	void SetState( GG_CHUNK_STATE _state );
 
 	void SetObjectData( GGObjectID _objectID, GGObjectData::GGObjectDataID _dataID, std::unique_ptr<GGObjectData> _data );
 
@@ -66,6 +66,9 @@ private:
 	GGObjectIDs m_removedObjectIDs;
 	GGObjectIDs m_awakenedObjectIDs;
 
+	GGObjectIDs m_toBeAddedObjectIDs;
+	GGObjectIDs m_toBeModifiedObjectIDs;
+	GGObjectIDs m_toBeRemovedObjectIDs;
 	GGObjectIDs m_toBeAwakenedObjectIDs;
 
 	GGObjectDataSets m_objectDataSets;
