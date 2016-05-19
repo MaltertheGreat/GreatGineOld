@@ -45,7 +45,7 @@ public:
 	const GGObjects& GetObjects() const;
 
 	const GGObjectIDs& GetAddedObjectIDs() const;
-	const GGObjectIDs& GetAwakeObjectIDs() const;
+	const GGObjectIDs& GetAwakenedObjectIDs() const;
 	const GGObjectIDs& GetModifiedObjectIDs() const;
 	const GGObjectIDs& GetRemovedObjectIDs() const;
 
@@ -59,9 +59,9 @@ private:
 	GGObjectIDs m_emptyObjectIDs;
 
 	GGObjectIDs m_addedObjectIDs;
-	GGObjectIDs m_awakeObjectIDs;
 	GGObjectIDs m_modifiedObjectIDs;
 	GGObjectIDs m_removedObjectIDs;
+	GGObjectIDs m_awakenedObjectIDs;
 
 	GGObjectDataSets m_objectDataSets;
 };

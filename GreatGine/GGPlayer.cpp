@@ -46,7 +46,7 @@ void GGPlayer::Update( GGWorld& _world, double _timeDelta )
 		m_isAlive = true;
 	}
 
-	GGObjectData::GGObjectDataID id = 1; // Magic number ;p
+	GGObjectData::GGObjectDataID id = GGPhysicsObjectData::magicID;
 	unique_ptr<GGPhysicsObjectData> objectData = make_unique<GGPhysicsObjectData>( id, m_velocity );
 	chunk.SetObjectData( m_headObject.objectID, id, move( objectData ) );
 
@@ -171,7 +171,7 @@ void GGPlayer::UpdatePosition( GGWorld& _world, double _timeDelta )
 	auto& chunk = _world.GetChunk( m_headObject.chunk );
 	auto& head = chunk.GetObjects().at( m_headObject.objectID );
 
-	GGObjectData::GGObjectDataID id = 1; // Magic number ;p
+	GGObjectData::GGObjectDataID id = GGPhysicsObjectData::magicID;
 	auto playerData = chunk.GetObjectData<GGPhysicsObjectData>( m_headObject.objectID, id );
 
 	// Update player position since last frame
