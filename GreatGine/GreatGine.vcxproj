@@ -237,6 +237,7 @@
     <ClInclude Include="GGPhysicsObjectData.h" />
     <ClInclude Include="GGPlayer.h" />
     <ClInclude Include="GGRenderer.h" />
+    <ClInclude Include="GGRenderer3D.h" />
     <ClInclude Include="GGScene.h" />
     <ClInclude Include="GGShader.h" />
     <ClInclude Include="GGVoxel.h" />

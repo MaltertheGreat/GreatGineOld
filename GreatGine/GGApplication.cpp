@@ -51,11 +51,11 @@ void GGApplication::Update()
 	m_timer.Update();
 	double frameTime = m_timer.GetFrameTime();
 
-	m_graphics.Update( m_world, frameTime );
+	m_world.Update();
 
 	m_game.Update( m_world, m_graphics, frameTime );
 
-	m_world.Update();
+	m_graphics.Update( m_world, frameTime );
 
 	return;
 }

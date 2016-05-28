@@ -10,12 +10,12 @@ void GGWorld::Update()
 {
 	for( auto& chunk : m_chunks )
 	{
-		chunk.Update();
-
 		if( chunk.GetState() == GGChunk::GG_CHUNK_STATE_UNGENERATED )
 		{
 			GenerateChunk( chunk );
 		}
+
+		chunk.Update();
 	}
 
 	return;

@@ -28,13 +28,13 @@ GGPlayer::GGPlayer( GGInput& _input, GGConfig& _config )
 
 void GGPlayer::Update( GGWorld& _world, double _timeDelta )
 {
-	auto& chunk = _world.GetChunk( m_headObject.chunk );
-
 	if( !m_isAlive )
 	{
 		m_position = { 0.0f, 10.0f, 0.0f };
 		m_headObject.chunk.chunkX = GGWorld::DIAMETER / 2;
 		m_headObject.chunk.chunkZ = GGWorld::DIAMETER / 2;
+
+		auto& chunk = _world.GetChunk( m_headObject.chunk );
 
 		if( chunk.GetState() == GGChunk::GG_CHUNK_STATE_UNGENERATED )
 		{
@@ -45,6 +45,8 @@ void GGPlayer::Update( GGWorld& _world, double _timeDelta )
 
 		m_isAlive = true;
 	}
+
+	auto& chunk = _world.GetChunk( m_headObject.chunk );
 
 	GGObjectData::GGObjectDataID id = GGPhysicsObjectData::magicID;
 	unique_ptr<GGPhysicsObjectData> objectData = make_unique<GGPhysicsObjectData>( id, m_velocity );

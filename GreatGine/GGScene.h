@@ -41,7 +41,6 @@ public:
 
 private:
 	void UpdateChunkModel( GGChunkModel& _chunkModel, const GGChunk& _chunk, const DirectX::XMFLOAT3& _position );
-	void MoveScene( long long _dX, long long _dZ );
 
 private:
 	GGDevice& m_device;

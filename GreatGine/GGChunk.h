@@ -1,7 +1,7 @@
 #pragma once
 
 #include <map>
-#include <vector>
+#include <set>
 #include <utility>
 
 #include "GGObject.h"
@@ -21,7 +21,7 @@ public:
 public:
 	typedef UINT GGObjectID;
 	typedef std::map<GGObjectID, GGObject> GGObjects;
-	typedef std::vector<GGObjectID> GGObjectIDs;
+	typedef std::set<GGObjectID> GGObjectIDs;
 
 	typedef std::map<GGObjectData::GGObjectDataID, std::unique_ptr<GGObjectData>> GGObjectDataSet;
 	typedef std::map<GGObjectID, GGObjectDataSet> GGObjectDataSets;

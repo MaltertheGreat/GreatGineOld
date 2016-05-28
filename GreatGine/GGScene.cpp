@@ -53,47 +53,10 @@ const GGScene::GGChunkModelArray& GGScene::GetChunkModels() const
 
 void GGScene::SetCenterChunk( GGWorld::GGChunkDescription _chunkDesc )
 {
-	MoveScene( static_cast<long long>(m_centerChunk.chunkX) - static_cast<long long>(_chunkDesc.chunkX), static_cast<long long>(m_centerChunk.chunkZ) - static_cast<long long>(_chunkDesc.chunkZ) );
+	long long _dX = static_cast<long long>(m_centerChunk.chunkX) - static_cast<long long>(_chunkDesc.chunkX);
+	long long _dZ = static_cast<long long>(m_centerChunk.chunkZ) - static_cast<long long>(_chunkDesc.chunkZ);
 
-	m_centerChunk = _chunkDesc;
-
-	return;
-}
-
-void GGScene::SetCamera( const GGCamera& _camera )
-{
-	m_camera = _camera;
-
-	return;
-}
-
-void GGScene::UpdateChunkModel( GGChunkModel& _chunkModel, const GGChunk& _chunk, const DirectX::XMFLOAT3& _position )
-{
-	auto& objects = _chunk.GetObjects();
-
-	auto& addedObjectIDs = _chunk.GetAddedObjectIDs();
-	for( auto id : addedObjectIDs )
-	{
-		_chunkModel[id] = GGObjectModel( m_device, objects.at( id ), _position );
-	}
-
-	auto& modifiedObjectIDs = _chunk.GetModifiedObjectIDs();
-	for( auto id : modifiedObjectIDs )
-	{
-		_chunkModel[id].Update( objects.at( id ), _position );
-	}
-
-	auto& removedObjectIDs = _chunk.GetRemovedObjectIDs();
-	for( auto id : removedObjectIDs )
-	{
-		_chunkModel[id] = GGObjectModel();
-	}
-
-	return;
-}
-
-void GGScene::MoveScene( long long _dX, long long _dZ )
-{
+	// Shift chunk models, if needed
 	if( _dX || _dZ )
 	{
 		GGChunkModelArray newChunkModels;
@@ -120,6 +83,50 @@ void GGScene::MoveScene( long long _dX, long long _dZ )
 		}
 
 		m_chunkModels = move( newChunkModels );
+	}
+
+	m_centerChunk = _chunkDesc;
+
+	return;
+}
+
+void GGScene::SetCamera( const GGCamera& _camera )
+{
+	m_camera = _camera;
+
+	return;
+}
+
+void GGScene::UpdateChunkModel( GGChunkModel& _chunkModel, const GGChunk& _chunk, const DirectX::XMFLOAT3& _position )
+{
+	auto& objects = _chunk.GetObjects();
+
+	if( _chunkModel.empty() )
+	{
+		for( auto& object : objects )
+		{
+			_chunkModel.insert( { object.first, GGObjectModel( m_device, object.second, _position ) } );
+		}
+	}
+	else
+	{
+		auto& addedObjectIDs = _chunk.GetAddedObjectIDs();
+		for( auto id : addedObjectIDs )
+		{
+			_chunkModel[id] = GGObjectModel( m_device, objects.at( id ), _position );
+		}
+
+		auto& modifiedObjectIDs = _chunk.GetModifiedObjectIDs();
+		for( auto id : modifiedObjectIDs )
+		{
+			_chunkModel[id].Update( objects.at( id ), _position );
+		}
+
+		auto& removedObjectIDs = _chunk.GetRemovedObjectIDs();
+		for( auto id : removedObjectIDs )
+		{
+			_chunkModel[id] = GGObjectModel();
+		}
 	}
 
 	return;
