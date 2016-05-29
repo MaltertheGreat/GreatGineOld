@@ -5,6 +5,7 @@
 
 #include <vector>
 #include <stack>
+#include <random>
 
 using namespace DirectX;
 using namespace std;
@@ -13,8 +14,8 @@ void GGPhysics::Update( GGWorld& _world )
 {
 	for( auto& chunk : _world.GetChunkArray() )
 	{
-		auto& modifiedObjectIDs = chunk.GetAddedObjectIDs();
-		for( auto id : modifiedObjectIDs )
+		auto& addedObjectIDs = chunk.GetAddedObjectIDs();
+		for( auto id : addedObjectIDs )
 		{
 			auto physicsData = chunk.GetObjectData<GGPhysicsObjectData>( id, GGPhysicsObjectData::magicID );
 
@@ -127,10 +128,28 @@ void GGPhysics::SplitObject( GGChunk::GGObjectID& _objectID, GGChunk& _chunk )
 
 	if( curLab > 2 )
 	{
-		auto pos = object.GetPosition();
-		pos.y += 0.1f;
-		object.SetPosition( pos );
+		_chunk.RemoveObject( _objectID );
+		vector<GGObject::GGVoxels> newVoxels( curLab - 1, GGObject::GGVoxels( GGObject::MAX_SIZE ) );
 
-		_chunk.ModifyObject( _objectID, pos );
+		for( UINT i = 0; i < newVoxels.size(); ++i )
+		{
+			for( UINT j = 0; j < GGObject::MAX_SIZE; ++j )
+			{
+				if( voxelLabels[j] == (i + 1) )
+				{
+					newVoxels[i][j] = voxels[j];
+				}
+			}
+
+			static random_device generator;
+			static uniform_real_distribution<float> distribution( 0.25f, 0.75f );
+			XMFLOAT3 color = { distribution( generator ), distribution( generator ),  distribution( generator ) };
+
+			GGObject newObject( move( newVoxels[i] ), object.GetVoxelDimension(), object.GetPosition(), color );
+
+			_chunk.AddObject( move( newObject ) );
+		}
 	}
+
+	return;
 }

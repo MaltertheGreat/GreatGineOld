@@ -76,24 +76,6 @@ void GGChunk::RemoveObject( GGObjectID _id )
 {
 	m_toBeRemovedObjectIDs.insert( _id );
 
-	auto it1 = find( m_addedObjectIDs.begin(), m_addedObjectIDs.end(), _id );
-	if( it1 != m_addedObjectIDs.end() )
-	{
-		m_addedObjectIDs.erase( it1 );
-	}
-
-	auto it2 = find( m_modifiedObjectIDs.begin(), m_modifiedObjectIDs.end(), _id );
-	if( it2 != m_modifiedObjectIDs.end() )
-	{
-		m_modifiedObjectIDs.erase( it2 );
-	}
-
-	auto it3 = find( m_awakenedObjectIDs.begin(), m_awakenedObjectIDs.end(), _id );
-	if( it3 != m_awakenedObjectIDs.end() )
-	{
-		m_awakenedObjectIDs.erase( it3 );
-	}
-
 	auto it4 = find( m_toBeAddedObjectIDs.begin(), m_toBeAddedObjectIDs.end(), _id );
 	if( it4 != m_toBeAddedObjectIDs.end() )
 	{
