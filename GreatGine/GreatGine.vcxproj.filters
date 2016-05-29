@@ -212,9 +212,6 @@
     <ClInclude Include="GGPhysicsObjectData.h">
       <Filter>Header Files\Physics</Filter>
     </ClInclude>
-    <ClInclude Include="GGRenderer3D.h">
-      <Filter>Header Files\Graphics</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="basicVS.hlsl">

@@ -49,7 +49,7 @@ void GGPlayer::Update( GGWorld& _world, double _timeDelta )
 	auto& chunk = _world.GetChunk( m_headObject.chunk );
 
 	GGObjectData::GGObjectDataID id = GGPhysicsObjectData::magicID;
-	unique_ptr<GGPhysicsObjectData> objectData = make_unique<GGPhysicsObjectData>( id, m_velocity );
+	unique_ptr<GGPhysicsObjectData> objectData = make_unique<GGPhysicsObjectData>( id, false, m_velocity );
 	chunk.SetObjectData( m_headObject.objectID, id, move( objectData ) );
 
 	UpdatePosition( _world, _timeDelta );
