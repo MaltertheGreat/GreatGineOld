@@ -24,6 +24,17 @@ void GGPhysics::Update( GGWorld& _world )
 				SplitObject( id, chunk );
 			}
 		}
+
+		auto& awakenedObjectIDs = chunk.GetObjectIDList( GGChunk::GG_OBJECT_IDS_AWAKENED );
+		for( auto id : awakenedObjectIDs )
+		{
+			auto physicsData = chunk.GetObjectData<GGPhysicsObjectData>( id );
+
+			if( physicsData.physical )
+			{
+				UpdateObject( id, chunk );
+			}
+		}
 	}
 
 	return;
@@ -152,4 +163,44 @@ void GGPhysics::SplitObject( GGChunk::GGObjectID& _objectID, GGChunk& _chunk )
 	}
 
 	return;
+}
+
+void GGPhysics::UpdateObject( GGChunk::GGObjectID& _objectID, GGChunk& _chunk )
+{
+	auto& object = _chunk.GetObject( _objectID );
+
+	float objectFloorHeight = GetObjectFloorHeight( object );
+	if( objectFloorHeight > 8.0f )
+	{
+		auto objectPos = object.GetPosition();
+		objectPos.y -= 0.01f;
+		object.SetPosition( objectPos );
+		_chunk.ModifyObject( _objectID, objectPos );
+	}
+}
+
+float GGPhysics::GetObjectFloorHeight( const GGObject& _object )
+{
+	float objectCenterHeight = _object.GetPosition().y;
+
+	const UINT objectDiameter = GGObject::MAX_DIAMETER;
+	auto& voxels = _object.GetVoxels();
+	for( UINT y = 0; y < objectDiameter; ++y )
+	{
+		for( UINT x = 0; x < objectDiameter; ++x )
+		{
+			for( UINT z = 0; z < objectDiameter; ++z )
+			{
+				UINT i = x * objectDiameter * objectDiameter + y * objectDiameter + z;
+				if( voxels[i].element != 0 )
+				{
+					int lowestVoxelLevel = y - (objectDiameter / 2);
+
+					return objectCenterHeight + (lowestVoxelLevel * _object.GetVoxelDimension());
+				}
+			}
+		}
+	}
+
+	return 0.0f;
 }

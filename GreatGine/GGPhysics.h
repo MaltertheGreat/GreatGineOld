@@ -12,4 +12,7 @@ public:
 
 private:
 	void SplitObject( GGChunk::GGObjectID& _objectID, GGChunk& _chunk );
+	void UpdateObject( GGChunk::GGObjectID& _objectID, GGChunk& _chunk );
+
+	float GetObjectFloorHeight( const GGObject& _object );
 };

@@ -5,6 +5,15 @@ using namespace std;
 
 void GGChunk::Update()
 {
+	swap( m_objectIDLists[GG_OBJECT_IDS_ADDED], m_objectIDScheduledLists[GG_OBJECT_IDS_ADDED] );
+	m_objectIDScheduledLists[GG_OBJECT_IDS_ADDED].clear();
+
+	swap( m_objectIDLists[GG_OBJECT_IDS_AWAKENED], m_objectIDScheduledLists[GG_OBJECT_IDS_AWAKENED] );
+	m_objectIDScheduledLists[GG_OBJECT_IDS_AWAKENED].clear();
+
+	swap( m_objectIDLists[GG_OBJECT_IDS_MODIFIED], m_objectIDScheduledLists[GG_OBJECT_IDS_MODIFIED] );
+	m_objectIDScheduledLists[GG_OBJECT_IDS_MODIFIED].clear();
+
 	m_objectIDLists[GG_OBJECT_IDS_REMOVED].clear();
 	for( auto id : m_objectIDScheduledLists[GG_OBJECT_IDS_REMOVED] )
 	{
@@ -13,18 +22,30 @@ void GGChunk::Update()
 			m_objectIDLists[GG_OBJECT_IDS_EMPTY].insert( id );
 			m_objectIDLists[GG_OBJECT_IDS_REMOVED].insert( id );
 			m_objectDataSets.erase( id );
+
+			auto& addedObjectIDs = m_objectIDLists[GG_OBJECT_IDS_ADDED];
+			auto it4 = find( addedObjectIDs.begin(), addedObjectIDs.end(), id );
+			if( it4 != addedObjectIDs.end() )
+			{
+				addedObjectIDs.erase( it4 );
+			}
+
+			auto& modifiedObjectIDs = m_objectIDLists[GG_OBJECT_IDS_MODIFIED];
+			auto it5 = find( modifiedObjectIDs.begin(), modifiedObjectIDs.end(), id );
+			if( it5 != modifiedObjectIDs.end() )
+			{
+				modifiedObjectIDs.erase( it5 );
+			}
+
+			auto& awakenedObjectIDs = m_objectIDLists[GG_OBJECT_IDS_AWAKENED];
+			auto it6 = find( awakenedObjectIDs.begin(), awakenedObjectIDs.end(), id );
+			if( it6 != awakenedObjectIDs.end() )
+			{
+				awakenedObjectIDs.erase( it6 );
+			}
 		}
 	}
 	m_objectIDScheduledLists[GG_OBJECT_IDS_REMOVED].clear();
-
-	swap( m_objectIDLists[GG_OBJECT_IDS_ADDED], m_objectIDScheduledLists[GG_OBJECT_IDS_ADDED] );
-	m_objectIDScheduledLists[GG_OBJECT_IDS_ADDED].clear();
-
-	swap( m_objectIDLists[GG_OBJECT_IDS_MODIFIED], m_objectIDScheduledLists[GG_OBJECT_IDS_MODIFIED] );
-	m_objectIDScheduledLists[GG_OBJECT_IDS_MODIFIED].clear();
-
-	swap( m_objectIDLists[GG_OBJECT_IDS_AWAKENED], m_objectIDScheduledLists[GG_OBJECT_IDS_AWAKENED] );
-	m_objectIDScheduledLists[GG_OBJECT_IDS_AWAKENED].clear();
 
 	return;
 }
@@ -76,27 +97,6 @@ void GGChunk::ModifyObject( GGObjectID _id, const DirectX::XMFLOAT3& _position )
 void GGChunk::RemoveObject( GGObjectID _id )
 {
 	m_objectIDScheduledLists[GG_OBJECT_IDS_REMOVED].insert( _id );
-
-	auto& toBeAddedObjectIDs = m_objectIDScheduledLists[GG_OBJECT_IDS_ADDED];
-	auto it4 = find( toBeAddedObjectIDs.begin(), toBeAddedObjectIDs.end(), _id );
-	if( it4 != toBeAddedObjectIDs.end() )
-	{
-		toBeAddedObjectIDs.erase( it4 );
-	}
-
-	auto& toBeModifiedObjectIDs = m_objectIDScheduledLists[GG_OBJECT_IDS_MODIFIED];
-	auto it5 = find( toBeModifiedObjectIDs.begin(), toBeModifiedObjectIDs.end(), _id );
-	if( it5 != toBeModifiedObjectIDs.end() )
-	{
-		toBeModifiedObjectIDs.erase( it5 );
-	}
-
-	auto& toBeAwakenedObjectIDs = m_objectIDScheduledLists[GG_OBJECT_IDS_AWAKENED];
-	auto it6 = find( toBeAwakenedObjectIDs.begin(), toBeAwakenedObjectIDs.end(), _id );
-	if( it6 != toBeAwakenedObjectIDs.end() )
-	{
-		toBeAwakenedObjectIDs.erase( it6 );
-	}
 
 	return;
 }
