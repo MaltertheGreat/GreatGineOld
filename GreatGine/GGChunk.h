@@ -2,6 +2,7 @@
 
 #include <map>
 #include <set>
+#include <array>
 #include <utility>
 
 #include "GGObject.h"
@@ -18,10 +19,21 @@ public:
 		GG_CHUNK_STATE_GENERAETD
 	};
 
+	enum GG_OBJECT_IDS : int
+	{
+		GG_OBJECT_IDS_ADDED,
+		GG_OBJECT_IDS_AWAKENED,
+		GG_OBJECT_IDS_MODIFIED,
+		GG_OBJECT_IDS_REMOVED,
+		GG_OBJECT_IDS_EMPTY,
+
+		GG_OBJECT_IDS_COUNT
+	};
+
 public:
 	typedef UINT GGObjectID;
 	typedef std::map<GGObjectID, GGObject> GGObjects;
-	typedef std::set<GGObjectID> GGObjectIDs;
+	typedef std::set<GGObjectID> GGObjectIDList;
 
 	typedef std::map<GGObjectData::GGObjectDataID, std::unique_ptr<GGObjectData>> GGObjectDataSet;
 	typedef std::map<GGObjectID, GGObjectDataSet> GGObjectDataSets;
@@ -40,58 +52,58 @@ public:
 
 	void SetState( GG_CHUNK_STATE _state );
 
-	void SetObjectData( GGObjectID _objectID, GGObjectData::GGObjectDataID _dataID, std::unique_ptr<GGObjectData> _data );
+	template<typename GGObjectDataType>
+	void SetObjectData( GGObjectID _objectID, std::unique_ptr<GGObjectData> _data );
 
 	GG_CHUNK_STATE GetState() const;
 
 	GGObject& GetObject( GGObjectID _id );
 	const GGObjects& GetObjects() const;
 
-	const GGObjectIDs& GetAddedObjectIDs() const;
-	const GGObjectIDs& GetAwakenedObjectIDs() const;
-	const GGObjectIDs& GetModifiedObjectIDs() const;
-	const GGObjectIDs& GetRemovedObjectIDs() const;
+	const GGObjectIDList& GetObjectIDList( GG_OBJECT_IDS _list ) const;
 
-	template<typename T>
-	const T* GetObjectData( GGObjectID _objectID, GGObjectData::GGObjectDataID _dataID ) const;
+	template<typename GGObjectDataType>
+	const GGObjectDataType GetObjectData( GGObjectID _objectID ) const;
 
 private:
 	GG_CHUNK_STATE    m_state = GG_CHUNK_STATE_UNGENERATED;
 
 	GGObjects m_objects;
-	GGObjectIDs m_emptyObjectIDs;
-
-	GGObjectIDs m_addedObjectIDs;
-	GGObjectIDs m_modifiedObjectIDs;
-	GGObjectIDs m_removedObjectIDs;
-	GGObjectIDs m_awakenedObjectIDs;
-
-	GGObjectIDs m_toBeAddedObjectIDs;
-	GGObjectIDs m_toBeModifiedObjectIDs;
-	GGObjectIDs m_toBeRemovedObjectIDs;
-	GGObjectIDs m_toBeAwakenedObjectIDs;
+	std::array<GGObjectIDList, GG_OBJECT_IDS_COUNT> m_objectIDLists;
+	std::array<GGObjectIDList, GG_OBJECT_IDS_COUNT> m_objectIDScheduledLists;
 
 	GGObjectDataSets m_objectDataSets;
 };
 
-template<typename T>
-inline const T* GGChunk::GetObjectData( GGObjectID _objectID, GGObjectData::GGObjectDataID _dataID ) const
+template<typename GGObjectDataType>
+inline void GGChunk::SetObjectData( GGObjectID _objectID, std::unique_ptr<GGObjectData> _data )
 {
-	try
+	auto& objectDataSet = m_objectDataSets[_objectID];
+	if( _data )
 	{
-		auto& objectDataSet = m_objectDataSets.at( _objectID );
-		auto& objectData = objectDataSet.at( _dataID );
+		swap( objectDataSet[GGObjectDataType::ID], _data );
+	}
+	else
+	{
+		objectDataSet.erase( GGObjectDataType::ID );
+	}
 
-		assert( objectData );
-		if( objectData->GetID() == _dataID )
+	return;
+}
+
+template<typename GGObjectDataType>
+inline const GGObjectDataType GGChunk::GetObjectData( GGObjectID _objectID ) const
+{
+	auto objectDataSet = m_objectDataSets.find( _objectID );
+	if( objectDataSet != m_objectDataSets.end() )
+	{
+		auto objectData = objectDataSet->second.find( GGObjectDataType::ID );
+
+		if( objectData != objectDataSet->second.end() )
 		{
-			return dynamic_cast<T*>(objectData.get());
+			return *(dynamic_cast<GGObjectDataType*>(objectData->second.get()));
 		}
 	}
-	catch( ... )
-	{
-		return nullptr;
-	}
 
-	return nullptr;
+	return GGObjectDataType();
 }

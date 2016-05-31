@@ -14,12 +14,12 @@ void GGPhysics::Update( GGWorld& _world )
 {
 	for( auto& chunk : _world.GetChunkArray() )
 	{
-		auto& addedObjectIDs = chunk.GetAddedObjectIDs();
+		auto& addedObjectIDs = chunk.GetObjectIDList( GGChunk::GG_OBJECT_IDS_ADDED );
 		for( auto id : addedObjectIDs )
 		{
-			auto physicsData = chunk.GetObjectData<GGPhysicsObjectData>( id, GGPhysicsObjectData::magicID );
+			auto physicsData = chunk.GetObjectData<GGPhysicsObjectData>( id );
 
-			if( (!physicsData) || (physicsData && physicsData->physical) )
+			if( physicsData.physical )
 			{
 				SplitObject( id, chunk );
 			}

@@ -110,19 +110,19 @@ void GGScene::UpdateChunkModel( GGChunkModel& _chunkModel, const GGChunk& _chunk
 	}
 	else
 	{
-		auto& addedObjectIDs = _chunk.GetAddedObjectIDs();
+		auto& addedObjectIDs = _chunk.GetObjectIDList( GGChunk::GG_OBJECT_IDS_ADDED );
 		for( auto id : addedObjectIDs )
 		{
 			_chunkModel[id] = GGObjectModel( m_device, objects.at( id ), _position );
 		}
 
-		auto& modifiedObjectIDs = _chunk.GetModifiedObjectIDs();
+		auto& modifiedObjectIDs = _chunk.GetObjectIDList( GGChunk::GG_OBJECT_IDS_MODIFIED );
 		for( auto id : modifiedObjectIDs )
 		{
 			_chunkModel[id].Update( objects.at( id ), _position );
 		}
 
-		auto& removedObjectIDs = _chunk.GetRemovedObjectIDs();
+		auto& removedObjectIDs = _chunk.GetObjectIDList( GGChunk::GG_OBJECT_IDS_REMOVED );
 		for( auto id : removedObjectIDs )
 		{
 			_chunkModel[id] = GGObjectModel();

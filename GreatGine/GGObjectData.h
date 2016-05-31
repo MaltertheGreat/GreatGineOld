@@ -2,6 +2,7 @@
 
 struct GGObjectData
 {
-	typedef unsigned GGObjectDataID;
-	virtual GGObjectDataID GetID() = 0;
+	typedef unsigned GGObjectData::GGObjectDataID;
+	virtual ~GGObjectData()
+	{}
 };

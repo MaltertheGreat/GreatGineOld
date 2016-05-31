@@ -48,9 +48,8 @@ void GGPlayer::Update( GGWorld& _world, double _timeDelta )
 
 	auto& chunk = _world.GetChunk( m_headObject.chunk );
 
-	GGObjectData::GGObjectDataID id = GGPhysicsObjectData::magicID;
-	unique_ptr<GGPhysicsObjectData> objectData = make_unique<GGPhysicsObjectData>( id, false, m_velocity );
-	chunk.SetObjectData( m_headObject.objectID, id, move( objectData ) );
+	unique_ptr<GGPhysicsObjectData> objectData = make_unique<GGPhysicsObjectData>( false, m_velocity );
+	chunk.SetObjectData<GGPhysicsObjectData>( m_headObject.objectID, move( objectData ) );
 
 	UpdatePosition( _world, _timeDelta );
 	InteractWithWorld( _world, _timeDelta );
@@ -173,13 +172,12 @@ void GGPlayer::UpdatePosition( GGWorld& _world, double _timeDelta )
 	auto& chunk = _world.GetChunk( m_headObject.chunk );
 	auto& head = chunk.GetObjects().at( m_headObject.objectID );
 
-	GGObjectData::GGObjectDataID id = GGPhysicsObjectData::magicID;
-	auto playerData = chunk.GetObjectData<GGPhysicsObjectData>( m_headObject.objectID, id );
+	auto playerData = chunk.GetObjectData<GGPhysicsObjectData>( m_headObject.objectID );
 
 	// Update player position since last frame
 	XMFLOAT3 horizontalRotation = { 0.0f, m_rotation.y, 0.0f };
 	XMVECTOR rotation = XMLoadFloat3( &horizontalRotation );
-	XMVECTOR velocity = XMLoadFloat3( &playerData->velocity );
+	XMVECTOR velocity = XMLoadFloat3( &playerData.velocity );
 	XMVECTOR position = XMLoadFloat3( &head.GetPosition() );
 
 	rotation = XMQuaternionRotationRollPitchYawFromVector( rotation );
