@@ -9,16 +9,8 @@ GGObjectModel::GGObjectModel()
 
 GGObjectModel::GGObjectModel( const GGDevice& _device, const GGObject& _object, const XMFLOAT3& _position )
 {
-	m_mesh = _device.CreateMesh( CreateObjectGrid( _object, _object.GetColor() ) );
-
-	// Set object model transformation matrix
-	XMVECTOR position = XMLoadFloat3( &_position );
-	position += XMLoadFloat3( &_object.GetPosition() );
-
-	float objectScale = _object.GetVoxelDimension() * GGObject::MAX_DIAMETER;
-	XMMATRIX trasformation = XMMatrixScaling( objectScale, objectScale, objectScale );
-	trasformation = XMMatrixMultiply( trasformation, XMMatrixTranslationFromVector( position ) );
-	XMStoreFloat4x4( &m_transformation, trasformation );
+	m_mesh = _device.CreateMesh( CreateObjectGrid( _object ) );
+	Update( _object, _position );
 }
 
 void GGObjectModel::Update( const GGObject& _object, const XMFLOAT3& _position )
@@ -26,8 +18,16 @@ void GGObjectModel::Update( const GGObject& _object, const XMFLOAT3& _position )
 	XMVECTOR position = XMLoadFloat3( &_position );
 	position += XMLoadFloat3( &_object.GetPosition() );
 
-	float objectScale = _object.GetVoxelDimension() * GGObject::MAX_DIAMETER;
-	XMMATRIX transformation = XMMatrixScaling( objectScale, objectScale, objectScale );
+	XMUINT3 objectDiameter = _object.GetDiameter();
+	//float biggestDiameter = static_cast<float>(max( objectDiameter.x, max( objectDiameter.y, objectDiameter.z ) ));
+
+	XMFLOAT3 objectScale =
+	{
+		_object.GetVoxelDimension() * objectDiameter.x,
+		_object.GetVoxelDimension() * objectDiameter.y,
+		_object.GetVoxelDimension() * objectDiameter.z,
+	};
+	XMMATRIX transformation = XMMatrixScaling( objectScale.x, objectScale.y, objectScale.z );
 	transformation = XMMatrixMultiply( transformation, XMMatrixTranslationFromVector( position ) );
 	XMStoreFloat4x4( &m_transformation, transformation );
 }
@@ -64,19 +64,19 @@ const XMFLOAT4X4& GGObjectModel::GetTransformation() const
 	return m_transformation;
 }
 
-GGMeshData GGObjectModel::CreateObjectGrid( const GGObject& _object, const XMFLOAT3& _color )
+GGMeshData GGObjectModel::CreateObjectGrid( const GGObject& _object )
 {
 	GGMeshData grid;
 
-	auto& voxels = _object.GetVoxels();
+	XMUINT3 objectDiameter = _object.GetDiameter();
 
-	for( UINT x = 0; x < GGObject::MAX_DIAMETER; ++x )
+	for( UINT x = 0; x < objectDiameter.x; ++x )
 	{
-		for( UINT y = 0; y < GGObject::MAX_DIAMETER; ++y )
+		for( UINT y = 0; y < objectDiameter.y; ++y )
 		{
-			for( UINT z = 0; z < GGObject::MAX_DIAMETER; ++z )
+			for( UINT z = 0; z < objectDiameter.z; ++z )
 			{
-				CreateVoxel( x, y, z, voxels, grid, _color );
+				CreateVoxel( x, y, z, _object, grid );
 			}
 		}
 	}
@@ -84,29 +84,52 @@ GGMeshData GGObjectModel::CreateObjectGrid( const GGObject& _object, const XMFLO
 	return grid;
 }
 
-void GGObjectModel::CreateVoxel( UINT x, UINT y, UINT z, const GGObject::GGVoxels& voxels, GGMeshData& _grid, const XMFLOAT3& _color )
+void GGObjectModel::CreateVoxel( UINT _x, UINT _y, UINT _z, const GGObject& _object, GGMeshData& _grid )
 {
-	const float diameter = 1.0f / GGObject::MAX_DIAMETER;
-	const float radius = diameter / 2.0f;
-	const float offset = -radius * static_cast<float>(GGObject::MAX_DIAMETER - 1);
+	const GGObject::GGVoxels& voxels = _object.GetVoxels();
 
-	UINT voxelIndex = x * GGObject::MAX_DIAMETER * GGObject::MAX_DIAMETER + y * GGObject::MAX_DIAMETER + z;
+	XMUINT3 objectDiameter = _object.GetDiameter();
+	//	float biggestDiameter = static_cast<float>(max( objectDiameter.x, max( objectDiameter.y, objectDiameter.z ) ));
+
+		//const float diameter = 1.0f / biggestDiameter;
+	const XMFLOAT3 diameter =
+	{
+		1.0f / objectDiameter.x,
+		1.0f / objectDiameter.y,
+		1.0f / objectDiameter.z,
+	};
+	//const float radius = diameter / 2.0f;
+	const XMFLOAT3 radius =
+	{
+		diameter.x / 2.0f,
+		diameter.y / 2.0f,
+		diameter.z / 2.0f
+	};
+	//const float offset = -radius * static_cast<float>(biggestDiameter - 1);
+	const XMFLOAT3 offset =
+	{
+		-radius.x * static_cast<float>(objectDiameter.x - 1),
+		-radius.y * static_cast<float>(objectDiameter.y - 1),
+		-radius.z * static_cast<float>(objectDiameter.z - 1),
+	};
+
+	UINT voxelIndex = _x * objectDiameter.y * objectDiameter.z + _y * objectDiameter.z + _z;
 	if( voxels[voxelIndex].element == 0 )
 	{
 		return;
 	}
 
-	XMFLOAT3 center = { offset + (x*diameter), offset + (y*diameter), offset + (z*diameter) };
-	XMFLOAT3 color = { 0.2314f, 0.8196f, 0.0f };
+	XMFLOAT3 center = { offset.x + (_x*diameter.x), offset.y + (_y*diameter.y), offset.z + (_z*diameter.z) };
+	XMFLOAT3 color = _object.GetColor();
 
 	// Right
-	if( (x < (GGObject::MAX_DIAMETER - 1) && (voxels[voxelIndex + (GGObject::MAX_DIAMETER * GGObject::MAX_DIAMETER)].element == 0)) || (x == (GGObject::MAX_DIAMETER - 1)) )
+	if( (_x < (objectDiameter.x - 1u) && (voxels[voxelIndex + (objectDiameter.y * objectDiameter.z)].element == 0)) || (_x == (objectDiameter.x - 1u)) )
 	{
 		UINT indexCount = static_cast<UINT>(_grid.vertices.size());
-		_grid.vertices.push_back( { { center.x + radius, center.y - radius, center.z - radius }, { 1.0f, 0.0f, 0.0f }, _color } );
-		_grid.vertices.push_back( { { center.x + radius, center.y + radius, center.z - radius }, { 1.0f, 0.0f, 0.0f }, _color } );
-		_grid.vertices.push_back( { { center.x + radius, center.y + radius, center.z + radius }, { 1.0f, 0.0f, 0.0f }, _color } );
-		_grid.vertices.push_back( { { center.x + radius, center.y - radius, center.z + radius }, { 1.0f, 0.0f, 0.0f }, _color } );
+		_grid.vertices.push_back( { { center.x + radius.x, center.y - radius.y, center.z - radius.z }, { 1.0f, 0.0f, 0.0f }, color } );
+		_grid.vertices.push_back( { { center.x + radius.x, center.y + radius.y, center.z - radius.z }, { 1.0f, 0.0f, 0.0f }, color } );
+		_grid.vertices.push_back( { { center.x + radius.x, center.y + radius.y, center.z + radius.z }, { 1.0f, 0.0f, 0.0f }, color } );
+		_grid.vertices.push_back( { { center.x + radius.x, center.y - radius.y, center.z + radius.z }, { 1.0f, 0.0f, 0.0f }, color } );
 
 		_grid.indices.push_back( indexCount + 0 );
 		_grid.indices.push_back( indexCount + 1 );
@@ -118,13 +141,13 @@ void GGObjectModel::CreateVoxel( UINT x, UINT y, UINT z, const GGObject::GGVoxel
 	}
 
 	// Top
-	if( (y < (GGObject::MAX_DIAMETER - 1) && (voxels[voxelIndex + (GGObject::MAX_DIAMETER)].element == 0)) || (y == (GGObject::MAX_DIAMETER - 1)) )
+	if( (_y < (objectDiameter.y - 1u) && (voxels[voxelIndex + (objectDiameter.z)].element == 0)) || (_y == (objectDiameter.y - 1u)) )
 	{
 		UINT indexCount = static_cast<UINT>(_grid.vertices.size());
-		_grid.vertices.push_back( { { center.x - radius, center.y + radius, center.z - radius }, { 0.0f, 1.0f, 0.0f }, _color } );
-		_grid.vertices.push_back( { { center.x - radius, center.y + radius, center.z + radius }, { 0.0f, 1.0f, 0.0f }, _color } );
-		_grid.vertices.push_back( { { center.x + radius, center.y + radius, center.z + radius }, { 0.0f, 1.0f, 0.0f }, _color } );
-		_grid.vertices.push_back( { { center.x + radius, center.y + radius, center.z - radius }, { 0.0f, 1.0f, 0.0f }, _color } );
+		_grid.vertices.push_back( { { center.x - radius.x, center.y + radius.y, center.z - radius.z }, { 0.0f, 1.0f, 0.0f }, color } );
+		_grid.vertices.push_back( { { center.x - radius.x, center.y + radius.y, center.z + radius.z }, { 0.0f, 1.0f, 0.0f }, color } );
+		_grid.vertices.push_back( { { center.x + radius.x, center.y + radius.y, center.z + radius.z }, { 0.0f, 1.0f, 0.0f }, color } );
+		_grid.vertices.push_back( { { center.x + radius.x, center.y + radius.y, center.z - radius.z }, { 0.0f, 1.0f, 0.0f }, color } );
 
 		_grid.indices.push_back( indexCount + 0 );
 		_grid.indices.push_back( indexCount + 1 );
@@ -136,13 +159,13 @@ void GGObjectModel::CreateVoxel( UINT x, UINT y, UINT z, const GGObject::GGVoxel
 	}
 
 	// Back
-	if( (z < (GGObject::MAX_DIAMETER - 1) && (voxels[voxelIndex + 1].element == 0)) || (z == (GGObject::MAX_DIAMETER - 1)) )
+	if( (_z < (objectDiameter.z - 1u) && (voxels[voxelIndex + 1].element == 0)) || (_z == (objectDiameter.z - 1u)) )
 	{
 		UINT indexCount = static_cast<UINT>(_grid.vertices.size());
-		_grid.vertices.push_back( { { center.x + radius, center.y - radius, center.z + radius }, { 0.0f, 0.0f, 1.0f }, _color } );
-		_grid.vertices.push_back( { { center.x + radius, center.y + radius, center.z + radius }, { 0.0f, 0.0f, 1.0f }, _color } );
-		_grid.vertices.push_back( { { center.x - radius, center.y + radius, center.z + radius }, { 0.0f, 0.0f, 1.0f }, _color } );
-		_grid.vertices.push_back( { { center.x - radius, center.y - radius, center.z + radius }, { 0.0f, 0.0f, 1.0f }, _color } );
+		_grid.vertices.push_back( { { center.x + radius.x, center.y - radius.y, center.z + radius.z }, { 0.0f, 0.0f, 1.0f }, color } );
+		_grid.vertices.push_back( { { center.x + radius.x, center.y + radius.y, center.z + radius.z }, { 0.0f, 0.0f, 1.0f }, color } );
+		_grid.vertices.push_back( { { center.x - radius.x, center.y + radius.y, center.z + radius.z }, { 0.0f, 0.0f, 1.0f }, color } );
+		_grid.vertices.push_back( { { center.x - radius.x, center.y - radius.y, center.z + radius.z }, { 0.0f, 0.0f, 1.0f }, color } );
 
 		_grid.indices.push_back( indexCount + 0 );
 		_grid.indices.push_back( indexCount + 1 );
@@ -154,13 +177,13 @@ void GGObjectModel::CreateVoxel( UINT x, UINT y, UINT z, const GGObject::GGVoxel
 	}
 
 	// Left
-	if( (x > 0 && (voxels[voxelIndex - (GGObject::MAX_DIAMETER * GGObject::MAX_DIAMETER)].element == 0)) || (x == 0) )
+	if( (_x > 0 && (voxels[voxelIndex - (objectDiameter.y * objectDiameter.z)].element == 0)) || (_x == 0) )
 	{
 		UINT indexCount = static_cast<UINT>(_grid.vertices.size());
-		_grid.vertices.push_back( { { center.x - radius, center.y - radius, center.z + radius }, { -1.0f, 0.0f, 0.0f }, _color } );
-		_grid.vertices.push_back( { { center.x - radius, center.y + radius, center.z + radius }, { -1.0f, 0.0f, 0.0f }, _color } );
-		_grid.vertices.push_back( { { center.x - radius, center.y + radius, center.z - radius }, { -1.0f, 0.0f, 0.0f }, _color } );
-		_grid.vertices.push_back( { { center.x - radius, center.y - radius, center.z - radius }, { -1.0f, 0.0f, 0.0f }, _color } );
+		_grid.vertices.push_back( { { center.x - radius.x, center.y - radius.y, center.z + radius.z }, { -1.0f, 0.0f, 0.0f }, color } );
+		_grid.vertices.push_back( { { center.x - radius.x, center.y + radius.y, center.z + radius.z }, { -1.0f, 0.0f, 0.0f }, color } );
+		_grid.vertices.push_back( { { center.x - radius.x, center.y + radius.y, center.z - radius.z }, { -1.0f, 0.0f, 0.0f }, color } );
+		_grid.vertices.push_back( { { center.x - radius.x, center.y - radius.y, center.z - radius.z }, { -1.0f, 0.0f, 0.0f }, color } );
 
 		_grid.indices.push_back( indexCount + 0 );
 		_grid.indices.push_back( indexCount + 1 );
@@ -172,13 +195,13 @@ void GGObjectModel::CreateVoxel( UINT x, UINT y, UINT z, const GGObject::GGVoxel
 	}
 
 	// Bottom
-	if( (y > 0 && (voxels[voxelIndex - GGObject::MAX_DIAMETER].element == 0)) || (y == 0) )
+	if( (_y > 0 && (voxels[voxelIndex - objectDiameter.z].element == 0)) || (_y == 0) )
 	{
 		UINT indexCount = static_cast<UINT>(_grid.vertices.size());
-		_grid.vertices.push_back( { { center.x - radius, center.y - radius, center.z + radius }, { 0.0f, -1.0f, 0.0f }, _color } );
-		_grid.vertices.push_back( { { center.x - radius, center.y - radius, center.z - radius }, { 0.0f, -1.0f, 0.0f }, _color } );
-		_grid.vertices.push_back( { { center.x + radius, center.y - radius, center.z - radius }, { 0.0f, -1.0f, 0.0f }, _color } );
-		_grid.vertices.push_back( { { center.x + radius, center.y - radius, center.z + radius }, { 0.0f, -1.0f, 0.0f }, _color } );
+		_grid.vertices.push_back( { { center.x - radius.x, center.y - radius.y, center.z + radius.z }, { 0.0f, -1.0f, 0.0f }, color } );
+		_grid.vertices.push_back( { { center.x - radius.x, center.y - radius.y, center.z - radius.z }, { 0.0f, -1.0f, 0.0f }, color } );
+		_grid.vertices.push_back( { { center.x + radius.x, center.y - radius.y, center.z - radius.z }, { 0.0f, -1.0f, 0.0f }, color } );
+		_grid.vertices.push_back( { { center.x + radius.x, center.y - radius.y, center.z + radius.z }, { 0.0f, -1.0f, 0.0f }, color } );
 
 		_grid.indices.push_back( indexCount + 0 );
 		_grid.indices.push_back( indexCount + 1 );
@@ -190,13 +213,13 @@ void GGObjectModel::CreateVoxel( UINT x, UINT y, UINT z, const GGObject::GGVoxel
 	}
 
 	// Front
-	if( (z > 0 && (voxels[voxelIndex - 1].element == 0)) || (z == 0) )
+	if( (_z > 0 && (voxels[voxelIndex - 1].element == 0)) || (_z == 0) )
 	{
 		UINT indexCount = static_cast<UINT>(_grid.vertices.size());
-		_grid.vertices.push_back( { { center.x - radius, center.y - radius, center.z - radius }, { 0.0f, 0.0f, -1.0f }, _color } );
-		_grid.vertices.push_back( { { center.x - radius, center.y + radius, center.z - radius }, { 0.0f, 0.0f, -1.0f }, _color } );
-		_grid.vertices.push_back( { { center.x + radius, center.y + radius, center.z - radius }, { 0.0f, 0.0f, -1.0f }, _color } );
-		_grid.vertices.push_back( { { center.x + radius, center.y - radius, center.z - radius }, { 0.0f, 0.0f, -1.0f }, _color } );
+		_grid.vertices.push_back( { { center.x - radius.x, center.y - radius.y, center.z - radius.z }, { 0.0f, 0.0f, -1.0f }, color } );
+		_grid.vertices.push_back( { { center.x - radius.x, center.y + radius.y, center.z - radius.z }, { 0.0f, 0.0f, -1.0f }, color } );
+		_grid.vertices.push_back( { { center.x + radius.x, center.y + radius.y, center.z - radius.z }, { 0.0f, 0.0f, -1.0f }, color } );
+		_grid.vertices.push_back( { { center.x + radius.x, center.y - radius.y, center.z - radius.z }, { 0.0f, 0.0f, -1.0f }, color } );
 
 		_grid.indices.push_back( indexCount + 0 );
 		_grid.indices.push_back( indexCount + 1 );
@@ -206,5 +229,6 @@ void GGObjectModel::CreateVoxel( UINT x, UINT y, UINT z, const GGObject::GGVoxel
 		_grid.indices.push_back( indexCount + 3 );
 		_grid.indices.push_back( indexCount + 0 );
 	}
+
 	return;
 }

@@ -44,9 +44,10 @@ void GGPhysics::SplitObject( GGChunk::GGObjectID& _objectID, GGChunk& _chunk )
 {
 	GGObject& object = _chunk.GetObject( _objectID );
 	const GGObject::GGVoxels& voxels = object.GetVoxels();
-	UINT objectDiameter = object.MAX_DIAMETER;
+	UINT voxelCount = voxels.size();
+	XMUINT3 objectDiameter = object.GetDiameter();
 
-	vector<BYTE> voxelLabels( object.MAX_SIZE );
+	vector<BYTE> voxelLabels( voxelCount );
 	BYTE curLab = 1;
 	stack<UINT> voxelsToCheck;
 
@@ -62,14 +63,15 @@ void GGPhysics::SplitObject( GGChunk::GGObjectID& _objectID, GGChunk& _chunk )
 				UINT j = voxelsToCheck.top();
 				voxelsToCheck.pop();
 
-				UINT x = j / (objectDiameter * objectDiameter);
-				UINT y = (j / objectDiameter) % objectDiameter;
-				UINT z = j % objectDiameter;
+				UINT x = j / (objectDiameter.y * objectDiameter.z);
+				UINT y = (j / objectDiameter.z) % objectDiameter.y;
+				UINT z = j % objectDiameter.z;
 
 				// Right
-				if( x < (objectDiameter - 1) )
+				if( x < (objectDiameter.x - 1) )
 				{
-					UINT k = (x + 1) * objectDiameter * objectDiameter + y * objectDiameter + z;
+					UINT k = GGWorld::ConvertCoordsToId( { x + 1, y, z }, objectDiameter );
+					//UINT k = (x + 1) * objectDiameter * objectDiameter + y * objectDiameter + z;
 					if( (voxels[k].element != 0) && (voxelLabels[k] == 0) )
 					{
 						voxelLabels[k] = curLab;
@@ -80,7 +82,8 @@ void GGPhysics::SplitObject( GGChunk::GGObjectID& _objectID, GGChunk& _chunk )
 				// Left
 				if( x > 0 )
 				{
-					UINT k = (x - 1) * objectDiameter * objectDiameter + y * objectDiameter + z;
+					UINT k = GGWorld::ConvertCoordsToId( { x - 1, y, z }, objectDiameter );
+					//UINT k = (x - 1) * objectDiameter * objectDiameter + y * objectDiameter + z;
 					if( (voxels[k].element != 0) && (voxelLabels[k] == 0) )
 					{
 						voxelLabels[k] = curLab;
@@ -89,9 +92,10 @@ void GGPhysics::SplitObject( GGChunk::GGObjectID& _objectID, GGChunk& _chunk )
 				}
 
 				// Top
-				if( y < (objectDiameter - 1) )
+				if( y < (objectDiameter.y - 1) )
 				{
-					UINT k = x * objectDiameter * objectDiameter + (y + 1) * objectDiameter + z;
+					UINT k = GGWorld::ConvertCoordsToId( { x, y + 1, z }, objectDiameter );
+					//UINT k = x * objectDiameter * objectDiameter + (y + 1) * objectDiameter + z;
 					if( (voxels[k].element != 0) && (voxelLabels[k] == 0) )
 					{
 						voxelLabels[k] = curLab;
@@ -102,7 +106,8 @@ void GGPhysics::SplitObject( GGChunk::GGObjectID& _objectID, GGChunk& _chunk )
 				// Bottom
 				if( y > 0 )
 				{
-					UINT k = x * objectDiameter * objectDiameter + (y - 1) * objectDiameter + z;
+					UINT k = GGWorld::ConvertCoordsToId( { x, y - 1, z }, objectDiameter );
+					//UINT k = x * objectDiameter * objectDiameter + (y - 1) * objectDiameter + z;
 					if( (voxels[k].element != 0) && (voxelLabels[k] == 0) )
 					{
 						voxelLabels[k] = curLab;
@@ -111,9 +116,10 @@ void GGPhysics::SplitObject( GGChunk::GGObjectID& _objectID, GGChunk& _chunk )
 				}
 
 				// Front
-				if( z < (objectDiameter - 1) )
+				if( z < (objectDiameter.z - 1) )
 				{
-					UINT k = x * objectDiameter * objectDiameter + y * objectDiameter + (z + 1);
+					UINT k = GGWorld::ConvertCoordsToId( { x, y, z + 1 }, objectDiameter );
+					//UINT k = x * objectDiameter * objectDiameter + y * objectDiameter + (z + 1);
 					if( (voxels[k].element != 0) && (voxelLabels[k] == 0) )
 					{
 						voxelLabels[k] = curLab;
@@ -124,7 +130,8 @@ void GGPhysics::SplitObject( GGChunk::GGObjectID& _objectID, GGChunk& _chunk )
 				// Back
 				if( z > 0 )
 				{
-					UINT k = x * objectDiameter * objectDiameter + y * objectDiameter + (z - 1);
+					UINT k = GGWorld::ConvertCoordsToId( { x, y, z - 1 }, objectDiameter );
+					//UINT k = x * objectDiameter * objectDiameter + y * objectDiameter + (z - 1);
 					if( (voxels[k].element != 0) && (voxelLabels[k] == 0) )
 					{
 						voxelLabels[k] = curLab;
@@ -140,11 +147,11 @@ void GGPhysics::SplitObject( GGChunk::GGObjectID& _objectID, GGChunk& _chunk )
 	if( curLab > 2 )
 	{
 		_chunk.RemoveObject( _objectID );
-		vector<GGObject::GGVoxels> newVoxels( curLab - 1, GGObject::GGVoxels( GGObject::MAX_SIZE ) );
+		vector<GGObject::GGVoxels> newVoxels( curLab - 1, GGObject::GGVoxels( voxelCount ) );
 
 		for( UINT i = 0; i < newVoxels.size(); ++i )
 		{
-			for( UINT j = 0; j < GGObject::MAX_SIZE; ++j )
+			for( UINT j = 0; j < voxelCount; ++j )
 			{
 				if( voxelLabels[j] == (i + 1) )
 				{
@@ -156,7 +163,7 @@ void GGPhysics::SplitObject( GGChunk::GGObjectID& _objectID, GGChunk& _chunk )
 			static uniform_real_distribution<float> distribution( 0.25f, 0.75f );
 			XMFLOAT3 color = { distribution( generator ), distribution( generator ),  distribution( generator ) };
 
-			GGObject newObject( move( newVoxels[i] ), object.GetVoxelDimension(), object.GetPosition(), color );
+			GGObject newObject( move( newVoxels[i] ), object.GetVoxelDimension(), object.GetPosition(), color, object.GetDiameter() );
 
 			_chunk.AddObject( move( newObject ) );
 		}
@@ -183,18 +190,18 @@ float GGPhysics::GetObjectFloorHeight( const GGObject& _object )
 {
 	float objectCenterHeight = _object.GetPosition().y;
 
-	const UINT objectDiameter = GGObject::MAX_DIAMETER;
+	const XMUINT3 objectDiameter = _object.GetDiameter();
 	auto& voxels = _object.GetVoxels();
-	for( UINT y = 0; y < objectDiameter; ++y )
+	for( UINT y = 0; y < objectDiameter.y; ++y )
 	{
-		for( UINT x = 0; x < objectDiameter; ++x )
+		for( UINT x = 0; x < objectDiameter.x; ++x )
 		{
-			for( UINT z = 0; z < objectDiameter; ++z )
+			for( UINT z = 0; z < objectDiameter.z; ++z )
 			{
-				UINT i = x * objectDiameter * objectDiameter + y * objectDiameter + z;
+				UINT i = x * objectDiameter.y * objectDiameter.z + y * objectDiameter.z + z;
 				if( voxels[i].element != 0 )
 				{
-					int lowestVoxelLevel = y - (objectDiameter / 2);
+					float lowestVoxelLevel = y - (objectDiameter.y / 2.0f);
 
 					return objectCenterHeight + (lowestVoxelLevel * _object.GetVoxelDimension());
 				}

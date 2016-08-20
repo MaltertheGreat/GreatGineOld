@@ -22,8 +22,8 @@ public:
 	const DirectX::XMFLOAT4X4& GetTransformation() const;
 
 private:
-	GGMeshData CreateObjectGrid( const GGObject& _object, const DirectX::XMFLOAT3& _color );
-	void CreateVoxel( UINT x, UINT y, UINT z, const GGObject::GGVoxels& voxels, GGMeshData& _grid, const DirectX::XMFLOAT3& _color );
+	GGMeshData CreateObjectGrid( const GGObject& _object );
+	void CreateVoxel( UINT _x, UINT _y, UINT _z, const GGObject& _object, GGMeshData& _grid );
 
 private:
 	GGMesh m_mesh;

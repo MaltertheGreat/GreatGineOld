@@ -42,6 +42,7 @@ private:
 	void UpdatePosition( GGWorld& _world, double _timeDelta );
 	void InteractWithWorld( GGWorld& _world, double _timeDelta );
 	void PlaceVoxel( const GGWorld::GGVoxelFaceDescription& _desc, GGWorld& _world );
+	void DigVoxel( const GGWorld::GGVoxelFaceDescription& _desc, GGWorld& _world );
 
 private:
 	bool m_isAlive;

@@ -160,7 +160,7 @@ GGObject GGPlayer::PlayerObject( const XMFLOAT3& _pos )
 	GGObject::GGVoxels voxels( GGObject::MAX_SIZE );
 	voxels[0].element = 1;
 	//voxels[ 2152 ].element = 1;
-	voxels[4095].element = 1;
+	voxels[GGObject::MAX_SIZE - 1].element = 1;
 	float bodyRadius = 1.0f;
 	XMFLOAT3 bodyColor = { 1.0f, 0.0f, 1.0f };
 
@@ -296,7 +296,8 @@ void GGPlayer::InteractWithWorld( GGWorld& _world, double _timeDelta )
 
 		if( voxelObjectChunk )
 		{
-			PlaceVoxel( *voxelObjectChunk, _world );
+			//PlaceVoxel( *voxelObjectChunk, _world );
+			_world.PlaceVoxelOn( *voxelObjectChunk );
 
 			m_placingCooldown = cooldown;
 		}
@@ -308,37 +309,7 @@ void GGPlayer::InteractWithWorld( GGWorld& _world, double _timeDelta )
 
 		if( voxelObjectChunk )
 		{
-			auto& chunk = _world.GetChunk( voxelObjectChunk->voxel.object.chunk );
-			auto& object = chunk.GetObjects().at( voxelObjectChunk->voxel.object.objectID );
-			UINT x = voxelObjectChunk->voxel.voxelX;
-			UINT y = voxelObjectChunk->voxel.voxelY;
-			UINT z = voxelObjectChunk->voxel.voxelZ;
-
-			UINT voxelIndex = x * GGObject::MAX_DIAMETER * GGObject::MAX_DIAMETER + y * GGObject::MAX_DIAMETER + z;
-
-			GGObject::GGVoxels newVoxels = object.GetVoxels();
-			newVoxels.at( voxelIndex ).element = 0;
-
-			bool objectEmpty = true;
-			for( auto voxel : newVoxels )
-			{
-				if( voxel.element != 0 )
-				{
-					objectEmpty = false;
-					break;
-				}
-			}
-
-			if( objectEmpty )
-			{
-				chunk.RemoveObject( voxelObjectChunk->voxel.object.objectID );
-			}
-			else
-			{
-				GGObject newObject = GGObject( move( newVoxels ), object.GetVoxelDimension(), object.GetPosition(), object.GetColor() );
-
-				chunk.ReplaceObject( voxelObjectChunk->voxel.object.objectID, move( newObject ) );
-			}
+			DigVoxel( *voxelObjectChunk, _world );
 
 			m_diggingCooldown = cooldown;
 		}
@@ -351,6 +322,7 @@ void GGPlayer::PlaceVoxel( const GGWorld::GGVoxelFaceDescription& _desc, GGWorld
 {
 	auto& chunk = _world.GetChunk( _desc.voxel.object.chunk );
 	auto& object = chunk.GetObjects().at( _desc.voxel.object.objectID );
+
 	UINT x = _desc.voxel.voxelX;
 	UINT y = _desc.voxel.voxelY;
 	UINT z = _desc.voxel.voxelZ;
@@ -501,4 +473,39 @@ void GGPlayer::PlaceVoxel( const GGWorld::GGVoxelFaceDescription& _desc, GGWorld
 	}
 
 	return;
+}
+
+void GGPlayer::DigVoxel( const GGWorld::GGVoxelFaceDescription& _desc, GGWorld& _world )
+{
+	auto& chunk = _world.GetChunk( _desc.voxel.object.chunk );
+	auto& object = chunk.GetObjects().at( _desc.voxel.object.objectID );
+	UINT x = _desc.voxel.voxelX;
+	UINT y = _desc.voxel.voxelY;
+	UINT z = _desc.voxel.voxelZ;
+
+	UINT voxelIndex = GGWorld::ConvertCoordsToId( { x,y,z }, object.GetDiameter() );
+
+	GGObject::GGVoxels newVoxels = object.GetVoxels();
+	newVoxels.at( voxelIndex ).element = 0;
+
+	bool objectEmpty = true;
+	for( auto voxel : newVoxels )
+	{
+		if( voxel.element != 0 )
+		{
+			objectEmpty = false;
+			break;
+		}
+	}
+
+	if( objectEmpty )
+	{
+		chunk.RemoveObject( _desc.voxel.object.objectID );
+	}
+	else
+	{
+		GGObject newObject = GGObject( move( newVoxels ), object.GetVoxelDimension(), object.GetPosition(), object.GetColor(), object.GetDiameter() );
+
+		chunk.ReplaceObject( _desc.voxel.object.objectID, move( newObject ) );
+	}
 }

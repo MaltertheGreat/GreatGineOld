@@ -53,6 +53,10 @@ public:
 
 	std::unique_ptr<GGVoxelFaceDescription> GetVoxelFromRay( UINT _originChunkX, UINT _originChunkZ, const DirectX::XMFLOAT3& _originPosition, const DirectX::XMFLOAT3& _rotation, float _length, GGObjectDescription* _excludedObject = nullptr );
 
+	void PlaceVoxelOn( GGVoxelFaceDescription _voxelFace );
+
+	const static UINT ConvertCoordsToId( const DirectX::XMUINT3& _coords, const DirectX::XMUINT3& _diameter );
+
 private:
 	// TODO: Move these functions to some sort of world generator
 	static void GenerateChunk( GGChunk& _chunk );
